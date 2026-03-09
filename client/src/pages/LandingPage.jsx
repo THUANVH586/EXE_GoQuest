@@ -130,31 +130,31 @@ function LandingPage() {
 
     const experiences = [
         {
-            image: '/src/assets/exp_1.png',
+            image: 'https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773065757/exp_1_cusjwd.png',
             badgeText: 'Ẩm thực',
             title: 'Làm Bánh Dân Gian',
             description: 'Tự tay nhào bột, nắn bánh và hấp những chiếc bánh truyền thống thơm lừng theo công thức trăm năm.'
         },
         {
-            image: '/src/assets/exp_2.png',
+            image: 'https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773065757/exp_2_r0lqnq.png',
             badgeText: 'Nghệ thuật',
             title: 'Vẽ Nón Lá Nghệ Thuật',
             description: 'Sáng tạo họa tiết phong cảnh Cồn Sơn trên nền nón lá trắng, tạo nên món quà lưu niệm độc bản mang dấu ấn.'
         },
         {
-            image: '/src/assets/exp_3.png',
+            image: 'https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773065757/exp_3_vi6m2k.png',
             badgeText: 'Cộng đồng',
             title: 'Trải Nghiệm Bán Hàng',
             description: 'Đứng quầy bán bánh tráng trộn cùng người dân địa phương, cảm nhận nhịp sống bình dị và chân thực của Cồn Sơn.'
         },
         {
-            image: '/src/assets/exp_4.png',
+            image: 'https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773065757/exp_4_ommyyg.png',
             badgeText: 'Khám phá',
             title: 'Hành Trình Khám Phá',
             description: 'Di chuyển và khám phá toàn bộ Cồn Sơn bằng cách tích lũy ít nhất 2000m, trải nghiệm hòn đảo xanh mát từng góc nhỏ.'
         },
         {
-            image: '/src/assets/exp_5.png',
+            image: 'https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773065757/exp_5_avm8sd.png',
             badgeText: 'Nghệ thuật cổ truyền',
             title: 'Hát Đờn Ca Tài Tử',
             description: 'Thưởng thức không gian âm nhạc di sản thấm đẫm tình đất, tình người Nam Bộ qua những giai điệu mộc mạc.'
