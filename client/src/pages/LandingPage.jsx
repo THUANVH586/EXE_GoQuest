@@ -168,7 +168,7 @@ function LandingPage() {
                 <div className="lp-nav-inner">
                     <div className="lp-nav-brand">
                         <span className="lp-nav-logo"></span>
-                        <span className="lp-nav-name">Cồn Sơn Explorer</span>
+                        <span className="lp-nav-name">Go Quest</span>
                     </div>
 
                     <div className="lp-nav-links">
@@ -240,27 +240,27 @@ function LandingPage() {
                 <div className="lp-stats-grid">
                     <div className="lp-stat">
                         <div className="lp-stat-number">
-                            <AnimatedCounter target="5200" suffix="+" />
+                            <AnimatedCounter target="200" suffix="+" />
                         </div>
-                        <div className="lp-stat-label">Cây ăn trái đã trồng</div>
+                        <div className="lp-stat-label">Du khách tham gia trải nghiệm</div>
                     </div>
                     <div className="lp-stat">
                         <div className="lp-stat-number">
-                            <AnimatedCounter target="150" suffix="+" />
+                            <AnimatedCounter target="10" suffix="+" />
                         </div>
-                        <div className="lp-stat-label">Hộ dân được hỗ trợ</div>
+                        <div className="lp-stat-label">Nhiệm vụ trải nghiệm được triển khai</div>
                     </div>
                     <div className="lp-stat">
                         <div className="lp-stat-number">
-                            <AnimatedCounter target="12" suffix=".5T" />
+                            <AnimatedCounter target="30" suffix="+" />
                         </div>
-                        <div className="lp-stat-label">Nhựa được cắt giảm</div>
+                        <div className="lp-stat-label">Hộ dân tham gia hoạt động trải nghiệm</div>
                     </div>
                     <div className="lp-stat">
                         <div className="lp-stat-number">
-                            <AnimatedCounter target="100" suffix="%" />
+                            <AnimatedCounter target="60" suffix="%" />
                         </div>
-                        <div className="lp-stat-label">Nguyên liệu hữu cơ</div>
+                        <div className="lp-stat-label">Du khách thực hiện hành vi du lịch xanh</div>
                     </div>
                 </div>
             </div>
@@ -376,12 +376,12 @@ function LandingPage() {
                             </div>
                             <div className="card" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
                                 <h3 style={{ marginBottom: 'var(--space-xl)', fontSize: 'var(--font-size-lg)' }}>
-                                    Tầm nhìn 2025
+                                    Mục tiêu
                                 </h3>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
-                                    <ProgressBar label="Hoàn thiện hệ thống lọc nước sạch" percent={85} />
-                                    <ProgressBar label="Chuyển đổi năng lượng mặt trời" percent={60} />
-                                    <ProgressBar label="Bảo tồn cá hô, cá tra dầu" percent={90} />
+                                    <ProgressBar label="Du khách tham gia ít nhất một nhiệm vụ" percent={80} />
+                                    <ProgressBar label="Du khách tham gia ít nhất một hành vi xanh" percent={70} />
+                                    <ProgressBar label="Người tham gia hoàn thành ít nhất một hành trình trải nghiệm" percent={75} />
                                 </div>
                             </div>
                         </div>
@@ -465,7 +465,7 @@ function LandingPage() {
                     <div className="lp-footer-grid">
                         <div className="lp-footer-brand">
                             <div className="navbar-brand" style={{ marginBottom: 'var(--space-md)' }}>
-                                <span>Cồn Sơn Explorer</span>
+                                <span>Go Quest</span>
                             </div>
                             <p className="lp-footer-desc">
                                 Ứng dụng du lịch trải nghiệm dựa vào cộng đồng, tiên phong trong mô hình du lịch bền vững
@@ -494,7 +494,7 @@ function LandingPage() {
                     </div>
 
                     <div className="lp-footer-bottom">
-                        <p>© 2025 Cồn Sơn Explorer. Phát triển vì cộng đồng địa phương.</p>
+                        <p>© 2025 Go Quest. Phát triển vì cộng đồng địa phương.</p>
                         <div className="lp-footer-socials">
                             <a href="#" className="lp-footer-link">Facebook</a>
                             <a href="#" className="lp-footer-link">Instagram</a>

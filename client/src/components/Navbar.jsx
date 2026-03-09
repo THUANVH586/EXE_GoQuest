@@ -9,7 +9,7 @@ function Navbar() {
         <nav className="navbar">
             <div className="navbar-container">
                 <Link to="/" className="navbar-brand">
-                    <span>Cồn Sơn Explorer</span>
+                    <span>Go Quest</span>
                 </Link>
 
                 <ul className="navbar-nav">
