@@ -3,59 +3,15 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
 import { calculateDistance } from '../utils/geo'
+import toast from 'react-hot-toast'
 
-/* ─── Task data ─────────────────────────────────────────────────── */
-const TASKS = [
-    {
-        id: 1, title: 'Làm bánh dân gian', icon: '',
-        description: 'Trải nghiệm tự tay nhào bột và chế biến các món bánh truyền thống miền Tây.',
-        type: 'craft', category: 'short-term', points: 150, duration: 45,
-        location: 'Khu Workshop - Nhà văn hóa Cồn Sơn',
-        img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAnpa5y1tvT8SEueZWJ770KfqJIprwJq4ZHCYji_3q_wzyYGWUFlA8Ft5Td3JnDcvCXKyr4SkXM_o3KiZv4HFausnJAl7NwRyV67HyytiTjHemrsVXDoEQoVduY6b9CK8rj7xkgklCdeAozxL8GVlk3vi3qapNNhcE9uOORGghN08nwoEJ-PGkCrnGCj0i7tz5yxAq6Z4iIYDUIWhk5UOrI4hrUFVRTlPx5CS0RZvRovRs1nfQShdsNbqCui01kXvf4dwViUBhP',
-    },
-    {
-        id: 2, title: 'Vẽ nón lá', icon: '',
-        description: 'Sáng tạo nghệ thuật trên chiếc nón lá đặc trưng của người Việt Nam.',
-        type: 'craft', category: 'short-term', points: 100, duration: 30,
-        location: 'Quầy Chú Năm - Khu thủ công',
-        img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCIr4-rkCWlX3jVPgIN5zRRGBuVDdfDYIxR9TrpsSIr6KKgORVDd8199MEIXDW7hcRzxq63ucMEjVS2d1E0YjhgYG3Km-sLhXckW62dfHJX1u_RjLh67PPZdl3pzZM_MvNBiPv5PkWCywRWQLKQaiSzdimlIMFvlSnDHXNwR5GA5eSeR7lbsNGyxVTIkO5oWdFWV_eFK2iyE2UkPAcASDmQ8TE0xzZ7YEV4tk6gIfhYV_zE6GFKTj26wzw7TrMUFSpcZNHldYBR',
-    },
-    {
-        id: 3, title: 'Thử thách 5000 bước', icon: '',
-        description: 'Đi dạo quanh Cồn Sơn và khám phá thiên nhiên tươi đẹp nơi đây.',
-        type: 'health', category: 'short-term', points: 80, duration: 60,
-        location: 'Toàn bộ Cồn Sơn',
-        img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCBXVEwHBNpC_6hVfL8l8odhSefM0c0dskGy9RyPY_QDekMLye0JDXs_dHK43SDrCQVVlHrhXXwCh-UCe4LwBGAYvcBvXHzbkZT0ErUX80jTt1et7btQcaTL5zauOXCVk06_EWJsGmRk4pDxJFEertk3LZrBGJBjvrX_D5uKOSRwQjC--922_gIBCX9NrH8W_KWQMh7V09kdqc4wvqQV1h4zudvmutkZpvqTSu_zDC8TqN-gIbghG-a0VyjVMlMJu2JNMYIHBv7',
-    },
-    {
-        id: 4, title: 'Sử dụng bình nước cá nhân', icon: '',
-        description: 'Hạn chế rác thải nhựa bằng cách sử dụng bình nước tái sử dụng tại các trạm.',
-        type: 'environment', category: 'short-term', points: 50, duration: 0,
-        location: 'Toàn bộ Cồn Sơn',
-        img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAC5dKo1FVBNNBYdZMl6aEdFdkPUYTwzqFbKabgxz9J_oL06l09XAeeYc62L4HDxMjPq7hcn6GzRY3TxF25iJBe14nGV8UEiEMmg_m6nvFFzybXPZ7ZWT3ydHTe4dhk54CnZ3o4v12gYc2ke3jCMZODO4eE0fPYtd7RX6BmtUKt-qdTrbu97pp9uE6b96DOhJ4rgqlBjDJrNhKydJU3yx3UvnJGxxVcZU8Pae5SroK2ftuDpnB8QKEA0qRI-xbc61XuVGdyuTU4',
-    },
-    {
-        id: 5, title: 'Thưởng thức Bánh Xèo', icon: '',
-        description: 'Đến quầy bánh dân gian thưởng thức món bánh xèo giòn rụm đặc trưng miền Tây.',
-        type: 'food', category: 'short-term', points: 60, duration: 20,
-        location: 'Quầy Cô Ba - Đầu đường chính',
-        img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAnpa5y1tvT8SEueZWJ770KfqJIprwJq4ZHCYji_3q_wzyYGWUFlA8Ft5Td3JnDcvCXKyr4SkXM_o3KiZv4HFausnJAl7NwRyV67HyytiTjHemrsVXDoEQoVduY6b9CK8rj7xkgklCdeAozxL8GVlk3vi3qapNNhcE9uOORGghN08nwoEJ-PGkCrnGCj0i7tz5yxAq6Z4iIYDUIWhk5UOrI4hrUFVRTlPx5CS0RZvRovRs1nfQShdsNbqCui01kXvf4dwViUBhP',
-    },
-    {
-        id: 6, title: 'Trải nghiệm Bán Hàng', icon: '',
-        description: 'Đứng quầy bán bánh tráng trộn cùng người dân địa phương trong 30 phút.',
-        type: 'community', category: 'short-term', points: 70, duration: 30,
-        location: 'Khu ẩm thực đường chính',
-        img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCBXVEwHBNpC_6hVfL8l8odhSefM0c0dskGy9RyPY_QDekMLye0JDXs_dHK43SDrCQVVlHrhXXwCh-UCe4LwBGAYvcBvXHzbkZT0ErUX80jTt1et7btQcaTL5zauOXCVk06_EWJsGmRk4pDxJFEertk3LZrBGJBjvrX_D5uKOSRwQjC--922_gIBCX9NrH8W_KWQMh7V09kdqc4wvqQV1h4zudvmutkZpvqTSu_zDC8TqN-gIbghG-a0VyjVMlMJu2JNMYIHBv7',
-    },
-]
-
+/* ─── Global Constants ─────────────────────────────────────────── */
 const MAP_IMG = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDrqeys7w8p3z_rdRnyMvr2LmXYwytkMD5WDPA4DKjQwLlT03ZYBAScnFdpfM6mxwUIJ9JDTNeGw-hjJ9PA8dtfn7jRx2OyrzJYxRSk60-a6TvPqolcMPRsAwiryDsczLTZ5bHPRSSiSDbN44Rtl3HpnnHdgeuzMak2DrmLkOMKj3HgP6gGLRypFmlFiXrymTuqPnI345DEo0BH6iB68uBmJzsKc3MWzuEqlOlyxGkwuVn53iHAEfztVWJDDl2ST0jblkqOabwR'
 
 function getRank(pts) {
-    if (pts >= 1000) return { name: 'Hạng Vàng', icon: '', next: null, need: 0 }
-    if (pts >= 500) return { name: 'Hạng Bạc', icon: '', next: 'Hạng Vàng', need: 1000 - pts }
-    return { name: 'Hạng Đồng', icon: '', next: 'Hạng Bạc', need: 500 - pts }
+    if (pts >= 1000) return { name: 'Hạng Vàng', icon: '🏆', next: null, need: 0 }
+    if (pts >= 500) return { name: 'Hạng Bạc', icon: '🥈', next: 'Hạng Vàng', need: 1000 - pts }
+    return { name: 'Hạng Đồng', icon: '🥉', next: 'Hạng Bạc', need: 500 - pts }
 }
 
 /* ─── Dashboard ─────────────────────────────────────────────────── */
@@ -63,23 +19,50 @@ export default function Dashboard() {
     const { user, logout } = useAuth()
     const navigate = useNavigate()
 
-    const [completedIds, setCompletedIds] = useState([])
-    const [toast, setToast] = useState(null)
-    const [toastType, setToastType] = useState('success')
+    const [tasks, setTasks] = useState([])
     const [activeNav, setActiveNav] = useState('journey')
     const [searchVal, setSearchVal] = useState('')
     const [celebrateId, setCelebrateId] = useState(null)
     const [isTracking, setIsTracking] = useState(false)
-    const [distance, setDistance] = useState(0)
+    const [distance, setDistance] = useState(user?.longTermProgress?.distance || 0)
+    const [completedIds, setCompletedIds] = useState([])
+    const [journeyTasks, setJourneyTasks] = useState(() => {
+        try {
+            const saved = localStorage.getItem('journeyTasks')
+            return saved ? JSON.parse(saved) : []
+        } catch (e) {
+            return []
+        }
+    })
+    const [toastMsg, setToastMsg] = useState(null)
+    const [toastType, setToastType] = useState('success')
     const watchRef = useRef(null)
     const lastPosRef = useRef(null)
+    const lastSavedDistanceRef = useRef(distance)
+    const distanceRef = useRef(distance)
 
-    /* fetch previous completions */
+    // Keep distanceRef in sync with distance state
     useEffect(() => {
-        api.get('/tasks/progress').then(r => {
-            const done = r.data.tasks?.filter(t => t.isCompleted).map(t => Number(t._id)) || []
-            setCompletedIds(done)
-        }).catch(() => { })
+        distanceRef.current = distance
+    }, [distance])
+
+    /* fetch tasks and progress */
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await api.get('/tasks/progress')
+                setTasks(response.data.tasks || [])
+                const done = response.data.tasks?.filter(t => t.isCompleted).map(t => t._id) || []
+                setCompletedIds(done)
+                if (response.data.longTermProgress?.distance) {
+                    setDistance(response.data.longTermProgress.distance)
+                    lastSavedDistanceRef.current = response.data.longTermProgress.distance
+                }
+            } catch (err) {
+                console.error('Failed to fetch tasks:', err)
+            }
+        }
+        fetchData()
     }, [])
 
     /* GPS tracking */
@@ -90,58 +73,103 @@ export default function Dashboard() {
                 const { latitude: lat, longitude: lng } = pos.coords
                 if (lastPosRef.current) {
                     const d = calculateDistance(lastPosRef.current.lat, lastPosRef.current.lng, lat, lng)
+                    // Only update if moved more than 3 meters to avoid jitter
                     if (d > 3) setDistance(prev => prev + d)
                 }
                 lastPosRef.current = { lat, lng }
-            }, () => { }, { enableHighAccuracy: true })
+            }, (err) => {
+                console.error('GPS Error:', err)
+                showToast('Không thể lấy vị trí GPS', 'error')
+            }, { enableHighAccuracy: true })
         } else {
             if (watchRef.current) navigator.geolocation.clearWatch(watchRef.current)
         }
         return () => { if (watchRef.current) navigator.geolocation.clearWatch(watchRef.current) }
     }, [isTracking])
 
+    /* Sync distance to backend periodically */
+    useEffect(() => {
+        const syncInterval = setInterval(async () => {
+            const currentDist = distanceRef.current
+            if (Math.abs(currentDist - lastSavedDistanceRef.current) > 10) { // Sync if moved > 10m
+                try {
+                    await api.patch('/tasks/long-term', { distance: currentDist })
+                    lastSavedDistanceRef.current = currentDist
+                    console.log('Distance synced:', currentDist)
+                } catch (err) {
+                    console.error('Failed to sync distance:', err)
+                }
+            }
+        }, 10000) // Every 10 seconds
+
+        return () => clearInterval(syncInterval)
+    }, [])
+
     const showToast = (msg, type = 'success') => {
-        setToast(msg); setToastType(type)
-        setTimeout(() => setToast(null), 3000)
+        setToastMsg(msg)
+        setToastType(type)
+        if (type === 'success') toast.success(msg)
+        else toast.error(msg)
+        setTimeout(() => setToastMsg(null), 3000)
     }
 
     const handleComplete = async (taskId) => {
         if (completedIds.includes(taskId)) return
-        try { await api.post(`/tasks/complete/${taskId}`) } catch { }
-        setCompletedIds(p => [...p, taskId])
-        setCelebrateId(taskId)
-        setTimeout(() => setCelebrateId(null), 800)
-        showToast('Chúc mừng! Bạn đã hoàn thành nhiệm vụ!')
+        try {
+            await api.post(`/tasks/complete/${taskId}`)
+            setCompletedIds(p => [...p, taskId])
+            setCelebrateId(taskId)
+            setTimeout(() => setCelebrateId(null), 800)
+            showToast('Chúc mừng! Bạn đã hoàn thành nhiệm vụ!')
+        } catch (err) {
+            showToast('Không thể cập nhật trạng thái nhiệm vụ', 'error')
+        }
+    }
+
+    const handleReceiveTasks = () => {
+        if (!tasks || tasks.length === 0) {
+            showToast('Đang tải danh sách nhiệm vụ, vui lòng thử lại', 'error')
+            return
+        }
+        // Filter out completed tasks first? Or just any 5?
+        // User said "random nhiệm vụ", usually means from all available.
+        const shuffled = [...tasks].sort(() => 0.5 - Math.random())
+        const selected = shuffled.slice(0, 5)
+        setJourneyTasks(selected)
+        localStorage.setItem('journeyTasks', JSON.stringify(selected))
+        showToast('Đã làm mới 5 nhiệm vụ ngẫu nhiên cho hành trình!')
     }
 
     const handleLogout = () => { logout(); navigate('/') }
 
     /* computed */
-    const totalPts = TASKS.filter(t => completedIds.includes(t.id)).reduce((s, t) => s + t.points, 0)
-    const pct = Math.round((completedIds.length / TASKS.length) * 100)
+    const REQUIRED_TASKS = 5;
+    const totalPts = tasks.filter(t => completedIds.includes(t._id)).reduce((s, t) => s + (t.points || 0), 0)
+    const pct = tasks.length > 0 ? Math.min(Math.round((completedIds.length / REQUIRED_TASKS) * 100), 100) : 0
     const barPct = Math.min((totalPts / 1000) * 100, 100)
     const rank = getRank(totalPts)
-    const filteredTasks = TASKS.filter(t =>
-        t.title.toLowerCase().includes(searchVal.toLowerCase()) ||
-        t.description.toLowerCase().includes(searchVal.toLowerCase())
+
+    const filteredTasks = tasks.filter(t =>
+        (t.title || '').toLowerCase().includes(searchVal.toLowerCase()) ||
+        (t.description || '').toLowerCase().includes(searchVal.toLowerCase())
     )
 
     /* recent activity — show completed tasks */
-    const recentDone = TASKS.filter(t => completedIds.includes(t.id)).slice(-3).reverse()
+    const recentDone = tasks.filter(t => completedIds.includes(t._id)).slice(-3).reverse()
     const staticActivities = [
-        { emoji: '', label: 'Đã hoàn thành 5000 bước', time: 'Hôm nay, 10:30 AM' },
-        { emoji: '', label: 'Đổi quà: Nước mắm Cồn Sơn', time: 'Hôm qua, 04:15 PM' },
-        { emoji: '', label: 'Nhận 50 điểm ẩm thực', time: '22 Tháng 10, 2023' },
+        { emoji: '🚶', label: 'Đã hoàn thành 5000 bước', time: 'Mục tiêu hàng ngày' },
+        { emoji: '🎁', label: 'Đổi quà: Nước mắm Cồn Sơn', time: 'Ghé quầy lưu niệm' },
+        { emoji: '🍜', label: 'Nhận 50 điểm ẩm thực', time: 'Trải nghiệm buffet bánh' },
     ]
     const activities = recentDone.length
-        ? recentDone.map(t => ({ emoji: t.icon, label: `Hoàn thành: ${t.title}`, time: `+${t.points} điểm · Vừa xong` }))
+        ? recentDone.map(t => ({ emoji: t.icon || '✅', label: `Hoàn thành: ${t.title}`, time: `+${t.points} điểm · Vừa xong` }))
         : staticActivities
 
     const navItems = [
-        { key: 'journey', icon: '', label: 'Hành trình' },
-        { key: 'tasks', icon: '', label: 'Nhiệm vụ' },
-        { key: 'rank', icon: '', label: 'Hạng của bạn' },
-        { key: 'challenges', icon: '', label: 'Thử thách' },
+        { key: 'journey', icon: '🗺️', label: 'Hành trình' },
+        { key: 'tasks', icon: '📋', label: 'Nhiệm vụ' },
+        { key: 'rank', icon: '🏆', label: 'Hạng của bạn' },
+        { key: 'challenges', icon: '✨', label: 'Thử thách' },
     ]
 
     /* ─── Render ─── */
@@ -156,10 +184,20 @@ export default function Dashboard() {
                         <span className="dsh-logo-name">Con Son Travel</span>
                     </Link>
                     <nav className="dsh-top-nav">
-                        <a className="dsh-top-link" href="#">Trang chủ</a>
-                        <a className="dsh-top-link dsh-top-link--active" href="#">Hành trình</a>
+                        <Link className="dsh-top-link" to="/">Giới thiệu</Link>
+                        <button
+                            className={`dsh-top-link ${activeNav === 'journey' ? 'dsh-top-link--active' : ''}`}
+                            onClick={() => setActiveNav('journey')}
+                        >
+                            Hành trình
+                        </button>
+                        <button
+                            className={`dsh-top-link ${activeNav === 'tasks' ? 'dsh-top-link--active' : ''}`}
+                            onClick={() => setActiveNav('tasks')}
+                        >
+                            Nhiệm vụ
+                        </button>
                         <a className="dsh-top-link" href="#">Cộng đồng</a>
-                        <a className="dsh-top-link" href="#">Ưu đãi</a>
                     </nav>
                 </div>
                 <div className="dsh-header-right">
@@ -229,103 +267,146 @@ export default function Dashboard() {
 
                 {/* ── MAIN ── */}
                 <main className="dsh-main">
-
-                    {/* Hero */}
-                    <section className="dsh-hero-card">
-                        <div className="dsh-hero-info">
-                            <h1 className="dsh-hero-title">Hành trình của bạn</h1>
-                            <p className="dsh-hero-sub">
-                                Theo dõi tiến độ và hoàn thành các nhiệm vụ trải nghiệm đặc sắc tại Cồn Sơn để nhận quà hấp dẫn.
-                            </p>
-                        </div>
-                        <div className="dsh-hero-stats">
-                            <div className="dsh-stat">
-                                <span className="dsh-stat-num">{pct}%</span>
-                                <span className="dsh-stat-lbl">Hoàn thành</span>
-                            </div>
-                            <div className="dsh-stat-sep" />
-                            <div className="dsh-stat">
-                                <span className="dsh-stat-num dsh-stat-num--dark">{totalPts}</span>
-                                <span className="dsh-stat-lbl">Điểm tích lũy</span>
-                            </div>
-                        </div>
-                        <div className="dsh-hero-bar-wrap">
-                            <div className="dsh-hero-bar-labels">
-                                <span>Tiến độ hiện tại</span>
-                                <span>Mục tiêu: 1000 điểm</span>
-                            </div>
-                            <div className="dsh-hero-bar-track">
-                                <div className="dsh-hero-bar-fill" style={{ width: `${barPct}%` }} />
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* Task Grid */}
-                    <section>
-                        <div className="dsh-section-head">
-                            <h2 className="dsh-section-title">
-                                <span style={{ color: 'var(--color-accent-primary)' }}></span>
-                                &nbsp;Nhiệm vụ trải nghiệm
-                            </h2>
-                            <button className="dsh-see-all">Xem tất cả</button>
-                        </div>
-
-                        <div className="dsh-task-grid">
-                            {filteredTasks.map(task => {
-                                const done = completedIds.includes(task.id)
-                                const celebrating = celebrateId === task.id
-                                return (
-                                    <article
-                                        key={task.id}
-                                        className={`dsh-task-card ${done ? 'dsh-task-card--done' : ''} ${celebrating ? 'dsh-task-card--celebrate' : ''}`}
-                                    >
-                                        {/* Image */}
-                                        <div className="dsh-task-img-wrap">
-                                            <img
-                                                src={task.img}
-                                                alt={task.title}
-                                                className="dsh-task-img"
-                                                loading="lazy"
-                                            />
-                                            <div className={`dsh-pts-badge ${done ? 'dsh-pts-badge--done' : ''}`}>
-                                                {done ? '✓ Hoàn thành' : `⭐ +${task.points} Điểm`}
-                                            </div>
-                                        </div>
-
-                                        {/* Body */}
-                                        <div className={`dsh-task-body ${done ? 'dsh-task-body--done' : ''}`}>
-                                            <h3 className="dsh-task-name">{task.title}</h3>
-                                            <p className="dsh-task-desc">{task.description}</p>
-                                            <button
-                                                className={`dsh-task-btn ${done ? 'dsh-task-btn--done' : ''}`}
-                                                onClick={() => handleComplete(task.id)}
-                                                disabled={done}
-                                            >
-                                                {done ? 'Đã nhận thưởng' : 'Bắt đầu ngay'}
-                                            </button>
-                                        </div>
-                                    </article>
-                                )
-                            })}
-                        </div>
-
-                        {/* GPS Tracking card */}
-                        <div className="dsh-gps-card">
-                            <div className="dsh-gps-left">
-                                <span className="dsh-gps-icon">{isTracking ? '' : ''}</span>
-                                <div>
-                                    <div className="dsh-gps-title">Hành trình khám phá</div>
-                                    <div className="dsh-gps-dist">{Math.round(distance)}m đã di chuyển</div>
+                    {activeNav === 'journey' && (
+                        <>
+                            {/* Hero */}
+                            <section className="dsh-hero-card">
+                                <div className="dsh-hero-info">
+                                    <h1 className="dsh-hero-title">Hành trình của bạn</h1>
+                                    <p className="dsh-hero-sub">
+                                        Theo dõi tiến độ và hoàn thành các nhiệm vụ trải nghiệm đặc sắc tại Cồn Sơn để nhận quà hấp dẫn.
+                                    </p>
                                 </div>
+                                <div className="dsh-hero-stats">
+                                    <div className="dsh-stat">
+                                        <span className="dsh-stat-num">{pct}%</span>
+                                        <span className="dsh-stat-lbl">Hoàn thành</span>
+                                    </div>
+                                    <div className="dsh-stat-sep" />
+                                    <div className="dsh-stat">
+                                        <span className="dsh-stat-num dsh-stat-num--dark">{totalPts}</span>
+                                        <span className="dsh-stat-lbl">Điểm tích lũy</span>
+                                    </div>
+                                </div>
+                                <div className="dsh-hero-bar-wrap">
+                                    <div className="dsh-hero-bar-labels">
+                                        <span>Tiến độ hiện tại</span>
+                                        <span>Mục tiêu: 1000 điểm</span>
+                                    </div>
+                                    <div className="dsh-hero-bar-track">
+                                        <div className="dsh-hero-bar-fill" style={{ width: `${barPct}%` }} />
+                                    </div>
+                                </div>
+                            </section>
+
+                            {/* Featured Task Selection */}
+                            <section>
+                                <div className="dsh-section-head">
+                                    <h2 className="dsh-section-title">Nhiệm vụ hành trình</h2>
+                                    <button className="dsh-see-all" style={{ background: '#2c5926', color: '#fff', padding: '6px 14px', borderRadius: '8px' }} onClick={handleReceiveTasks}>
+                                        Nhận nhiệm vụ
+                                    </button>
+                                </div>
+                                <div className="dsh-task-grid">
+                                    {journeyTasks.length > 0 ? (
+                                        journeyTasks.map(task => {
+                                            const done = completedIds.includes(task._id)
+                                            const celebrating = celebrateId === task._id
+                                            return (
+                                                <article key={task._id} className={`dsh-task-card ${done ? 'dsh-task-card--done' : ''} ${celebrating ? 'dsh-task-card--celebrate' : ''}`}>
+                                                    <div className="dsh-task-img-wrap">
+                                                        <img src={task.img} alt={task.title} className="dsh-task-img" loading="lazy" />
+                                                        <div className={`dsh-pts-badge ${done ? 'dsh-pts-badge--done' : ''}`}>
+                                                            {done ? '✓ Hoàn thành' : `⭐ +${task.points} Điểm`}
+                                                        </div>
+                                                    </div>
+                                                    <div className={`dsh-task-body ${done ? 'dsh-task-body--done' : ''}`}>
+                                                        <h3 className="dsh-task-name">{task.title}</h3>
+                                                        <p className="dsh-task-desc">{task.description}</p>
+                                                        <button className={`dsh-task-btn ${done ? 'dsh-task-btn--done' : ''}`} onClick={() => handleComplete(task._id)} disabled={done}>
+                                                            {done ? 'Đã nhận thưởng' : 'Bắt đầu ngay'}
+                                                        </button>
+                                                    </div>
+                                                </article>
+                                            )
+                                        })
+                                    ) : (
+                                        <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2rem', background: 'rgba(44, 89, 38, 0.05)', borderRadius: '1rem', border: '1px dashed rgba(44, 89, 38, 0.2)' }}>
+                                            <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>Bấm nút "Nhận nhiệm vụ" để bắt đầu hành trình của bạn!</p>
+                                            <button className="dsh-task-btn" style={{ width: 'auto', padding: '0.75rem 2rem' }} onClick={handleReceiveTasks}>Nhận nhiệm vụ ngay</button>
+                                        </div>
+                                    )}
+                                </div>
+                            </section>
+                        </>
+                    )}
+
+                    {activeNav === 'tasks' && (
+                        <section>
+                            <div className="dsh-section-head">
+                                <h2 className="dsh-section-title">Tất cả nhiệm vụ</h2>
+                                <div className="dsh-task-count">{tasks.length} nhiệm vụ khả dụng</div>
                             </div>
-                            <button
-                                className={`dsh-gps-btn ${isTracking ? 'dsh-gps-btn--stop' : ''}`}
-                                onClick={() => setIsTracking(t => !t)}
-                            >
-                                {isTracking ? 'Dừng' : 'Bắt đầu'}
-                            </button>
+                            <div className="dsh-task-grid">
+                                {filteredTasks.map(task => {
+                                    const done = completedIds.includes(task._id)
+                                    const celebrating = celebrateId === task._id
+                                    return (
+                                        <article key={task._id} className={`dsh-task-card ${done ? 'dsh-task-card--done' : ''} ${celebrating ? 'dsh-task-card--celebrate' : ''}`}>
+                                            <div className="dsh-task-img-wrap">
+                                                <img src={task.img} alt={task.title} className="dsh-task-img" loading="lazy" />
+                                                <div className={`dsh-pts-badge ${done ? 'dsh-pts-badge--done' : ''}`}>
+                                                    {done ? '✓ Hoàn thành' : `⭐ +${task.points} Điểm`}
+                                                </div>
+                                            </div>
+                                            <div className={`dsh-task-body ${done ? 'dsh-task-body--done' : ''}`}>
+                                                <h3 className="dsh-task-name">{task.title}</h3>
+                                                <p className="dsh-task-desc">{task.description}</p>
+                                                <button className={`dsh-task-btn ${done ? 'dsh-task-btn--done' : ''}`} onClick={() => handleComplete(task._id)} disabled={done}>
+                                                    {done ? 'Đã nhận thưởng' : 'Bắt đầu ngay'}
+                                                </button>
+                                            </div>
+                                        </article>
+                                    )
+                                })}
+                            </div>
+                        </section>
+                    )}
+
+                    {activeNav === 'rank' && (
+                        <section className="dsh-rank-section">
+                            <h2 className="dsh-section-title">Hạng và Thành tích</h2>
+                            {/* Copy rank info here if needed or keep existing sidebar visibility */}
+                            <div className="card">
+                                <h3>{rank.name}</h3>
+                                <p>Bạn hiện đang ở cấp độ {rank.name} {rank.icon}</p>
+                            </div>
+                        </section>
+                    )}
+
+                    {activeNav === 'challenges' && (
+                        <section className="dsh-challenge-section">
+                            <h2 className="dsh-section-title">Thử thách hàng tuần</h2>
+                            <div className="card">
+                                <h3>Không rác thải nhựa</h3>
+                                <p>Hoàn thành 3 ngày liên tục để nhận thưởng.</p>
+                            </div>
+                        </section>
+                    )}
+
+                    {/* GPS Tracking card - Always visible at bottom */}
+                    <div className="dsh-gps-card">
+                        <div className="dsh-gps-left">
+                            <span className="dsh-gps-icon">📍</span>
+                            <div>
+                                <div className="dsh-gps-title">Hành trình khám phá</div>
+                                <div className="dsh-gps-dist">{Math.round(distance)}m đã di chuyển</div>
+                            </div>
                         </div>
-                    </section>
+                        <button className={`dsh-gps-btn ${isTracking ? 'dsh-gps-btn--stop' : ''}`} onClick={() => setIsTracking(t => !t)}>
+                            {isTracking ? 'Dừng' : 'Bắt đầu'}
+                        </button>
+                    </div>
                 </main>
 
                 {/* ── RIGHT SIDEBAR ── */}
@@ -395,9 +476,9 @@ export default function Dashboard() {
             </footer>
 
             {/* Toast */}
-            {toast && (
+            {toastMsg && (
                 <div className={`dsh-toast ${toastType === 'error' ? 'dsh-toast--error' : ''}`}>
-                    {toast}
+                    {toastMsg}
                 </div>
             )}
         </div>

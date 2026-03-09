@@ -1637,11 +1637,15 @@ a:hover {
 }
 
 .dsh-top-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family);
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-text-secondary);
   text-decoration: none;
-  transition: color var(--transition-fast);
+  transition: all var(--transition-fast);
   padding-bottom: 2px;
 }
 

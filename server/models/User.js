@@ -25,6 +25,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
+    },
     completedTasks: [{
         taskId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -37,6 +42,10 @@ const userSchema = new mongoose.Schema({
     }],
     longTermProgress: {
         steps: {
+            type: Number,
+            default: 0
+        },
+        distance: {
             type: Number,
             default: 0
         },

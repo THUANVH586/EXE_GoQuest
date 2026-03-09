@@ -6,6 +6,8 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import AdminDashboard from './pages/AdminDashboard'
 import LandingPage from './pages/LandingPage'
+import { Toaster } from 'react-hot-toast'
+
 
 // Protected Route component
 function ProtectedRoute({ children }) {
@@ -124,6 +126,7 @@ function AppContent() {
 function App() {
     return (
         <AuthProvider>
+            <Toaster position="top-center" reverseOrder={false} />
             <AppContent />
         </AuthProvider>
     )
