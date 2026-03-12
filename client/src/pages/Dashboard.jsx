@@ -572,45 +572,7 @@ export default function Dashboard() {
 
                 {/* ── RIGHT SIDEBAR ── */}
                 <aside className="dsh-aside">
-
-                    {/* Rank Card */}
-                    <div className="dsh-rank-card">
-                        <div className="dsh-rank-bg"></div>
-                        <div className="dsh-rank-content">
-                            <span className="dsh-rank-badge">{t('dashboard.rank.current')}</span>
-                            <h2 className="dsh-rank-name">{rank.name}</h2>
-                            {rank.next
-                                ? <p className="dsh-rank-desc">{t('dashboard.rank.next_rank', { points: rank.need, rank: rank.next })}</p>
-                                : <p className="dsh-rank-desc">{t('dashboard.rank.max_rank')}</p>
-                            }
-                            <div className="dsh-rank-icon-row">
-                                <span style={{ fontSize: '3.2rem' }}>{rank.icon}</span>
-                                <div>
-                                    <div className="dsh-rank-pts-lbl">{t('dashboard.rank.next_points_label')}</div>
-                                    <div className="dsh-rank-pts">{rank.next ? (rank.next === t('dashboard.rank.silver') ? 500 : 1000) : '—'} Pts</div>
-                                </div>
-                            </div>
-                            <button className="dsh-rank-btn">{t('dashboard.rank.view_privileges')}</button>
-                        </div>
-                    </div>
-
-                    {/* Recent Activities */}
-                    <div className="dsh-sidebar-card">
-                        <h3 className="dsh-activities-title">{t('dashboard.recent_activity.title')}</h3>
-                        <ul className="dsh-activities">
-                            {activities.map((a, i) => (
-                                <li key={i} className="dsh-activity-row">
-                                    <div className="dsh-activity-icon">{a.emoji}</div>
-                                    <div>
-                                        <div className="dsh-activity-lbl">{a.label}</div>
-                                        <div className="dsh-activity-time">{a.time}</div>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* Map - Leaflet thật */}
+                    {/* Map - Leaflet thật (Moved to top for mobile visibility) */}
                     <div className="dsh-map-card">
                         <div style={{ padding: '14px 16px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <div>
@@ -676,6 +638,43 @@ export default function Dashboard() {
                                 scrollWheelZoom={false}
                             />
                         </div>
+                    </div>
+
+                    {/* Rank Card */}
+                    <div className="dsh-rank-card">
+                        <div className="dsh-rank-bg"></div>
+                        <div className="dsh-rank-content">
+                            <span className="dsh-rank-badge">{t('dashboard.rank.current')}</span>
+                            <h2 className="dsh-rank-name">{rank.name}</h2>
+                            {rank.next
+                                ? <p className="dsh-rank-desc">{t('dashboard.rank.next_rank', { points: rank.need, rank: rank.next })}</p>
+                                : <p className="dsh-rank-desc">{t('dashboard.rank.max_rank')}</p>
+                            }
+                            <div className="dsh-rank-icon-row">
+                                <span style={{ fontSize: '3.2rem' }}>{rank.icon}</span>
+                                <div>
+                                    <div className="dsh-rank-pts-lbl">{t('dashboard.rank.next_points_label')}</div>
+                                    <div className="dsh-rank-pts">{rank.next ? (rank.next === t('dashboard.rank.silver') ? 500 : 1000) : '—'} Pts</div>
+                                </div>
+                            </div>
+                            <button className="dsh-rank-btn">{t('dashboard.rank.view_privileges')}</button>
+                        </div>
+                    </div>
+
+                    {/* Recent Activities */}
+                    <div className="dsh-sidebar-card">
+                        <h3 className="dsh-activities-title">{t('dashboard.recent_activity.title')}</h3>
+                        <ul className="dsh-activities">
+                            {activities.map((a, i) => (
+                                <li key={i} className="dsh-activity-row">
+                                    <div className="dsh-activity-icon">{a.emoji}</div>
+                                    <div>
+                                        <div className="dsh-activity-lbl">{a.label}</div>
+                                        <div className="dsh-activity-time">{a.time}</div>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 </aside>
             </div>
