@@ -3498,3 +3498,35 @@ a:hover {
     flex-direction: column;
   }
 }
+
+/* Language Switcher */
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-right: var(--space-md);
+  color: var(--color-text-muted);
+}
+
+.btn-lang {
+  background: none;
+  border: none;
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.btn-lang:hover {
+  color: var(--color-accent-primary);
+  background: rgba(45, 122, 58, 0.05);
+}
+
+.btn-lang.active {
+  color: var(--color-accent-primary);
+  background: rgba(45, 122, 58, 0.1);
+}

@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useTranslation } from 'react-i18next'
 
 function Register() {
+    const { t } = useTranslation()
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -25,12 +27,12 @@ function Register() {
         setError('')
 
         if (formData.password !== formData.confirmPassword) {
-            setError('Mật khẩu xác nhận không khớp')
+            setError(t('auth.register.error_mismatch'))
             return
         }
 
         if (formData.password.length < 6) {
-            setError('Mật khẩu phải có ít nhất 6 ký tự')
+            setError(t('auth.register.error_length'))
             return
         }
 
@@ -45,7 +47,7 @@ function Register() {
             )
             navigate('/dashboard')
         } catch (err) {
-            setError(err.response?.data?.message || 'Đăng ký thất bại. Vui lòng thử lại.')
+            setError(err.response?.data?.message || t('auth.register.error_fallback'))
         } finally {
             setLoading(false)
         }
@@ -56,8 +58,8 @@ function Register() {
             <div className="card auth-card animate-fade-in">
                 <div className="auth-header">
                     <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}></div>
-                    <h1 className="auth-title">Tham gia ngay!</h1>
-                    <p className="auth-subtitle">Tạo tài khoản để bắt đầu hành trình khám phá</p>
+                    <h1 className="auth-title">{t('auth.register.title')}</h1>
+                    <p className="auth-subtitle">{t('auth.register.subtitle')}</p>
                 </div>
 
                 <form onSubmit={handleSubmit}>
@@ -76,26 +78,26 @@ function Register() {
                     )}
 
                     <div className="form-group">
-                        <label className="form-label" htmlFor="displayName">Tên hiển thị</label>
+                        <label className="form-label" htmlFor="displayName">{t('auth.register.display_name')}</label>
                         <input
                             id="displayName"
                             name="displayName"
                             type="text"
                             className="form-input"
-                            placeholder="Tên bạn muốn hiển thị"
+                            placeholder={t('auth.register.display_name_placeholder')}
                             value={formData.displayName}
                             onChange={handleChange}
                         />
                     </div>
 
                     <div className="form-group">
-                        <label className="form-label" htmlFor="username">Tên đăng nhập *</label>
+                        <label className="form-label" htmlFor="username">{t('auth.register.username')}</label>
                         <input
                             id="username"
                             name="username"
                             type="text"
                             className="form-input"
-                            placeholder="Chọn tên đăng nhập"
+                            placeholder={t('auth.register.username_placeholder')}
                             value={formData.username}
                             onChange={handleChange}
                             required
@@ -104,7 +106,7 @@ function Register() {
                     </div>
 
                     <div className="form-group">
-                        <label className="form-label" htmlFor="email">Email *</label>
+                        <label className="form-label" htmlFor="email">{t('auth.register.email')}</label>
                         <input
                             id="email"
                             name="email"
@@ -118,13 +120,13 @@ function Register() {
                     </div>
 
                     <div className="form-group">
-                        <label className="form-label" htmlFor="password">Mật khẩu *</label>
+                        <label className="form-label" htmlFor="password">{t('auth.register.password')}</label>
                         <input
                             id="password"
                             name="password"
                             type="password"
                             className="form-input"
-                            placeholder="Ít nhất 6 ký tự"
+                            placeholder={t('auth.register.password_placeholder')}
                             value={formData.password}
                             onChange={handleChange}
                             required
@@ -133,13 +135,13 @@ function Register() {
                     </div>
 
                     <div className="form-group">
-                        <label className="form-label" htmlFor="confirmPassword">Xác nhận mật khẩu *</label>
+                        <label className="form-label" htmlFor="confirmPassword">{t('auth.register.confirm_password')}</label>
                         <input
                             id="confirmPassword"
                             name="confirmPassword"
                             type="password"
                             className="form-input"
-                            placeholder="Nhập lại mật khẩu"
+                            placeholder={t('auth.register.confirm_password_placeholder')}
                             value={formData.confirmPassword}
                             onChange={handleChange}
                             required
@@ -155,16 +157,16 @@ function Register() {
                         {loading ? (
                             <>
                                 <div className="spinner" style={{ width: 20, height: 20 }}></div>
-                                Đang tạo tài khoản...
+                                {t('auth.register.submitting')}
                             </>
                         ) : (
-                            'Đăng ký'
+                            t('auth.register.submit')
                         )}
                     </button>
                 </form>
 
                 <div className="auth-footer">
-                    Đã có tài khoản? <Link to="/login">Đăng nhập</Link>
+                    {t('auth.register.have_account')} <Link to="/login">{t('auth.register.login_now')}</Link>
                 </div>
             </div>
         </div>

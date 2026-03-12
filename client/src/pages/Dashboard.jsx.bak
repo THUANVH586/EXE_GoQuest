@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import api from '../services/api'
 import { calculateDistance } from '../utils/geo'
+import InteractiveMap from '../components/InteractiveMap'
 import toast from 'react-hot-toast'
 
 /* ─── Global Constants ─────────────────────────────────────────── */
@@ -20,6 +21,7 @@ export default function Dashboard() {
     const [searchVal, setSearchVal] = useState('')
     const [celebrateId, setCelebrateId] = useState(null)
     const [isTracking, setIsTracking] = useState(false)
+    const [currentPos, setCurrentPos] = useState(null)
     const [distance, setDistance] = useState(user?.longTermProgress?.distance || 0)
     const [plasticCommit, setPlasticCommit] = useState(user?.longTermProgress?.usingPersonalBottle || false)
     const [completedIds, setCompletedIds] = useState([])
@@ -55,7 +57,7 @@ export default function Dashboard() {
             try {
                 const response = await api.get('/tasks/progress')
                 setTasks(response.data.tasks || [])
-                const done = response.data.tasks?.filter(t => t.isCompleted).map(t => t._id) || []
+                const done = response.data.tasks?.filter(tk => tk.isCompleted).map(tk => tk._id) || []
                 setCompletedIds(done)
                 if (response.data.longTermProgress) {
                     setDistance(response.data.longTermProgress.distance || 0)
@@ -89,9 +91,11 @@ export default function Dashboard() {
                             setDistance(prev => prev + d)
                         }
                         lastPosRef.current = { lat, lng }
+                        setCurrentPos({ lat, lng })
                     }
                 } else {
                     lastPosRef.current = { lat, lng } // First point after starting
+                    setCurrentPos({ lat, lng })
                 }
             }, (err) => {
                 console.error('GPS Error:', err)
@@ -178,19 +182,20 @@ export default function Dashboard() {
 
     /* computed */
     const REQUIRED_TASKS = 5;
-    const basePts = tasks.filter(t => completedIds.includes(t._id)).reduce((s, t) => s + (t.points || 0), 0)
+    const basePts = tasks.filter(tk => completedIds.includes(tk._id)).reduce((s, tk) => s + (tk.points || 0), 0)
     const totalPts = basePts + (plasticCommit ? 200 : 0)
     const pct = tasks.length > 0 ? Math.min(Math.round((completedIds.length / REQUIRED_TASKS) * 100), 100) : 0
     const barPct = Math.min((totalPts / 1000) * 100, 100)
     const rank = getRank(totalPts)
 
-    const filteredTasks = tasks.filter(t =>
-        (t.title || '').toLowerCase().includes(searchVal.toLowerCase()) ||
-        (t.description || '').toLowerCase().includes(searchVal.toLowerCase())
-    )
+    const filteredTasks = tasks.filter(t_item => {
+        const titleMatch = t_item?.title?.toLowerCase()?.includes(searchVal.toLowerCase()) || false
+        const descMatch = t_item?.description?.toLowerCase()?.includes(searchVal.toLowerCase()) || false
+        return titleMatch || descMatch
+    })
 
     /* recent activity — show completed tasks */
-    const recentDone = tasks.filter(t => completedIds.includes(t._id)).slice(-3).reverse()
+    const recentDone = tasks.filter(tk => completedIds.includes(tk._id)).slice(-3).reverse()
     const staticActivities = [
         { emoji: '🚶', label: t('dashboard.recent_activity.static1'), time: t('dashboard.recent_activity.static1_sub') },
         { emoji: '🎁', label: t('dashboard.recent_activity.static2'), time: t('dashboard.recent_activity.static2_sub') },
@@ -571,11 +576,11 @@ export default function Dashboard() {
                     </div>
 
                     {/* Map */}
-                    <div className="dsh-map-card">
-                        <img src={MAP_IMG} alt={t('dashboard.map.title')} className="dsh-map-img" />
+                    <div className="dsh-map-card" style={{ minHeight: '240px' }}>
+                        <InteractiveMap currentPos={currentPos} />
                         <div className="dsh-map-overlay">
-                            <p className="dsh-map-title">{t('dashboard.map.title')}</p>
-                            <p className="dsh-map-sub">{t('dashboard.map.subtitle')}</p>
+                            <p className="dsh-map-title">{t('map.title')}</p>
+                            <p className="dsh-map-sub">{t('map.subtitle')}</p>
                         </div>
                     </div>
                 </aside>

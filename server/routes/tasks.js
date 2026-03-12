@@ -167,7 +167,7 @@ router.post('/complete/:taskId', authMiddleware, async (req, res) => {
 // Update long-term progress (steps, bottle)
 router.patch('/long-term', authMiddleware, async (req, res) => {
     try {
-        const { steps, usingPersonalBottle } = req.body;
+        const { steps, usingPersonalBottle, distance } = req.body;
         const user = await User.findById(req.userId);
 
         if (!user) {
@@ -179,6 +179,9 @@ router.patch('/long-term', authMiddleware, async (req, res) => {
         }
         if (usingPersonalBottle !== undefined) {
             user.longTermProgress.usingPersonalBottle = usingPersonalBottle;
+        }
+        if (distance !== undefined) {
+            user.longTermProgress.distance = distance;
         }
 
         await user.save();

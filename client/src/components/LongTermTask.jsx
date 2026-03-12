@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 function LongTermTask({ task, currentValue, targetValue, onUpdate, isCompleted, unit = '', isTracking }) {
+    const { t } = useTranslation()
     const [inputValue, setInputValue] = useState(currentValue || 0)
 
     const progress = Math.min((currentValue / targetValue) * 100, 100)
@@ -39,7 +41,7 @@ function LongTermTask({ task, currentValue, targetValue, onUpdate, isCompleted, 
                             checked={isCompleted}
                             onChange={(e) => onUpdate(e.target.checked)}
                         />
-                        <span>Đã mang bình nước cá nhân</span>
+                        <span>{t('components.long_term_task.water_bottle')}</span>
                     </label>
                 </div>
             </div>
@@ -108,11 +110,11 @@ function LongTermTask({ task, currentValue, targetValue, onUpdate, isCompleted, 
                             onClick={onUpdate}
                             style={{ width: '100%', padding: 'var(--space-sm) var(--space-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-sm)' }}
                         >
-                            {isTracking ? 'Dừng hành trình' : 'Bắt đầu hành trình'}
+                            {isTracking ? t('components.long_term_task.tracking.stop') : t('components.long_term_task.tracking.start')}
                         </button>
                         {isTracking && (
                             <p style={{ color: 'var(--color-success)', fontSize: 'var(--font-size-xs)', marginTop: 'var(--space-sm)', textAlign: 'center', animation: 'pulse 2s infinite' }}>
-                                Đang ghi lại hành trình thực tế qua GPS...
+                                {t('components.long_term_task.tracking.recording')}
                             </p>
                         )}
                     </div>
@@ -127,7 +129,7 @@ function LongTermTask({ task, currentValue, targetValue, onUpdate, isCompleted, 
                             min="0"
                         />
                         <button className="btn btn-primary" onClick={handleUpdate} style={{ padding: 'var(--space-sm) var(--space-md)' }}>
-                            Cập nhật
+                            {t('components.long_term_task.update')}
                         </button>
                     </div>
                 )}

@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useTranslation } from 'react-i18next'
 
 function Login() {
+    const { t } = useTranslation()
     const [identifier, setIdentifier] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
@@ -20,7 +22,7 @@ function Login() {
             const userData = await login(identifier, password)
             navigate(userData.role === 'admin' ? '/admin' : '/dashboard')
         } catch (err) {
-            setError(err.response?.data?.message || 'Đăng nhập thất bại. Vui lòng thử lại.')
+            setError(err.response?.data?.message || t('auth.login.error_fallback'))
         } finally {
             setLoading(false)
         }
@@ -31,8 +33,8 @@ function Login() {
             <div className="card auth-card animate-fade-in">
                 <div className="auth-header">
                     <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}></div>
-                    <h1 className="auth-title">Chào mừng trở lại!</h1>
-                    <p className="auth-subtitle">Đăng nhập để tiếp tục khám phá Cồn Sơn</p>
+                    <h1 className="auth-title">{t('auth.login.welcome')}</h1>
+                    <p className="auth-subtitle">{t('auth.login.subtitle')}</p>
                 </div>
 
                 <form onSubmit={handleSubmit}>
@@ -51,12 +53,12 @@ function Login() {
                     )}
 
                     <div className="form-group">
-                        <label className="form-label" htmlFor="identifier">Email hoặc Tên đăng nhập</label>
+                        <label className="form-label" htmlFor="identifier">{t('auth.login.identifier')}</label>
                         <input
                             id="identifier"
                             type="text"
                             className="form-input"
-                            placeholder="Nhập email hoặc tên đăng nhập"
+                            placeholder={t('auth.login.identifier_placeholder')}
                             value={identifier}
                             onChange={(e) => setIdentifier(e.target.value)}
                             required
@@ -64,12 +66,12 @@ function Login() {
                     </div>
 
                     <div className="form-group">
-                        <label className="form-label" htmlFor="password">Mật khẩu</label>
+                        <label className="form-label" htmlFor="password">{t('auth.login.password')}</label>
                         <input
                             id="password"
                             type="password"
                             className="form-input"
-                            placeholder="Nhập mật khẩu"
+                            placeholder={t('auth.login.password_placeholder')}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
@@ -85,16 +87,16 @@ function Login() {
                         {loading ? (
                             <>
                                 <div className="spinner" style={{ width: 20, height: 20 }}></div>
-                                Đang đăng nhập...
+                                {t('auth.login.submitting')}
                             </>
                         ) : (
-                            'Đăng nhập'
+                            t('auth.login.submit')
                         )}
                     </button>
                 </form>
 
                 <div className="auth-footer">
-                    Chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link>
+                    {t('auth.login.no_account')} <Link to="/register">{t('auth.login.register_now')}</Link>
                 </div>
             </div>
         </div>

@@ -1,15 +1,17 @@
 import { useState } from 'react'
-
-const typeLabels = {
-    food: 'Ẩm thực',
-    craft: 'Thủ công',
-    community: 'Cộng đồng',
-    health: 'Sức khỏe',
-    environment: 'Môi trường'
-}
+import { useTranslation } from 'react-i18next'
 
 function TaskCard({ task, onComplete, isCompleted }) {
+    const { t } = useTranslation()
     const [isAnimating, setIsAnimating] = useState(false)
+
+    const typeLabels = {
+        food: t('components.task_card.types.food'),
+        craft: t('components.task_card.types.craft'),
+        community: t('components.task_card.types.community'),
+        health: t('components.task_card.types.health'),
+        environment: t('components.task_card.types.environment')
+    }
 
     const handleClick = () => {
         if (isCompleted) return
@@ -53,12 +55,12 @@ function TaskCard({ task, onComplete, isCompleted }) {
 
                 {task.duration > 0 && (
                     <span className="task-badge">
-                        {task.duration} phút
+                        {t('components.task_card.minutes', { count: task.duration })}
                     </span>
                 )}
 
                 <span className="task-badge">
-                    {task.points} điểm
+                    {t('components.task_card.points', { count: task.points })}
                 </span>
             </div>
 
