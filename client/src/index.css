@@ -573,6 +573,17 @@ a:hover {
   }
 }
 
+@keyframes userPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.2);
+    opacity: 0;
+  }
+}
+
 @keyframes pulse {
 
   0%,
@@ -2247,10 +2258,6 @@ a:hover {
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
-  position: sticky;
-  top: 74px;
-  max-height: calc(100vh - 90px);
-  overflow-y: auto;
 }
 
 .dsh-rank-card {
@@ -2392,10 +2399,9 @@ a:hover {
   border-radius: 1.25rem;
   overflow: hidden;
   position: relative;
-  height: 186px;
   border: 1px solid rgba(44, 89, 38, 0.1);
   box-shadow: 0 2px 12px rgba(44, 89, 38, 0.06);
-  cursor: pointer;
+  background: #fff;
 }
 
 .dsh-map-img {
@@ -2419,14 +2425,14 @@ a:hover {
 }
 
 .dsh-map-title {
-  color: #fff;
-  font-size: 0.83rem;
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
   font-weight: 700;
 }
 
 .dsh-map-sub {
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 0.68rem;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
   margin-top: 2px;
 }
 

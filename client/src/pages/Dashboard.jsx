@@ -5,9 +5,19 @@ import { useTranslation } from 'react-i18next'
 import api from '../services/api'
 import { calculateDistance } from '../utils/geo'
 import toast from 'react-hot-toast'
+import InteractiveMap from '../components/InteractiveMap'
 
-/* ─── Global Constants ─────────────────────────────────────────── */
-const MAP_IMG = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDrqeys7w8p3z_rdRnyMvr2LmXYwytkMD5WDPA4DKjQwLlT03ZYBAScnFdpfM6mxwUIJ9JDTNeGw-hjJ9PA8dtfn7jRx2OyrzJYxRSk60-a6TvPqolcMPRsAwiryDsczLTZ5bHPRSSiSDbN44Rtl3HpnnHdgeuzMak2DrmLkOMKj3HgP6gGLRypFmlFiXrymTuqPnI345DEo0BH6iB68uBmJzsKc3MWzuEqlOlyxGkwuVn53iHAEfztVWJDDl2ST0jblkqOabwR'
+/* ─── Địa điểm nổi bật tại Cồn Sơn ────────────────────────────── */
+const CON_SON_MARKERS = [
+    { lat: 10.08453, lng: 105.75048, title: '🌿 Trung tâm Cồn Sơn' },
+    { lat: 10.0841,  lng: 105.7512,  title: '🍜 Ẩm thực dân gian (Thực đơn bay)' },
+    { lat: 10.0850,  lng: 105.7498,  title: '🎨 Làng nghề bánh dân gian' },
+    { lat: 10.0862,  lng: 105.7510,  title: '🐟 Xem cá lóc bay' },
+    { lat: 10.0803,  lng: 105.7444,  title: '🚢 Bến đò Cô Bắc (xuất phát)' },
+]
+
+/* Tọa độ chỉ đường đến bến đò (du khách đi xuỳng đ liên tại bến, sau đó đi thuyền vào Cồn Sơn) */
+const DIRECTIONS_TARGET = '10.0803,105.7444' // Bến đò Cô Bắc
 
 /* ─── Dashboard ─────────────────────────────────────────────────── */
 export default function Dashboard() {
@@ -23,6 +33,8 @@ export default function Dashboard() {
     const [distance, setDistance] = useState(user?.longTermProgress?.distance || 0)
     const [plasticCommit, setPlasticCommit] = useState(user?.longTermProgress?.usingPersonalBottle || false)
     const [completedIds, setCompletedIds] = useState([])
+    const [currentPos, setCurrentPos] = useState(null)
+    const [isMapExpanded, setIsMapExpanded] = useState(false)
     const [journeyTasks, setJourneyTasks] = useState(() => {
         try {
             const saved = localStorage.getItem('journeyTasks')
@@ -69,7 +81,22 @@ export default function Dashboard() {
         fetchData()
     }, [])
 
-    /* GPS tracking */
+    /* Tự động lấy vị trí ngay khi Dashboard load */
+    useEffect(() => {
+        if (!navigator.geolocation) return
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const { latitude: lat, longitude: lng } = pos.coords
+                setCurrentPos({ lat, lng })
+            },
+            (err) => {
+                console.warn('Không thể lấy vị trí ban đầu:', err.message)
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+        )
+    }, [])
+
+    /* GPS tracking (real-time khi bật) */
     useEffect(() => {
         if (isTracking) {
             if (!navigator.geolocation) { showToast(t('dashboard.toasts.gps_unsupported'), 'error'); return }
@@ -78,6 +105,9 @@ export default function Dashboard() {
 
                 // Loosen accuracy check for indoor/laptop development
                 if (accuracy > 500) return;
+
+                // Cập nhật vị trí hiện tại cho bản đồ
+                setCurrentPos({ lat, lng })
 
                 if (lastPosRef.current) {
                     const d = calculateDistance(lastPosRef.current.lat, lastPosRef.current.lng, lat, lng)
@@ -99,7 +129,8 @@ export default function Dashboard() {
             }, { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 })
         } else {
             if (watchRef.current) navigator.geolocation.clearWatch(watchRef.current)
-            lastPosRef.current = null // Clear last position so we don't jump when restarting!
+            lastPosRef.current = null // Reset để tránh nhảy vị trí khi khởi động lại
+            // Giữ nguyên currentPos để marker vẫn hiển thị trên bản đồ
         }
         return () => {
             if (watchRef.current) navigator.geolocation.clearWatch(watchRef.current)
@@ -122,6 +153,15 @@ export default function Dashboard() {
         }, 10000) // Every 10 seconds
 
         return () => clearInterval(syncInterval)
+    }, [])
+
+    /* Đóng fullscreen map bằng phím Escape */
+    useEffect(() => {
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') setIsMapExpanded(false)
+        }
+        window.addEventListener('keydown', handleEsc)
+        return () => window.removeEventListener('keydown', handleEsc)
     }, [])
 
     const showToast = (msg, type = 'success') => {
@@ -570,12 +610,71 @@ export default function Dashboard() {
                         </ul>
                     </div>
 
-                    {/* Map */}
+                    {/* Map - Leaflet thật */}
                     <div className="dsh-map-card">
-                        <img src={MAP_IMG} alt={t('dashboard.map.title')} className="dsh-map-img" />
-                        <div className="dsh-map-overlay">
-                            <p className="dsh-map-title">{t('dashboard.map.title')}</p>
-                            <p className="dsh-map-sub">{t('dashboard.map.subtitle')}</p>
+                        <div style={{ padding: '14px 16px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <div>
+                                <p className="dsh-map-title" style={{ margin: 0 }}>{t('dashboard.map.title')}</p>
+                                <p className="dsh-map-sub" style={{ margin: '2px 0 0' }}>
+                                    {currentPos
+                                        ? `🟢 Đã xác định vị trí của bạn`
+                                        : t('dashboard.map.subtitle')
+                                    }
+                                </p>
+                            </div>
+                            <div style={{ display: 'flex', gap: '6px' }}>
+                                {/* Nút chỉ đường */}
+                                <button
+                                    onClick={() => {
+                                        const origin = currentPos
+                                            ? `${currentPos.lat},${currentPos.lng}`
+                                            : ''
+                                        const url = origin
+                                            ? `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${DIRECTIONS_TARGET}&travelmode=driving`
+                                            : `https://www.google.com/maps/dir/?api=1&destination=${DIRECTIONS_TARGET}&travelmode=driving`
+                                        window.open(url, '_blank')
+                                    }}
+                                    title="Chỉ đường đến Cồn Sơn"
+                                    style={{
+                                        background: '#2d7a3a', color: '#fff',
+                                        border: 'none', borderRadius: '8px',
+                                        padding: '6px 10px', fontSize: '0.78rem',
+                                        fontWeight: 700, cursor: 'pointer',
+                                        display: 'flex', alignItems: 'center', gap: '4px',
+                                        fontFamily: 'var(--font-family)',
+                                        transition: 'opacity 0.2s',
+                                        whiteSpace: 'nowrap'
+                                    }}
+                                    onMouseOver={e => e.currentTarget.style.opacity = '0.85'}
+                                    onMouseOut={e => e.currentTarget.style.opacity = '1'}
+                                >
+                                    🗯️ Chỉ đường
+                                </button>
+                                {/* Nút phóng to */}
+                                <button
+                                    onClick={() => setIsMapExpanded(true)}
+                                    title="Phóng to bản đồ"
+                                    style={{
+                                        background: 'rgba(44,89,38,0.08)',
+                                        border: '1px solid rgba(44,89,38,0.2)',
+                                        borderRadius: '8px', padding: '6px 8px',
+                                        fontSize: '1rem', cursor: 'pointer',
+                                        transition: 'background 0.2s',
+                                        lineHeight: 1
+                                    }}
+                                    onMouseOver={e => e.currentTarget.style.background = 'rgba(44,89,38,0.16)'}
+                                    onMouseOut={e => e.currentTarget.style.background = 'rgba(44,89,38,0.08)'}
+                                >
+                                    ⛶
+                                </button>
+                            </div>
+                        </div>
+                        <div style={{ height: '240px', width: '100%', borderRadius: '0 0 16px 16px', overflow: 'hidden' }}>
+                            <InteractiveMap
+                                currentPos={currentPos}
+                                markers={CON_SON_MARKERS}
+                                scrollWheelZoom={false}
+                            />
                         </div>
                     </div>
                 </aside>
@@ -600,6 +699,96 @@ export default function Dashboard() {
             {toastMsg && (
                 <div className={`dsh-toast ${toastType === 'error' ? 'dsh-toast--error' : ''}`}>
                     {toastMsg}
+                </div>
+            )}
+
+            {/* Fullscreen Map Modal */}
+            {isMapExpanded && (
+                <div
+                    style={{
+                        position: 'fixed', inset: 0, zIndex: 9999,
+                        background: 'rgba(0,0,0,0.75)',
+                        display: 'flex', flexDirection: 'column',
+                        animation: 'fadeIn 0.2s ease'
+                    }}
+                    onClick={(e) => { if (e.target === e.currentTarget) setIsMapExpanded(false) }}
+                >
+                    {/* Header modal */}
+                    <div style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        padding: '14px 20px',
+                        background: '#fff',
+                        borderBottom: '1px solid rgba(44,89,38,0.1)',
+                        flexShrink: 0
+                    }}>
+                        <div>
+                            <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#1a2e1c' }}>
+                                🗺️ {t('dashboard.map.title')}
+                            </div>
+                            <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>
+                                OpenStreetMap · {currentPos ? `🟢 Đã lấy được vị trí của bạn` : 'Hiển thị khu vực Cồn Sơn'}
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            {/* Nút Chỉ đường */}
+                            <button
+                                onClick={() => {
+                                    const origin = currentPos ? `${currentPos.lat},${currentPos.lng}` : ''
+                                    const url = origin
+                                        ? `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${DIRECTIONS_TARGET}&travelmode=driving`
+                                        : `https://www.google.com/maps/dir/?api=1&destination=${DIRECTIONS_TARGET}&travelmode=driving`
+                                    window.open(url, '_blank')
+                                }}
+                                style={{
+                                    background: '#2d7a3a', color: '#fff',
+                                    border: 'none', borderRadius: '10px',
+                                    padding: '8px 16px', fontSize: '0.87rem',
+                                    fontWeight: 700, cursor: 'pointer',
+                                    display: 'flex', alignItems: 'center', gap: '6px',
+                                    fontFamily: 'var(--font-family)'
+                                }}
+                            >
+                                🗯️ Chỉ đường đến Cồn Sơn
+                            </button>
+                            {/* Nút đóng */}
+                            <button
+                                onClick={() => setIsMapExpanded(false)}
+                                style={{
+                                    background: 'rgba(239,68,68,0.08)',
+                                    border: '1px solid rgba(239,68,68,0.2)',
+                                    borderRadius: '10px', padding: '8px 14px',
+                                    fontSize: '1rem', cursor: 'pointer',
+                                    fontWeight: 700, color: '#ef4444',
+                                    fontFamily: 'var(--font-family)', lineHeight: 1
+                                }}
+                                title="Đóng"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Map full */}
+                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                        <InteractiveMap
+                            currentPos={currentPos}
+                            markers={CON_SON_MARKERS}
+                            scrollWheelZoom={true}
+                        />
+                    </div>
+
+                    {/* Footer info */}
+                    <div style={{
+                        background: '#fff', padding: '10px 20px',
+                        borderTop: '1px solid rgba(44,89,38,0.1)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        fontSize: '0.78rem', color: 'var(--color-text-muted)', flexShrink: 0
+                    }}>
+                        <span>© OpenStreetMap contributors · Dữ liệu đường đi trên Google Maps</span>
+                        <span style={{ color: '#2d7a3a', fontWeight: 600 }}>
+                            Cồn Sơn, Bình Thủy, Cần Thơ
+                        </span>
+                    </div>
                 </div>
             )}
         </div>

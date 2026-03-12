@@ -206,6 +206,11 @@
             "complete_error": "Unable to update mission status",
             "load_error": "Loading mission list, please try again",
             "refresh_tasks": "Refreshed 5 random missions for the journey!"
+        },
+        "map": {
+            "title": "Con Son Map",
+            "subtitle": "Explore experience locations",
+            "location_you": "You are here"
         }
     },
     "auth": {

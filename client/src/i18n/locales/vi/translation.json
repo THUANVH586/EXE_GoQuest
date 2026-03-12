@@ -209,6 +209,11 @@
             "complete_error": "Không thể cập nhật trạng thái nhiệm vụ",
             "load_error": "Đang tải danh sách nhiệm vụ, vui lòng thử lại",
             "refresh_tasks": "Đã làm mới 5 nhiệm vụ ngẫu nhiên cho hành trình!"
+        },
+        "map": {
+            "title": "Bản đồ Cồn Sơn",
+            "subtitle": "Khám phá các địa điểm trải nghiệm",
+            "location_you": "Bạn đang ở đây"
         }
     },
     "auth": {
