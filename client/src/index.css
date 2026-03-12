@@ -2517,24 +2517,57 @@ a:hover {
 /* ── RESPONSIVE ── */
 @media (max-width: 1200px) {
   .dsh-aside {
-    display: none;
+    width: 280px;
+    display: flex; /* Đảm bảo hiển thị */
   }
 }
 
 @media (max-width: 900px) {
+  .dsh-header {
+    padding: 0.8rem 1rem;
+    flex-direction: row; /* Giữ logo và lang cùng hàng */
+    justify-content: space-between;
+  }
+
+  .dsh-header-left {
+    gap: 1rem;
+  }
+
+  .dsh-top-nav {
+    display: flex;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+    gap: 1.2rem;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    scrollbar-width: none; /* Ẩn scrollbar */
+  }
+  .dsh-top-nav::-webkit-scrollbar { display: none; }
+
   .dsh-body {
     flex-direction: column;
-    padding: 1.25rem;
+    padding: 1rem;
+    gap: 1.2rem;
   }
 
   .dsh-sidebar {
     width: 100%;
     position: static;
     max-height: none;
+    order: 3; /* Đưa nav xuống cuối trên mobile để tập trung trải nghiệm */
   }
 
   .dsh-main {
     width: 100%;
+    order: 1; /* Hero & Nhiệm vụ lên trên cùng */
+    gap: 1.2rem;
+  }
+
+  .dsh-aside {
+    width: 100%;
+    order: 2; /* Bản đồ & Rank đi ngay sau Hero/Nhiệm vụ */
+    display: flex;
+    flex-direction: column;
   }
 
   .dsh-task-grid {
@@ -2542,11 +2575,38 @@ a:hover {
   }
 
   .dsh-hero-card {
+    padding: 1.5rem;
     flex-direction: column;
+    text-align: center;
   }
 
-  .dsh-top-nav {
-    display: none;
+  .dsh-hero-info {
+    text-align: center;
+  }
+
+  .dsh-hero-sub {
+    margin: 0.5rem auto 0;
+  }
+
+  .dsh-hero-stats {
+    width: 100%;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .dsh-gps-card {
+    flex-direction: column;
+    gap: 1.25rem;
+    text-align: center;
+  }
+
+  .dsh-gps-left {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .dsh-gps-btn {
+    width: 100%;
   }
 
   .dsh-search-box {
