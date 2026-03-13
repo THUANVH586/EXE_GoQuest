@@ -9,9 +9,16 @@ function AdminDashboard() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [filter, setFilter] = useState('all') // all, completed, in-progress, not-started
-    const [activeTab, setActiveTab] = useState('leaderboard') // leaderboard, tasks
+    const [activeTab, setActiveTab] = useState('leaderboard') // leaderboard, tasks, staff
     const [showTaskModal, setShowTaskModal] = useState(false)
+    const [showStaffModal, setShowStaffModal] = useState(false)
     const [editingTask, setEditingTask] = useState(null)
+    const [staffForm, setStaffForm] = useState({
+        username: '',
+        email: '',
+        password: '',
+        displayName: ''
+    })
     const [taskForm, setTaskForm] = useState({
         title: '',
         description: '',
@@ -74,6 +81,19 @@ function AdminDashboard() {
             fetchTasks()
         } catch (err) {
             alert(t('admin.tasks.error_save'))
+        }
+    }
+
+    const handleSaveStaff = async (e) => {
+        e.preventDefault()
+        try {
+            await api.post('/admin/staff', staffForm)
+            setShowStaffModal(false)
+            setStaffForm({ username: '', email: '', password: '', displayName: '' })
+            fetchAllData()
+            alert('Đã tạo tài khoản nhân viên thành công!')
+        } catch (err) {
+            alert(err.response?.data?.message || 'Lỗi tạo tài khoản nhân viên')
         }
     }
 
@@ -215,11 +235,20 @@ function AdminDashboard() {
                     >
                         {t('admin.tabs.tasks')}
                     </button>
+                    <button
+                        className={`tab-btn ${activeTab === 'staff' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('staff')}
+                        style={{
+                            background: 'none', border: 'none', color: activeTab === 'staff' ? 'var(--color-accent-primary)' : 'var(--color-text-muted)',
+                            fontWeight: 600, cursor: 'pointer', paddingBottom: 'var(--space-xs)', borderBottom: activeTab === 'staff' ? '2px solid var(--color-accent-primary)' : 'none'
+                        }}
+                    >
+                        Quản lý nhân viên
+                    </button>
                 </div>
 
                 {activeTab === 'leaderboard' ? (
                     <>
-                        {/* Stats Summary */}
                         <div className="dashboard-stats" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', marginBottom: 'var(--space-xl)' }}>
                             <div className="card stat-card" style={{ borderLeft: '4px solid var(--color-accent-primary)' }}>
                                 <div className="stat-value">{totalPlayers}</div>
@@ -235,7 +264,6 @@ function AdminDashboard() {
                             </div>
                         </div>
 
-                        {/* Filters & Leaderboard Header */}
                         <div className="section-header" style={{ marginBottom: 'var(--space-md)' }}>
                             <h2 className="section-title">{t('admin.leaderboard.title')}</h2>
                             <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
@@ -254,7 +282,6 @@ function AdminDashboard() {
                             </div>
                         </div>
 
-                        {/* Users Table */}
                         <div className="card" style={{ overflowX: 'auto', padding: 0 }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                                 <thead>
@@ -343,6 +370,45 @@ function AdminDashboard() {
                             {filteredUsers.length === 0 && (
                                 <div className="empty-state" style={{ padding: 'var(--space-2xl)', textAlign: 'center' }}>
                                     <p>{t('admin.leaderboard.empty')}</p>
+                                </div>
+                            )}
+                        </div>
+                    </>
+                ) : activeTab === 'staff' ? (
+                    <>
+                        <div className="section-header" style={{ marginBottom: 'var(--space-md)' }}>
+                            <h2 className="section-title">Danh sách nhân viên</h2>
+                            <button className="btn btn-primary" onClick={() => setShowStaffModal(true)}>Thêm nhân viên</button>
+                        </div>
+
+                        <div className="card" style={{ overflowX: 'auto', padding: 0 }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                                <thead>
+                                    <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                                        <th style={{ padding: 'var(--space-md) var(--space-lg)' }}>Tên hiển thị</th>
+                                        <th style={{ padding: 'var(--space-md) var(--space-lg)' }}>Username</th>
+                                        <th style={{ padding: 'var(--space-md) var(--space-lg)' }}>Email</th>
+                                        <th style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'center' }}>Role</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {users.filter(u => u.role === 'staff').map((staff) => (
+                                        <tr key={staff._id || staff.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                            <td style={{ padding: 'var(--space-md) var(--space-lg)', fontWeight: 600 }}>{staff.displayName}</td>
+                                            <td style={{ padding: 'var(--space-md) var(--space-lg)' }}>@{staff.username}</td>
+                                            <td style={{ padding: 'var(--space-md) var(--space-lg)' }}>{staff.email}</td>
+                                            <td style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'center' }}>
+                                                <span style={{ fontSize: '0.8rem', background: 'rgba(124, 58, 237, 0.1)', color: 'var(--color-accent-secondary)', padding: '2px 8px', borderRadius: '10px' }}>
+                                                    {staff.role}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            {users.filter(u => u.role === 'staff').length === 0 && (
+                                <div className="empty-state" style={{ padding: 'var(--space-2xl)', textAlign: 'center' }}>
+                                    <p>Chưa có nhân viên nào</p>
                                 </div>
                             )}
                         </div>
@@ -462,6 +528,54 @@ function AdminDashboard() {
                                 <div style={{ display: 'flex', gap: 'var(--space-md)', justifyContent: 'flex-end', marginTop: 'var(--space-xl)' }}>
                                     <button type="button" className="btn btn-secondary" onClick={() => setShowTaskModal(false)}>{t('admin.modal.cancel')}</button>
                                     <button type="submit" className="btn btn-primary">{t('admin.modal.save')}</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+
+                {/* Staff Modal */}
+                {showStaffModal && (
+                    <div style={{
+                        position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+                        background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        zIndex: 1000, backdropFilter: 'blur(4px)'
+                    }}>
+                        <div className="card" style={{ width: '100%', maxWidth: '500px', margin: 'var(--space-md)' }}>
+                            <h2 style={{ marginBottom: 'var(--space-lg)' }}>Thêm nhân viên mới</h2>
+                            <form onSubmit={handleSaveStaff}>
+                                <div className="form-group">
+                                    <label className="form-label">Tên hiển thị</label>
+                                    <input
+                                        type="text" className="form-input" required value={staffForm.displayName}
+                                        onChange={e => setStaffForm({ ...staffForm, displayName: e.target.value })}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Username</label>
+                                    <input
+                                        type="text" className="form-input" required value={staffForm.username}
+                                        onChange={e => setStaffForm({ ...staffForm, username: e.target.value })}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Email</label>
+                                    <input
+                                        type="email" className="form-input" required value={staffForm.email}
+                                        onChange={e => setStaffForm({ ...staffForm, email: e.target.value })}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Mật khẩu</label>
+                                    <input
+                                        type="password" className="form-input" required value={staffForm.password}
+                                        onChange={e => setStaffForm({ ...staffForm, password: e.target.value })}
+                                    />
+                                </div>
+
+                                <div style={{ display: 'flex', gap: 'var(--space-md)', justifyContent: 'flex-end', marginTop: 'var(--space-xl)' }}>
+                                    <button type="button" className="btn btn-secondary" onClick={() => setShowStaffModal(false)}>Hủy</button>
+                                    <button type="submit" className="btn btn-primary">Tạo tài khoản</button>
                                 </div>
                             </form>
                         </div>

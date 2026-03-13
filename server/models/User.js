@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user', 'admin'],
+        enum: ['user', 'admin', 'staff'],
         default: 'user'
     },
     completedTasks: [{
@@ -38,6 +38,24 @@ const userSchema = new mongoose.Schema({
         completedAt: {
             type: Date,
             default: Date.now
+        }
+    }],
+    activeMissions: [{
+        taskId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Task'
+        },
+        startTime: {
+            type: Date,
+            default: Date.now
+        },
+        expiresAt: {
+            type: Date
+        },
+        status: {
+            type: String,
+            enum: ['started', 'completed', 'expired'],
+            default: 'started'
         }
     }],
     longTermProgress: {

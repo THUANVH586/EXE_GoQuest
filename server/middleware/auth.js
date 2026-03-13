@@ -18,16 +18,20 @@ exports.authMiddleware = async (req, res, next) => {
     }
 };
 
-// Admin only - User must have admin role
-exports.adminMiddleware = async (req, res, next) => {
-    try {
-        const user = await User.findById(req.userId);
-        if (user && user.role === 'admin') {
+// Role-based authorization
+exports.authorize = (...roles) => {
+    return async (req, res, next) => {
+        try {
+            const user = await User.findById(req.userId);
+            if (!user) {
+                return res.status(404).json({ message: 'Không tìm thấy người dùng' });
+            }
+            if (!roles.includes(user.role)) {
+                return res.status(403).json({ message: `Quyền truy cập bị từ chối. Cần quyền: ${roles.join(', ')}` });
+            }
             next();
-        } else {
-            res.status(403).json({ message: 'Quyền truy cập bị từ chối. Chỉ dành cho Admin.' });
+        } catch (error) {
+            res.status(500).json({ message: 'Lỗi kiểm tra quyền' });
         }
-    } catch (error) {
-        res.status(500).json({ message: 'Lỗi kiểm tra quyền Admin' });
-    }
+    };
 };

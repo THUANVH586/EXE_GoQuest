@@ -1,13 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { getUsersReport, createTask, updateTask, deleteTask } = require('../controllers/adminController');
-const { authMiddleware, adminMiddleware } = require('../middleware/auth');
+const { getUsersReport, createTask, updateTask, deleteTask, createStaff } = require('../controllers/adminController');
+const { authMiddleware, adminMiddleware, authorize } = require('../middleware/auth');
 
-router.get('/users', authMiddleware, adminMiddleware, getUsersReport);
+router.get('/users', authMiddleware, authorize('admin'), getUsersReport);
+
+// Staff Management
+router.post('/staff', authMiddleware, authorize('admin'), createStaff);
 
 // Task Management
-router.post('/tasks', authMiddleware, adminMiddleware, createTask);
-router.put('/tasks/:id', authMiddleware, adminMiddleware, updateTask);
-router.delete('/tasks/:id', authMiddleware, adminMiddleware, deleteTask);
+router.post('/tasks', authMiddleware, authorize('admin'), createTask);
+router.put('/tasks/:id', authMiddleware, authorize('admin'), updateTask);
+router.delete('/tasks/:id', authMiddleware, authorize('admin'), deleteTask);
 
 module.exports = router;

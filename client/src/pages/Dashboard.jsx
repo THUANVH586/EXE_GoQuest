@@ -7,6 +7,9 @@ import { calculateDistance } from '../utils/geo'
 import toast from 'react-hot-toast'
 import InteractiveMap from '../components/InteractiveMap'
 
+import confetti from 'canvas-confetti'
+import CountdownTimer from '../components/CountdownTimer'
+
 /* ─── Địa điểm nổi bật tại Cồn Sơn ────────────────────────────── */
 const CON_SON_MARKERS = [
     { lat: 10.08453, lng: 105.75048, title: '🌿 Trung tâm Cồn Sơn' },
@@ -45,6 +48,7 @@ export default function Dashboard() {
     })
     const [toastMsg, setToastMsg] = useState(null)
     const [toastType, setToastType] = useState('success')
+    const [verifyCodes, setVerifyCodes] = useState({})
     const watchRef = useRef(null)
     const lastPosRef = useRef(null)
     const lastSavedDistanceRef = useRef(distance)
@@ -172,16 +176,64 @@ export default function Dashboard() {
         setTimeout(() => setToastMsg(null), 3000)
     }
 
-    const handleComplete = async (taskId) => {
-        if (completedIds.includes(taskId)) return
+    const triggerConfetti = () => {
+        confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+    };
+
+    const handleStartMission = async (taskId) => {
         try {
-            await api.post(`/tasks/complete/${taskId}`)
-            setCompletedIds(p => [...p, taskId])
+            const res = await api.post(`/tasks/start/${taskId}`);
+            // Force refresh tasks and progress
+            const progressRes = await api.get('/tasks/progress');
+            setTasks(progressRes.data.tasks || []);
+            showToast(res.data.message);
+        } catch (err) {
+            if (err.response?.status === 400 && err.response.data.message.includes('hết hạn')) {
+                // Trigger PayOS payment
+                handlePayment(taskId);
+            } else {
+                showToast(err.response?.data?.message || 'Lỗi bắt đầu nhiệm vụ', 'error');
+            }
+        }
+    }
+
+    const handlePayment = async (taskId) => {
+        try {
+            const res = await api.post('/payment/create-payment-link', { taskId });
+            window.location.href = res.data.checkoutUrl;
+        } catch (err) {
+            showToast('Lỗi tạo link thanh toán', 'error');
+        }
+    }
+
+    const handleComplete = async (taskId, code) => {
+        if (completedIds.includes(taskId)) return
+        if (!code) {
+            showToast('Vui lòng nhập mã xác nhận từ nhân viên', 'error');
+            return;
+        }
+        try {
+            await api.post(`/tasks/complete/${taskId}`, { code })
+            const newCompleted = [...completedIds, taskId];
+            setCompletedIds(newCompleted)
             setCelebrateId(taskId)
+            
+            if (newCompleted.length === 5) {
+                triggerConfetti();
+            }
+
             setTimeout(() => setCelebrateId(null), 800)
             showToast(t('dashboard.toasts.complete_success'))
+            
+            // Refresh tasks
+            const response = await api.get('/tasks/progress')
+            setTasks(response.data.tasks || [])
         } catch (err) {
-            showToast(t('dashboard.toasts.complete_error'), 'error')
+            showToast(err.response?.data?.message || t('dashboard.toasts.complete_error'), 'error')
         }
     }
 
@@ -231,18 +283,11 @@ export default function Dashboard() {
 
     /* recent activity — show completed tasks */
     const recentDone = tasks.filter(t => completedIds.includes(t._id)).slice(-3).reverse()
-    const staticActivities = [
-        { emoji: '🚶', label: t('dashboard.recent_activity.static1'), time: t('dashboard.recent_activity.static1_sub') },
-        { emoji: '🎁', label: t('dashboard.recent_activity.static2'), time: t('dashboard.recent_activity.static2_sub') },
-        { emoji: '🍜', label: t('dashboard.recent_activity.static3'), time: t('dashboard.recent_activity.static3_sub') },
-    ]
-    const activities = recentDone.length
-        ? recentDone.map(t_item => ({
-            emoji: t_item.icon || '✅',
-            label: t('dashboard.recent_activity.completed_text', { title: t_item.title }),
-            time: t('dashboard.recent_activity.points_time', { points: t_item.points })
-        }))
-        : staticActivities
+    const activities = recentDone.map(t_item => ({
+        emoji: t_item.icon || '✅',
+        label: t('dashboard.recent_activity.completed_text', { title: t_item.title }),
+        time: t('dashboard.recent_activity.points_time', { points: t_item.points })
+    }))
 
     const navItems = [
         { key: 'journey', icon: '🗺️', label: t('dashboard.nav.journey') },
@@ -410,28 +455,65 @@ export default function Dashboard() {
                                 <div className="dsh-task-grid">
                                     {journeyTasks.length > 0 ? (
                                         journeyTasks.map(task => {
-                                            const done = completedIds.includes(task._id)
-                                            const celebrating = celebrateId === task._id
+                                            // Sync with the latest task data from the main tasks state
+                                            const tData = tasks.find(t => t._id === task._id) || task;
+                                            const done = tData.isCompleted;
+                                            const celebrating = celebrateId === tData._id;
+                                            const isStarted = tData.missionStatus === 'started';
+                                            const isExpired = tData.missionStatus === 'expired' || (tData.expiresAt && new Date(tData.expiresAt) <= new Date());
+                                            
                                             return (
-                                                <article key={task._id} className={`dsh-task-card ${done ? 'dsh-task-card--done' : ''} ${celebrating ? 'dsh-task-card--celebrate' : ''}`}>
+                                                <article key={tData._id} className={`dsh-task-card ${done ? 'dsh-task-card--done' : ''} ${celebrating ? 'dsh-task-card--celebrate' : ''}`}>
                                                     <div className="dsh-task-img-wrap">
-                                                        <img src={task.img} alt={task.title} className="dsh-task-img" loading="lazy" />
+                                                        <img src={tData.img} alt={tData.title} className="dsh-task-img" loading="lazy" />
                                                         <div className={`dsh-pts-badge ${done ? 'dsh-pts-badge--done' : ''}`}>
-                                                            {done ? t('dashboard.journey_tasks.completed_badge') : t('dashboard.journey_tasks.points_badge', { points: task.points })}
+                                                            {done ? t('dashboard.journey_tasks.completed_badge') : t('dashboard.journey_tasks.points_badge', { points: tData.points })}
                                                         </div>
+                                                        {isStarted && !isExpired && !done && (
+                                                            <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10 }}>
+                                                                <CountdownTimer expiresAt={tData.expiresAt} onExpire={() => {
+                                                                    const progressRes = api.get('/tasks/progress');
+                                                                    setTasks(progressRes.data.tasks || []);
+                                                                }} />
+                                                            </div>
+                                                        )}
                                                     </div>
                                                     <div className={`dsh-task-body ${done ? 'dsh-task-body--done' : ''}`}>
-                                                        <h3 className="dsh-task-name">{task.title}</h3>
-                                                        <p className="dsh-task-desc">{task.description}</p>
-                                                        <button className={`dsh-task-btn ${done ? 'dsh-task-btn--done' : ''}`} onClick={() => handleComplete(task._id)} disabled={done}>
-                                                            {done ? t('dashboard.journey_tasks.reward_btn') : t('dashboard.journey_tasks.start_btn')}
-                                                        </button>
+                                                        <h3 className="dsh-task-name">{tData.title}</h3>
+                                                        <p className="dsh-task-desc">{tData.description}</p>
+                                                        
+                                                        {done ? (
+                                                            <button className="dsh-task-btn dsh-task-btn--done" disabled>
+                                                                {t('dashboard.journey_tasks.reward_btn')}
+                                                            </button>
+                                                        ) : isStarted && !isExpired ? (
+                                                            <div style={{ marginTop: 'auto' }}>
+                                                                <input 
+                                                                    type="text" 
+                                                                    placeholder="Nhập mã xác nhận" 
+                                                                    value={verifyCodes[tData._id] || ''}
+                                                                    onChange={(e) => setVerifyCodes(prev => ({ ...prev, [tData._id]: e.target.value }))}
+                                                                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '8px', fontSize: '14px' }}
+                                                                />
+                                                                <button className="dsh-task-btn" onClick={() => handleComplete(tData._id, verifyCodes[tData._id])}>
+                                                                    Xác nhận hoàn thành
+                                                                </button>
+                                                            </div>
+                                                        ) : isExpired ? (
+                                                            <button className="dsh-task-btn" style={{ background: '#ef4444' }} onClick={() => handlePayment(tData._id)}>
+                                                                Hết hạn - Làm lại (5.000đ)
+                                                            </button>
+                                                        ) : (
+                                                            <button className="dsh-task-btn" onClick={() => handleStartMission(tData._id)}>
+                                                                {t('dashboard.journey_tasks.start_btn')}
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </article>
                                             )
                                         })
                                     ) : (
-                                        <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2rem', background: 'rgba(44, 89, 38, 0.05)', borderRadius: '1rem', border: '1px dashed rgba(44, 89, 38, 0.2)' }}>
+                                        <div style={{ width: '100%', textAlign: 'center', padding: '2rem', background: 'rgba(44, 89, 38, 0.05)', borderRadius: '1rem', border: '1px dashed rgba(44, 89, 38, 0.2)' }}>
                                             <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>{t('dashboard.journey_tasks.empty_text')}</p>
                                             <button className="dsh-task-btn" style={{ width: 'auto', padding: '0.75rem 2rem' }} onClick={handleReceiveTasks}>{t('dashboard.journey_tasks.empty_btn')}</button>
                                         </div>
@@ -449,8 +531,11 @@ export default function Dashboard() {
                             </div>
                             <div className="dsh-task-grid">
                                 {filteredTasks.map(task => {
-                                    const done = completedIds.includes(task._id)
+                                    const done = task.isCompleted
                                     const celebrating = celebrateId === task._id
+                                    const isStarted = task.missionStatus === 'started'
+                                    const isExpired = task.missionStatus === 'expired' || (task.expiresAt && new Date(task.expiresAt) <= new Date())
+
                                     return (
                                         <article key={task._id} className={`dsh-task-card ${done ? 'dsh-task-card--done' : ''} ${celebrating ? 'dsh-task-card--celebrate' : ''}`}>
                                             <div className="dsh-task-img-wrap">
@@ -458,13 +543,45 @@ export default function Dashboard() {
                                                 <div className={`dsh-pts-badge ${done ? 'dsh-pts-badge--done' : ''}`}>
                                                     {done ? t('dashboard.journey_tasks.completed_badge') : t('dashboard.journey_tasks.points_badge', { points: task.points })}
                                                 </div>
+                                                {isStarted && !isExpired && !done && (
+                                                    <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10 }}>
+                                                        <CountdownTimer expiresAt={task.expiresAt} onExpire={() => {
+                                                            const progressRes = api.get('/tasks/progress');
+                                                            setTasks(progressRes.data.tasks || []);
+                                                        }} />
+                                                    </div>
+                                                )}
                                             </div>
                                             <div className={`dsh-task-body ${done ? 'dsh-task-body--done' : ''}`}>
                                                 <h3 className="dsh-task-name">{task.title}</h3>
                                                 <p className="dsh-task-desc">{task.description}</p>
-                                                <button className={`dsh-task-btn ${done ? 'dsh-task-btn--done' : ''}`} onClick={() => handleComplete(task._id)} disabled={done}>
-                                                    {done ? t('dashboard.journey_tasks.reward_btn') : t('dashboard.journey_tasks.start_btn')}
-                                                </button>
+                                                
+                                                {done ? (
+                                                    <button className="dsh-task-btn dsh-task-btn--done" disabled>
+                                                        {t('dashboard.journey_tasks.reward_btn')}
+                                                    </button>
+                                                ) : isStarted && !isExpired ? (
+                                                    <div style={{ marginTop: 'auto' }}>
+                                                        <input 
+                                                            type="text" 
+                                                            placeholder="Nhập mã xác nhận" 
+                                                            value={verifyCodes[task._id] || ''}
+                                                            onChange={(e) => setVerifyCodes(prev => ({ ...prev, [task._id]: e.target.value }))}
+                                                            style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '8px', fontSize: '14px' }}
+                                                        />
+                                                        <button className="dsh-task-btn" onClick={() => handleComplete(task._id, verifyCodes[task._id])}>
+                                                            Xác nhận hoàn thành
+                                                        </button>
+                                                    </div>
+                                                ) : isExpired ? (
+                                                    <button className="dsh-task-btn" style={{ background: '#ef4444' }} onClick={() => handlePayment(task._id)}>
+                                                        Hết hạn - Làm lại (5.000đ)
+                                                    </button>
+                                                ) : (
+                                                    <button className="dsh-task-btn" onClick={() => handleStartMission(task._id)}>
+                                                        {t('dashboard.journey_tasks.start_btn')}
+                                                    </button>
+                                                )}
                                             </div>
                                         </article>
                                     )
@@ -665,15 +782,21 @@ export default function Dashboard() {
                     <div className="dsh-sidebar-card">
                         <h3 className="dsh-activities-title">{t('dashboard.recent_activity.title')}</h3>
                         <ul className="dsh-activities">
-                            {activities.map((a, i) => (
-                                <li key={i} className="dsh-activity-row">
-                                    <div className="dsh-activity-icon">{a.emoji}</div>
-                                    <div>
-                                        <div className="dsh-activity-lbl">{a.label}</div>
-                                        <div className="dsh-activity-time">{a.time}</div>
-                                    </div>
+                            {activities.length > 0 ? (
+                                activities.map((a, i) => (
+                                    <li key={i} className="dsh-activity-row">
+                                        <div className="dsh-activity-icon">{a.emoji}</div>
+                                        <div>
+                                            <div className="dsh-activity-lbl">{a.label}</div>
+                                            <div className="dsh-activity-time">{a.time}</div>
+                                        </div>
+                                    </li>
+                                ))
+                            ) : (
+                                <li className="dsh-activity-row" style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', justifyContent: 'center' }}>
+                                    {t('dashboard.recent_activity.empty', 'Chưa có hoạt động nào')}
                                 </li>
-                            ))}
+                            )}
                         </ul>
                     </div>
                 </aside>

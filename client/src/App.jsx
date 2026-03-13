@@ -5,7 +5,9 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import AdminDashboard from './pages/AdminDashboard'
+import StaffDashboard from './pages/StaffDashboard'
 import LandingPage from './pages/LandingPage'
+import PaymentSuccess from './pages/PaymentSuccess'
 import { Toaster } from 'react-hot-toast'
 
 
@@ -51,6 +53,25 @@ function AdminRoute({ children }) {
     return children
 }
 
+// Staff Route component
+function StaffRoute({ children }) {
+    const { user, loading } = useAuth()
+
+    if (loading) {
+        return (
+            <div className="loading-container">
+                <div className="spinner"></div>
+            </div>
+        )
+    }
+
+    if (!user || (user.role !== 'staff' && user.role !== 'admin')) {
+        return <Navigate to="/dashboard" replace />
+    }
+
+    return children
+}
+
 // Public Route (redirect to dashboard if logged in)
 function PublicRoute({ children }) {
     const { user, loading } = useAuth()
@@ -64,7 +85,9 @@ function PublicRoute({ children }) {
     }
 
     if (user) {
-        return <Navigate to={user.role === 'admin' ? '/admin' : '/dashboard'} replace />
+        if (user.role === 'admin') return <Navigate to="/admin" replace />
+        if (user.role === 'staff') return <Navigate to="/staff" replace />
+        return <Navigate to="/dashboard" replace />
     }
 
     return children
@@ -73,7 +96,7 @@ function PublicRoute({ children }) {
 // Hide global Navbar on pages with their own embedded header
 function NavbarWrapper() {
     const location = useLocation()
-    const noNavbar = ['/', '/dashboard']
+    const noNavbar = ['/', '/dashboard', '/staff', '/admin']
     if (noNavbar.includes(location.pathname)) return null
     return <Navbar />
 }
@@ -116,6 +139,22 @@ function AppContent() {
                         <AdminRoute>
                             <AdminDashboard />
                         </AdminRoute>
+                    }
+                />
+                <Route
+                    path="/staff"
+                    element={
+                        <StaffRoute>
+                            <StaffDashboard />
+                        </StaffRoute>
+                    }
+                />
+                <Route
+                    path="/payment-success"
+                    element={
+                        <ProtectedRoute>
+                            <PaymentSuccess />
+                        </ProtectedRoute>
                     }
                 />
             </Routes>
