@@ -19,6 +19,7 @@ app.use('/api/tasks', require('./routes/taskRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/staff', require('./routes/staffRoutes'));
 app.use('/api/payment', require('./routes/paymentRoutes'));
+app.use('/api/gifts', require('./routes/giftRoutes'));
 
 // Health check
 app.get('/api/health', async (req, res) => {

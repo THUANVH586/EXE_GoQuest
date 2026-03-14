@@ -21,7 +21,9 @@ exports.getStaffDashboard = async (req, res) => {
         const activePlayers = await User.find({ 
             role: 'user',
             'activeMissions.status': 'started'
-        }).select('username displayName activeMissions');
+        })
+        .select('username displayName activeMissions')
+        .populate('activeMissions.taskId', 'title');
 
         const currentCodeObj = await getActiveCode();
 
@@ -31,12 +33,20 @@ exports.getStaffDashboard = async (req, res) => {
                 id: u._id,
                 username: u.username,
                 displayName: u.displayName,
+                activeMissions: u.activeMissions
+                    .filter(m => m.status === 'started' && m.taskId)
+                    .map(m => ({
+                        taskId: m.taskId._id,
+                        title: m.taskId.title,
+                        startTime: m.startTime
+                    })),
                 activeMissionsCount: u.activeMissions.filter(m => m.status === 'started').length
             })),
             currentCode: currentCodeObj.code,
             expiresAt: currentCodeObj.expiresAt
         });
     } catch (error) {
+        console.error('Error fetching staff dashboard:', error);
         res.status(500).json({ message: 'Lỗi tải dữ liệu dashboard nhân viên' });
     }
 };

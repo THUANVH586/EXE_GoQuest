@@ -1,12 +1,13 @@
-const { PayOS } = require('@payos/node');
+const PayOS = require('@payos/node');
 const User = require('../models/User');
 const Task = require('../models/Task');
 
-const payos = new PayOS({
-    clientId: process.env.PAYOS_CLIENT_ID || 'dummy_id',
-    apiKey: process.env.PAYOS_API_KEY || 'dummy_api_key',
-    checksumKey: process.env.PAYOS_CHECKSUM_KEY || 'dummy_checksum'
-});
+// Robust initialization for different export styles
+const payos = new (PayOS.default || PayOS)(
+    process.env.PAYOS_CLIENT_ID || 'dummy_id',
+    process.env.PAYOS_API_KEY || 'dummy_api_key',
+    process.env.PAYOS_CHECKSUM_KEY || 'dummy_checksum'
+);
 
 // @desc    Create payment link for task retry
 // @route   POST /api/payment/create-payment-link
@@ -25,10 +26,23 @@ exports.createPaymentLink = async (req, res) => {
         }
 
         // PayOS orderCode must be a number and should be unique. 
-        // We use the last 9 digits of timestamp which is < 2,147,483,647 (max int32)
+        // We use the last 9 digits of timestamp.
         const orderCode = Number(String(Date.now()).slice(-9));
-        const amount = 5000;
-        const description = `Thực hiện lại: ${task.title}`.slice(0, 25); // PayOS limit 25 chars
+        
+        const usdAmount = 0.5;
+        const exchangeRate = 25000; // Tỉ giá 1 USD = 25,000 VND
+        const amount = Math.round(usdAmount * exchangeRate); 
+
+        // Sanitize description: no accents, alphanumeric only, max 25 chars
+        const sanitizeText = (text) => {
+            return text.normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[đĐ]/g, 'd')
+                .replace(/[^a-zA-Z0-9 ]/g, '')
+                .slice(0, 25);
+        };
+        const description = sanitizeText(`Retry ${task.title}`);
+
         const returnUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment-success?taskId=${taskId}`;
         const cancelUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment-cancel?taskId=${taskId}`;
 
@@ -49,8 +63,12 @@ exports.createPaymentLink = async (req, res) => {
             orderCode
         });
     } catch (error) {
-        console.error('PayOS Error:', error);
-        res.status(500).json({ message: 'Lỗi tạo link thanh toán' });
+        console.error('PayOS createPaymentLink Error Detail:', {
+            message: error.message,
+            stack: error.stack,
+            data: error.response?.data
+        });
+        res.status(500).json({ message: 'Lỗi tạo link thanh toán PayOS. Vui lòng thử lại sau.' });
     }
 };
 

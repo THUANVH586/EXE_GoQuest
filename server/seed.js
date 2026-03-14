@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const User = require('./models/User');
 const Task = require('./models/Task');
+const Gift = require('./models/Gift');
 const connectDB = require('./config/db');
 
 const sampleTasks = [
@@ -46,7 +47,7 @@ const sampleTasks = [
         category: 'long-term',
         location: { name: 'Toàn bộ Cồn Sơn' },
         duration: 0,
-        points: 100,
+        points: 200,
         icon: '🏃',
         order: 4
     },
@@ -85,6 +86,37 @@ const sampleTasks = [
     }
 ];
 
+const sampleGifts = [
+    {
+        title: 'Nón lá Cồn Sơn',
+        description: 'Chiếc nón lá truyền thống được các nghệ nhân Cồn Sơn đan thủ công.',
+        pointsRequired: 200,
+        icon: '👒',
+        stock: 50
+    },
+    {
+        title: 'Móc khóa Gỗ',
+        description: 'Móc khóa gỗ khắc hình lưu niệm Cồn Sơn độc đáo.',
+        pointsRequired: 50,
+        icon: '🔑',
+        stock: 100
+    },
+    {
+        title: 'Túi vải Canvas',
+        description: 'Túi vải thân thiện môi trường với họa tiết sống xanh.',
+        pointsRequired: 150,
+        icon: '🛍️',
+        stock: 30
+    },
+    {
+        title: 'Bộ Bánh Dân Gian',
+        description: 'Hộp quà gồm các loại bánh dân gian đặc sản địa phương.',
+        pointsRequired: 300,
+        icon: '🍱',
+        stock: 20
+    }
+];
+
 const seedData = async () => {
     try {
         await connectDB();
@@ -96,6 +128,11 @@ const seedData = async () => {
         // Seed tasks
         await Task.insertMany(sampleTasks);
         console.log('✅ Tasks seeded');
+
+        // Seed gifts
+        await Gift.deleteMany({});
+        await Gift.insertMany(sampleGifts);
+        console.log('✅ Gifts seeded');
 
         // Create admin if not exists
         const adminExists = await User.findOne({ role: 'admin' });

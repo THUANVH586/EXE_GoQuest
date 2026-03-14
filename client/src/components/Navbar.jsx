@@ -14,8 +14,9 @@ function Navbar() {
     return (
         <nav className="navbar">
             <div className="navbar-container">
-                <Link to="/" className="navbar-brand">
-                    <span>Go Quest</span>
+                <Link to="/" className="navbar-brand" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+                    <img src="https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773476778/Asset_3_on57x4.png" alt="Go Quest Logo" style={{ height: '32px', width: 'auto', objectFit: 'contain' }} />
+                    <span style={{ fontWeight: 800, fontSize: '1.2rem', color: 'inherit' }}>Go Quest</span>
                 </Link>
 
                 <ul className="navbar-nav">
@@ -80,13 +81,29 @@ function Navbar() {
                             <li>
                                 <Link
                                     to="/login"
-                                    className={`navbar-link ${location.pathname === '/login' ? 'active' : ''}`}
+                                    className="btn"
+                                    style={{ 
+                                        padding: 'var(--space-sm) var(--space-md)', 
+                                        background: 'rgba(45, 122, 58, 0.08)',
+                                        color: 'var(--color-accent-primary)',
+                                        borderRadius: 'var(--radius-md)',
+                                        fontWeight: 600,
+                                        fontSize: '0.9rem'
+                                    }}
                                 >
                                     {t('navbar.login')}
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/register" className="btn btn-primary" style={{ padding: 'var(--space-sm) var(--space-md)' }}>
+                                <Link 
+                                    to="/register" 
+                                    className="btn btn-primary" 
+                                    style={{ 
+                                        padding: 'var(--space-sm) var(--space-md)',
+                                        borderRadius: 'var(--radius-md)',
+                                        fontSize: '0.9rem'
+                                    }}
+                                >
                                     {t('navbar.register')}
                                 </Link>
                             </li>
