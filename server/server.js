@@ -17,6 +17,8 @@ app.use(express.json());
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/staff', require('./routes/staffRoutes'));
+app.use('/api/payment', require('./routes/paymentRoutes'));
 
 // Health check
 app.get('/api/health', async (req, res) => {

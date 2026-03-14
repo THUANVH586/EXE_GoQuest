@@ -20,7 +20,13 @@ function Login() {
 
         try {
             const userData = await login(identifier, password)
-            navigate(userData.role === 'admin' ? '/admin' : '/dashboard')
+            if (userData.role === 'admin') {
+                navigate('/admin')
+            } else if (userData.role === 'staff') {
+                navigate('/staff')
+            } else {
+                navigate('/dashboard')
+            }
         } catch (err) {
             setError(err.response?.data?.message || t('auth.login.error_fallback'))
         } finally {

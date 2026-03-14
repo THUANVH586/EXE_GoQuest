@@ -123,13 +123,13 @@
         "nav": {
             "journey": "Hành trình",
             "tasks": "Nhiệm vụ",
-            "rank": "Thứ hạng",
+            "rank": "Phần thưởng",
             "challenges": "Thử thách",
             "intro": "Giới thiệu",
             "community": "Cộng đồng"
         },
         "user": {
-            "subtitle": "Người khám phá Cồn Sơn"
+            "subtitle": "Khách hàng khám phá Cồn Sơn"
         },
         "logout": "Đăng xuất",
         "weekly_challenge": {
@@ -163,8 +163,8 @@
             "count": "Có {{count}} nhiệm vụ sẵn sàng"
         },
         "rank": {
-            "title": "Thứ hạng và Thành tích",
-            "current": "Thứ hạng hiện tại",
+            "title": "Phần thưởng & Thành tích",
+            "current": "Phần thưởng hiện tại",
             "bronze": "Hạng Đồng",
             "silver": "Hạng Bạc",
             "gold": "Hạng Vàng",
@@ -279,29 +279,29 @@
     },
     "admin": {
         "title": "Bảng điều khiển Admin",
-        "subtitle": "Quản lý người chơi và nhiệm vụ trải nghiệm",
+        "subtitle": "Quản lý khách hàng và nhiệm vụ trải nghiệm",
         "tabs": {
-            "leaderboard": "Bảng xếp hạng",
+            "leaderboard": "Bảng xếp hạng khách hàng",
             "tasks": "Quản lý nhiệm vụ"
         },
         "stats": {
-            "total_players": "Tổng người chơi",
+            "total_players": "Tổng khách hàng",
             "completed": "Đã về đích",
             "avg_points": "Điểm trung bình"
         },
         "leaderboard": {
-            "title": "Thứ hạng người chơi",
+            "title": "Thứ hạng khách hàng",
             "filter_all": "Tất cả",
             "filter_completed": "Hoàn thành",
             "filter_in_progress": "Đang làm",
             "rank": "Hạng",
-            "player": "Người chơi",
+            "player": "Khách hàng",
             "status": "Trạng thái",
             "missions": "Nhiệm vụ",
             "journey": "Hành trình",
             "time": "Thời gian",
             "total_points": "Tổng điểm",
-            "empty": "Không tìm thấy người chơi nào phù hợp."
+            "empty": "Không tìm thấy khách hàng nào phù hợp."
         },
         "tasks": {
             "title": "Danh sách nhiệm vụ",

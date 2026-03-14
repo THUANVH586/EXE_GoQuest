@@ -36,6 +36,10 @@ const taskSchema = new mongoose.Schema({
         type: String,
         default: '🎯'
     },
+    img: {
+        type: String,
+        default: ''
+    },
     isActive: {
         type: Boolean,
         default: true

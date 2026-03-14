@@ -1,17 +1,28 @@
 import { useState, useEffect } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
 import { useTranslation } from 'react-i18next'
 
 function AdminDashboard() {
     const { t, i18n } = useTranslation()
+    const { logout } = useAuth()
+    const navigate = useNavigate()
     const [users, setUsers] = useState([])
     const [tasks, setTasks] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [filter, setFilter] = useState('all') // all, completed, in-progress, not-started
-    const [activeTab, setActiveTab] = useState('leaderboard') // leaderboard, tasks
+    const [activeTab, setActiveTab] = useState('leaderboard') // leaderboard, tasks, staff
     const [showTaskModal, setShowTaskModal] = useState(false)
+    const [showStaffModal, setShowStaffModal] = useState(false)
     const [editingTask, setEditingTask] = useState(null)
+    const [staffForm, setStaffForm] = useState({
+        username: '',
+        email: '',
+        password: '',
+        displayName: ''
+    })
     const [taskForm, setTaskForm] = useState({
         title: '',
         description: '',
@@ -21,6 +32,11 @@ function AdminDashboard() {
         img: '',
         icon: '✨'
     })
+
+    const handleLogout = () => {
+        logout()
+        navigate('/login')
+    }
 
     useEffect(() => {
         fetchAllData()
@@ -74,6 +90,19 @@ function AdminDashboard() {
             fetchTasks()
         } catch (err) {
             alert(t('admin.tasks.error_save'))
+        }
+    }
+
+    const handleSaveStaff = async (e) => {
+        e.preventDefault()
+        try {
+            await api.post('/admin/staff', staffForm)
+            setShowStaffModal(false)
+            setStaffForm({ username: '', email: '', password: '', displayName: '' })
+            fetchAllData()
+            alert('Đã tạo tài khoản nhân viên thành công!')
+        } catch (err) {
+            alert(err.response?.data?.message || 'Lỗi tạo tài khoản nhân viên')
         }
     }
 
@@ -184,67 +213,139 @@ function AdminDashboard() {
     }
 
     return (
-        <div className="page">
+        <div className="page" style={{ paddingBottom: 'var(--space-2xl)' }}>
             <div className="container">
-                <div className="page-header" style={{ marginBottom: 'var(--space-lg)' }}>
+                {/* Header Section */}
+                <div className="page-header" style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center', 
+                    textAlign: 'left', 
+                    padding: 'var(--space-xl) 0',
+                    borderBottom: '1px solid rgba(45, 122, 58, 0.1)',
+                    marginBottom: 'var(--space-xl)'
+                }}>
                     <div>
-                        <h1 className="page-title">{t('admin.title')}</h1>
-                        <p className="page-subtitle">{t('admin.subtitle')}</p>
+                        <div style={{ 
+                            display: 'inline-flex', 
+                            alignItems: 'center', 
+                            gap: 'var(--space-xs)',
+                            background: 'rgba(45, 122, 58, 0.1)',
+                            color: 'var(--color-accent-primary)',
+                            padding: '4px 12px',
+                            borderRadius: '20px',
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            marginBottom: 'var(--space-sm)'
+                        }}>
+                            🛡️ HỆ THỐNG QUẢN TRỊ
+                        </div>
+                        <h1 className="page-title" style={{ margin: 0 }}>{t('admin.title')}</h1>
+                        <p className="page-subtitle" style={{ marginTop: '4px' }}>{t('admin.subtitle')}</p>
+                    </div>
+                    <div style={{ display: 'flex', gap: 'var(--space-md)', alignItems: 'center' }}>
+                        <Link to="/staff" className="btn btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-xs)', height: '100%' }}>
+                            <span>📋</span> Giao diện Nhân viên
+                        </Link>
+                        <button 
+                            className="btn btn-secondary" 
+                            onClick={handleLogout} 
+                            style={{ 
+                                borderColor: 'var(--color-error)',
+                                color: 'var(--color-error)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--space-xs)',
+                                height: '100%'
+                            }}
+                        >
+                            <span>🚪</span> {t('navbar.logout')}
+                        </button>
                     </div>
                 </div>
 
-                {/* Tabs */}
-                <div style={{ display: 'flex', gap: 'var(--space-md)', marginBottom: 'var(--space-xl)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 'var(--space-sm)' }}>
-                    <button
-                        className={`tab-btn ${activeTab === 'leaderboard' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('leaderboard')}
-                        style={{
-                            background: 'none', border: 'none', color: activeTab === 'leaderboard' ? 'var(--color-accent-primary)' : 'var(--color-text-muted)',
-                            fontWeight: 600, cursor: 'pointer', paddingBottom: 'var(--space-xs)', borderBottom: activeTab === 'leaderboard' ? '2px solid var(--color-accent-primary)' : 'none'
-                        }}
-                    >
-                        {t('admin.tabs.leaderboard')}
-                    </button>
-                    <button
-                        className={`tab-btn ${activeTab === 'tasks' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('tasks')}
-                        style={{
-                            background: 'none', border: 'none', color: activeTab === 'tasks' ? 'var(--color-accent-primary)' : 'var(--color-text-muted)',
-                            fontWeight: 600, cursor: 'pointer', paddingBottom: 'var(--space-xs)', borderBottom: activeTab === 'tasks' ? '2px solid var(--color-accent-primary)' : 'none'
-                        }}
-                    >
-                        {t('admin.tabs.tasks')}
-                    </button>
+                {/* Tabs - Premium Look */}
+                <div style={{ 
+                    display: 'flex', 
+                    gap: 'var(--space-lg)', 
+                    marginBottom: 'var(--space-xl)', 
+                    padding: '4px',
+                    background: 'rgba(45, 122, 58, 0.05)',
+                    borderRadius: '12px',
+                    width: 'fit-content'
+                }}>
+                    {[
+                        { key: 'leaderboard', label: t('admin.tabs.leaderboard'), icon: '📊' },
+                        { key: 'tasks', label: t('admin.tabs.tasks'), icon: '🎯' },
+                        { key: 'staff', label: 'Quản lý nhân viên', icon: '👤' }
+                    ].map(tab => (
+                        <button
+                            key={tab.key}
+                            onClick={() => setActiveTab(tab.key)}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--space-xs)',
+                                padding: '10px 20px',
+                                background: activeTab === tab.key ? 'var(--color-bg-primary)' : 'transparent',
+                                color: activeTab === tab.key ? 'var(--color-accent-primary)' : 'var(--color-text-muted)',
+                                border: 'none',
+                                borderRadius: '8px',
+                                fontWeight: 700,
+                                fontSize: '0.9rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s ease',
+                                boxShadow: activeTab === tab.key ? '0 4px 12px rgba(45, 122, 58, 0.1)' : 'none'
+                            }}
+                        >
+                            <span>{tab.icon}</span> {tab.label}
+                        </button>
+                    ))}
                 </div>
 
                 {activeTab === 'leaderboard' ? (
-                    <>
-                        {/* Stats Summary */}
-                        <div className="dashboard-stats" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', marginBottom: 'var(--space-xl)' }}>
-                            <div className="card stat-card" style={{ borderLeft: '4px solid var(--color-accent-primary)' }}>
+                    <div className="animate-fade-in">
+                        <div className="dashboard-stats" style={{ 
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+                            gap: 'var(--space-xl)',
+                            marginBottom: 'var(--space-2xl)' 
+                        }}>
+                            <div className="card stat-card" style={{ borderBottom: '4px solid var(--color-accent-primary)' }}>
                                 <div className="stat-value">{totalPlayers}</div>
-                                <div className="stat-label">{t('admin.stats.total_players')}</div>
+                                <div className="stat-label">👥 {t('admin.stats.total_players')}</div>
                             </div>
-                            <div className="card stat-card" style={{ borderLeft: '4px solid var(--color-success)' }}>
+                            <div className="card stat-card" style={{ borderBottom: '4px solid var(--color-success)' }}>
                                 <div className="stat-value">{completedPlayers}</div>
-                                <div className="stat-label">{t('admin.stats.completed')}</div>
+                                <div className="stat-label">🏁 {t('admin.stats.completed')}</div>
                             </div>
-                            <div className="card stat-card" style={{ borderLeft: '4px solid var(--color-accent-secondary)' }}>
+                            <div className="card stat-card" style={{ borderBottom: '4px solid var(--color-warning)' }}>
                                 <div className="stat-value">{avgPoints}</div>
-                                <div className="stat-label">{t('admin.stats.avg_points')}</div>
+                                <div className="stat-label">⭐️ {t('admin.stats.avg_points')}</div>
                             </div>
                         </div>
 
-                        {/* Filters & Leaderboard Header */}
-                        <div className="section-header" style={{ marginBottom: 'var(--space-md)' }}>
-                            <h2 className="section-title">{t('admin.leaderboard.title')}</h2>
-                            <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+                        <div className="section-header">
+                            <h2 className="section-title">
+                                <span style={{ background: 'var(--color-accent-primary)', color: '#fff', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>🏆</span>
+                                {t('admin.leaderboard.title')}
+                            </h2>
+                            <div style={{ display: 'flex', gap: 'var(--space-xs)', background: 'var(--color-bg-secondary)', padding: '4px', borderRadius: '10px' }}>
                                 {['all', 'completed', 'in-progress'].map((f) => (
                                     <button
                                         key={f}
                                         onClick={() => setFilter(f)}
-                                        className={`btn ${filter === f ? 'btn-primary' : 'btn-secondary'}`}
-                                        style={{ padding: 'var(--space-xs) var(--space-md)', fontSize: 'var(--font-size-sm)' }}
+                                        style={{ 
+                                            padding: '6px 14px', 
+                                            fontSize: '0.75rem', 
+                                            borderRadius: '8px', 
+                                            border: 'none',
+                                            fontWeight: 700,
+                                            cursor: 'pointer',
+                                            background: filter === f ? 'var(--color-accent-primary)' : 'transparent',
+                                            color: filter === f ? '#fff' : 'var(--color-text-muted)',
+                                            transition: 'all 0.2s'
+                                        }}
                                     >
                                         {f === 'all' ? t('admin.leaderboard.filter_all') :
                                             f === 'completed' ? t('admin.leaderboard.filter_completed') :
@@ -254,142 +355,189 @@ function AdminDashboard() {
                             </div>
                         </div>
 
-                        {/* Users Table */}
-                        <div className="card" style={{ overflowX: 'auto', padding: 0 }}>
+                        <div className="card" style={{ overflowX: 'auto', padding: 0, border: '1px solid rgba(45, 122, 58, 0.1)' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                                 <thead>
-                                    <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                                        <th style={{ padding: 'var(--space-md) var(--space-lg)', width: '80px', textAlign: 'center' }}>{t('admin.leaderboard.rank')}</th>
-                                        <th style={{ padding: 'var(--space-md) var(--space-lg)' }}>{t('admin.leaderboard.player')}</th>
-                                        <th style={{ padding: 'var(--space-md) var(--space-lg)' }}>{t('admin.leaderboard.status')}</th>
-                                        <th style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'center' }}>{t('admin.leaderboard.missions')}</th>
-                                        <th style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'center' }}>{t('admin.leaderboard.journey')}</th>
-                                        <th style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'center' }}>{t('admin.leaderboard.time')}</th>
-                                        <th style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'center' }}>{t('admin.leaderboard.total_points')}</th>
+                                    <tr style={{ background: 'var(--color-bg-secondary)', borderBottom: '2px solid rgba(45, 122, 58, 0.1)' }}>
+                                        <th style={{ padding: 'var(--space-lg)', width: '60px', textAlign: 'center' }}>{t('admin.leaderboard.rank')}</th>
+                                        <th style={{ padding: 'var(--space-lg)' }}>{t('admin.leaderboard.player')}</th>
+                                        <th style={{ padding: 'var(--space-lg)' }}>{t('admin.leaderboard.status')}</th>
+                                        <th style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>{t('admin.leaderboard.missions')}</th>
+                                        <th style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>{t('admin.leaderboard.total_points')}</th>
+                                        <th style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>⏱️ Lần cuối</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredUsers.map((u, index) => {
-                                        const isPlayer = u.role === 'user'
-                                        const rank = index + 1
+                                        const isPlayer = u.role === 'user';
+                                        const rankNumber = index + 1;
                                         return (
-                                            <tr key={u._id || u.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', background: u.role === 'admin' ? 'rgba(124, 58, 237, 0.05)' : 'transparent' }}>
-                                                <td style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'center' }}>
-                                                    {u.role === 'admin' ? (
-                                                        <span title="Quản trị viên">⚙️</span>
-                                                    ) : (
-                                                        <span style={{
-                                                            fontWeight: rank <= 3 ? 'bold' : 'normal',
-                                                            fontSize: rank <= 3 ? '1.2rem' : '1rem',
-                                                            color: rank === 1 ? 'gold' : rank === 2 ? '#C0C0C0' : rank === 3 ? '#CD7F32' : 'inherit'
+                                            <tr key={u._id || u.id} style={{ 
+                                                borderBottom: '1px solid rgba(45, 122, 58, 0.05)', 
+                                                transition: 'background 0.2s',
+                                                verticalAlign: 'middle'
+                                            }} className="table-row-hover">
+                                                <td style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>
+                                                    {u.role === 'admin' ? '⚙️' : (
+                                                        <span style={{ 
+                                                            fontWeight: 900,
+                                                            color: rankNumber === 1 ? 'var(--color-warning)' : 'inherit',
+                                                            background: rankNumber <= 3 ? 'rgba(245, 158, 11, 0.1)' : 'transparent',
+                                                            width: '24px', height: '24px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%'
                                                         }}>
-                                                            {rank}
+                                                            {rankNumber}
                                                         </span>
                                                     )}
                                                 </td>
-                                                <td style={{ padding: 'var(--space-md) var(--space-lg)' }}>
-                                                    <div style={{ fontWeight: 600, color: u.role === 'admin' ? 'var(--color-accent-secondary)' : 'inherit' }}>
-                                                        {u.displayName}
-                                                        {u.role === 'admin' && <span style={{ marginLeft: 'var(--space-xs)', fontSize: '0.7rem', verticalAlign: 'middle' }}>(Admin)</span>}
+                                                <td style={{ padding: 'var(--space-lg)' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+                                                        <div style={{ 
+                                                            width: '32px', height: '32px', borderRadius: '50%', 
+                                                            background: u.role === 'admin' ? 'var(--gradient-primary)' : 'rgba(45, 122, 58, 0.1)',
+                                                            color: u.role === 'admin' ? '#fff' : 'var(--color-accent-primary)',
+                                                            display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.8rem'
+                                                        }}>
+                                                            {(u.displayName || u.username)[0].toUpperCase()}
+                                                        </div>
+                                                        <div>
+                                                            <div style={{ fontWeight: 700 }}>{u.displayName}</div>
+                                                            <div style={{ fontSize: '0.7rem', opacity: 0.6 }}>@{u.username}</div>
+                                                        </div>
                                                     </div>
-                                                    <div style={{ fontSize: 'var(--font-size-xs)', opacity: 0.6 }}>@{u.username}</div>
                                                 </td>
-                                                <td style={{ padding: 'var(--space-md) var(--space-lg)' }}>
-                                                    <span style={{
-                                                        display: 'inline-flex',
-                                                        alignItems: 'center',
-                                                        gap: '4px',
-                                                        fontSize: '0.75rem',
-                                                        fontWeight: 600,
-                                                        color: getStatusColor(u.status)
-                                                    }}>
-                                                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: getStatusColor(u.status) }}></span>
+                                                <td style={{ padding: 'var(--space-lg)' }}>
+                                                    <span className={`task-badge ${normalizeStatus(u.status) === 'completed' ? 'health' : 'craft'}`} style={{ fontSize: '0.7rem' }}>
                                                         {displayStatus(u.status)}
                                                     </span>
                                                 </td>
-                                                <td style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'center' }}>
-                                                    <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'bold' }}>
-                                                        {u.completedCount}/{u.totalTasks}
-                                                    </div>
-                                                    <div style={{ width: '60px', height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', margin: '4px auto 0' }}>
-                                                        <div style={{
-                                                            width: `${(u.completedCount / u.totalTasks) * 100}%`,
-                                                            height: '100%',
-                                                            background: getStatusColor(u.status),
-                                                            borderRadius: '2px'
-                                                        }}></div>
+                                                <td style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>
+                                                    <div style={{ fontWeight: 800 }}>{u.completedCount}/{u.totalTasks}</div>
+                                                    <div style={{ width: '60px', height: '4px', background: 'rgba(0,0,0,0.05)', borderRadius: '2px', margin: '4px auto' }}>
+                                                        <div style={{ width: `${(u.completedCount / u.totalTasks) * 100}%`, height: '100%', background: 'var(--color-accent-primary)', borderRadius: '2px' }}></div>
                                                     </div>
                                                 </td>
-                                                <td style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'center' }}>
-                                                    {Math.round(u.longTermProgress?.distance || 0)}m
+                                                <td style={{ padding: 'var(--space-lg)', textAlign: 'center', fontWeight: 900, color: 'var(--color-accent-primary)', fontSize: '1.1rem' }}>
+                                                    {u.points}
                                                 </td>
-                                                <td style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'center', fontSize: 'var(--font-size-xs)', opacity: 0.7 }}>
+                                                <td style={{ padding: 'var(--space-lg)', textAlign: 'center', fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
                                                     {formatTime(u.lastCompletedAt)}
                                                 </td>
-                                                <td style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'center' }}>
-                                                    <div style={{
-                                                        fontSize: 'var(--font-size-lg)',
-                                                        fontWeight: 'bold',
-                                                        color: isPlayer ? 'var(--color-accent-primary)' : 'var(--color-text-muted)'
-                                                    }}>
-                                                        {u.points}
-                                                    </div>
-                                                </td>
                                             </tr>
-                                        )
+                                        );
                                     })}
                                 </tbody>
                             </table>
                             {filteredUsers.length === 0 && (
-                                <div className="empty-state" style={{ padding: 'var(--space-2xl)', textAlign: 'center' }}>
+                                <div className="empty-state">
+                                    <div className="empty-state-icon">🧊</div>
                                     <p>{t('admin.leaderboard.empty')}</p>
                                 </div>
                             )}
                         </div>
-                    </>
-                ) : (
-                    <>
-                        <div className="section-header" style={{ marginBottom: 'var(--space-md)' }}>
-                            <h2 className="section-title">{t('admin.tasks.title')}</h2>
-                            <button className="btn btn-primary" onClick={openAddModal}>{t('admin.tasks.add_btn')}</button>
+                    </div>
+                ) : activeTab === 'staff' ? (
+                    <div className="animate-fade-in">
+                        <div className="section-header">
+                            <h2 className="section-title">
+                                <span style={{ background: 'var(--color-accent-primary)', color: '#fff', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>👥</span>
+                                Danh sách nhân viên
+                            </h2>
+                            <button className="btn btn-primary" onClick={() => setShowStaffModal(true)}>+ Thêm nhân viên</button>
                         </div>
 
-                        <div className="card" style={{ overflowX: 'auto', padding: 0 }}>
+                        <div className="card" style={{ padding: 0, border: '1px solid rgba(45, 122, 58, 0.1)' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                                 <thead>
-                                    <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                                        <th style={{ padding: 'var(--space-md) var(--space-lg)' }}>{t('admin.tasks.task')}</th>
-                                        <th style={{ padding: 'var(--space-md) var(--space-lg)' }}>{t('admin.tasks.type')}</th>
-                                        <th style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'center' }}>{t('admin.tasks.points')}</th>
-                                        <th style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'center' }}>{t('admin.tasks.actions')}</th>
+                                    <tr style={{ background: 'var(--color-bg-secondary)', borderBottom: '2px solid rgba(45, 122, 58, 0.1)' }}>
+                                        <th style={{ padding: 'var(--space-lg)' }}>Tên hiển thị</th>
+                                        <th style={{ padding: 'var(--space-lg)' }}>Username</th>
+                                        <th style={{ padding: 'var(--space-lg)' }}>Email</th>
+                                        <th style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>Phân quyền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {users.filter(u => u.role === 'staff').map((staff) => (
+                                        <tr key={staff._id || staff.id} style={{ borderBottom: '1px solid rgba(45, 122, 58, 0.05)' }}>
+                                            <td style={{ padding: 'var(--space-lg)', fontWeight: 700 }}>{staff.displayName}</td>
+                                            <td style={{ padding: 'var(--space-lg)', opacity: 0.7 }}>@{staff.username}</td>
+                                            <td style={{ padding: 'var(--space-lg)', opacity: 0.7 }}>{staff.email}</td>
+                                            <td style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>
+                                                <span className="task-badge craft" style={{ textTransform: 'uppercase', fontSize: '10px' }}>
+                                                    {staff.role}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            {users.filter(u => u.role === 'staff').length === 0 && (
+                                <div className="empty-state">
+                                    <div className="empty-state-icon">👤</div>
+                                    <p>Chưa có nhân viên nào</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="animate-fade-in">
+                        <div className="section-header">
+                            <h2 className="section-title">
+                                <span style={{ background: 'var(--color-accent-primary)', color: '#fff', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>🎯</span>
+                                {t('admin.tasks.title')}
+                            </h2>
+                            <button className="btn btn-primary" onClick={openAddModal}>+ {t('admin.tasks.add_btn')}</button>
+                        </div>
+
+                        <div className="card" style={{ padding: 0, border: '1px solid rgba(45, 122, 58, 0.1)' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                                <thead>
+                                    <tr style={{ background: 'var(--color-bg-secondary)', borderBottom: '2px solid rgba(45, 122, 58, 0.1)' }}>
+                                        <th style={{ padding: 'var(--space-lg)' }}>{t('admin.tasks.task')}</th>
+                                        <th style={{ padding: 'var(--space-lg)' }}>{t('admin.tasks.type')}</th>
+                                        <th style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>{t('admin.tasks.points')}</th>
+                                        <th style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>{t('admin.tasks.actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {tasks.map((task) => (
-                                        <tr key={task._id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                            <td style={{ padding: 'var(--space-md) var(--space-lg)' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
-                                                    <div style={{ fontSize: '1.5rem' }}>{task.icon || '✨'}</div>
+                                        <tr key={task._id} style={{ borderBottom: '1px solid rgba(45, 122, 58, 0.05)' }}>
+                                            <td style={{ padding: 'var(--space-lg)' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+                                                    <div style={{ position: 'relative' }}>
+                                                        <div style={{ fontSize: '1.5rem', background: 'rgba(45, 122, 58, 0.05)', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px' }}>
+                                                            {task.icon || '✨'}
+                                                        </div>
+                                                        {task.img && (
+                                                            <img 
+                                                                src={task.img} 
+                                                                alt="" 
+                                                                style={{ 
+                                                                    position: 'absolute', top: '-4px', right: '-4px', width: '28px', height: '28px', 
+                                                                    borderRadius: '6px', objectFit: 'cover', border: '2px solid #fff', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' 
+                                                                }} 
+                                                            />
+                                                        )}
+                                                    </div>
                                                     <div>
-                                                        <div style={{ fontWeight: 600 }}>{task.title}</div>
-                                                        <div style={{ fontSize: 'var(--font-size-xs)', opacity: 0.6, maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                        <div style={{ fontWeight: 700 }}>{task.title}</div>
+                                                        <div style={{ fontSize: '0.75rem', opacity: 0.6, maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                             {task.description}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td style={{ padding: 'var(--space-md) var(--space-lg)' }}>
-                                                <span style={{ fontSize: '0.8rem', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '10px' }}>
+                                            <td style={{ padding: 'var(--space-lg)' }}>
+                                                <span className={`task-badge ${task.type}`} style={{ fontSize: '0.7rem' }}>
                                                     {task.type}
                                                 </span>
                                             </td>
-                                            <td style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'center', fontWeight: 'bold', color: 'var(--color-accent-primary)' }}>
+                                            <td style={{ padding: 'var(--space-lg)', textAlign: 'center', fontWeight: 900, color: 'var(--color-accent-primary)' }}>
                                                 {task.points}
                                             </td>
-                                            <td style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'center' }}>
-                                                <div style={{ display: 'flex', gap: 'var(--space-sm)', justifyContent: 'center' }}>
-                                                    <button className="btn btn-secondary" style={{ padding: 'var(--space-xs) var(--space-sm)' }} onClick={() => openEditModal(task)}>{t('admin.tasks.edit')}</button>
-                                                    <button className="btn btn-secondary" style={{ padding: 'var(--space-xs) var(--space-sm)', borderColor: 'var(--color-error)', color: 'var(--color-error)' }} onClick={() => handleDeleteTask(task._id)}>{t('admin.tasks.delete')}</button>
+                                            <td style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>
+                                                <div style={{ display: 'flex', gap: 'var(--space-xs)', justifyContent: 'center' }}>
+                                                    <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.75rem' }} onClick={() => openEditModal(task)}>✏️</button>
+                                                    <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.75rem', borderColor: 'var(--color-error)', color: 'var(--color-error)' }} onClick={() => handleDeleteTask(task._id)}>🗑️</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -397,79 +545,96 @@ function AdminDashboard() {
                                 </tbody>
                             </table>
                             {tasks.length === 0 && (
-                                <div className="empty-state" style={{ padding: 'var(--space-2xl)', textAlign: 'center' }}>
+                                <div className="empty-state">
+                                    <div className="empty-state-icon">🌵</div>
                                     <p>{t('admin.tasks.empty')}</p>
                                 </div>
                             )}
                         </div>
-                    </>
+                    </div>
                 )}
 
-                {/* Task Modal */}
-                {showTaskModal && (
+                {/* Modals - Fixed alignment */}
+                {(showTaskModal || showStaffModal) && (
                     <div style={{
-                        position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-                        background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        zIndex: 1000, backdropFilter: 'blur(4px)'
+                        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', 
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        zIndex: 1000, backdropFilter: 'blur(8px)', padding: 'var(--space-md)'
                     }}>
-                        <div className="card" style={{ width: '100%', maxWidth: '500px', margin: 'var(--space-md)' }}>
-                            <h2 style={{ marginBottom: 'var(--space-lg)' }}>{editingTask ? t('admin.modal.title_edit') : t('admin.modal.title_add')}</h2>
-                            <form onSubmit={handleSaveTask}>
-                                <div className="form-group">
-                                    <label className="form-label">{t('admin.modal.name')}</label>
-                                    <input
-                                        type="text" className="form-input" required value={taskForm.title}
-                                        onChange={e => setTaskForm({ ...taskForm, title: e.target.value })}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label">{t('admin.modal.desc')}</label>
-                                    <textarea
-                                        className="form-input" style={{ minHeight: '100px', resize: 'vertical' }} required value={taskForm.description}
-                                        onChange={e => setTaskForm({ ...taskForm, description: e.target.value })}
-                                    />
-                                </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)', marginBottom: 'var(--space-lg)' }}>
-                                    <div className="form-group" style={{ marginBottom: 0 }}>
-                                        <label className="form-label">{t('admin.modal.points')}</label>
-                                        <input
-                                            type="number" className="form-input" required value={taskForm.points}
-                                            onChange={e => setTaskForm({ ...taskForm, points: parseInt(e.target.value) })}
-                                        />
-                                    </div>
-                                    <div className="form-group" style={{ marginBottom: 0 }}>
-                                        <label className="form-label">{t('admin.modal.type')}</label>
-                                        <select
-                                            className="form-input" value={taskForm.type}
-                                            onChange={e => setTaskForm({ ...taskForm, type: e.target.value })}
-                                        >
-                                            <option value="craft">{t('components.task_card.types.craft')}</option>
-                                            <option value="food">{t('components.task_card.types.food')}</option>
-                                            <option value="health">{t('components.task_card.types.health')}</option>
-                                            <option value="environment">{t('components.task_card.types.environment')}</option>
-                                            <option value="community">{t('components.task_card.types.community')}</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label">{t('admin.modal.img_url')}</label>
-                                    <input
-                                        type="text" className="form-input" placeholder={t('admin.modal.placeholder_img')} value={taskForm.img}
-                                        onChange={e => setTaskForm({ ...taskForm, img: e.target.value })}
-                                    />
-                                </div>
-
-                                <div style={{ display: 'flex', gap: 'var(--space-md)', justifyContent: 'flex-end', marginTop: 'var(--space-xl)' }}>
-                                    <button type="button" className="btn btn-secondary" onClick={() => setShowTaskModal(false)}>{t('admin.modal.cancel')}</button>
-                                    <button type="submit" className="btn btn-primary">{t('admin.modal.save')}</button>
-                                </div>
-                            </form>
+                        <div className="card animate-fade-in" style={{ width: '100%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto' }}>
+                            {showTaskModal ? (
+                                <>
+                                    <h2 style={{ marginBottom: 'var(--space-lg)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        {editingTask ? '📝 Sửa nhiệm vụ' : '✨ Thêm nhiệm vụ mới'}
+                                    </h2>
+                                    <form onSubmit={handleSaveTask}>
+                                        <div className="form-group">
+                                            <label className="form-label">{t('admin.modal.name')}</label>
+                                            <input type="text" className="form-input" required value={taskForm.title} onChange={e => setTaskForm({ ...taskForm, title: e.target.value })} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">{t('admin.modal.desc')}</label>
+                                            <textarea className="form-input" style={{ minHeight: '80px' }} required value={taskForm.description} onChange={e => setTaskForm({ ...taskForm, description: e.target.value })} />
+                                        </div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)', marginBottom: 'var(--space-lg)' }}>
+                                            <div className="form-group" style={{ marginBottom: 0 }}>
+                                                <label className="form-label">{t('admin.modal.points')}</label>
+                                                <input type="number" className="form-input" required value={taskForm.points} onChange={e => setTaskForm({ ...taskForm, points: parseInt(e.target.value) })} />
+                                            </div>
+                                            <div className="form-group" style={{ marginBottom: 0 }}>
+                                                <label className="form-label">{t('admin.modal.type')}</label>
+                                                <select className="form-input" value={taskForm.type} onChange={e => setTaskForm({ ...taskForm, type: e.target.value })}>
+                                                    <option value="craft">{t('components.task_card.types.craft')}</option>
+                                                    <option value="food">{t('components.task_card.types.food')}</option>
+                                                    <option value="health">{t('components.task_card.types.health')}</option>
+                                                    <option value="environment">{t('components.task_card.types.environment')}</option>
+                                                    <option value="community">{t('components.task_card.types.community')}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">URL Ảnh Nhiệm Vụ (Cloudinary)</label>
+                                            <input type="text" className="form-input" placeholder="Dán link ảnh tại đây..." value={taskForm.img} onChange={e => setTaskForm({ ...taskForm, img: e.target.value })} />
+                                        </div>
+                                        <div style={{ display: 'flex', gap: 'var(--space-md)', justifyContent: 'flex-end', marginTop: 'var(--space-xl)' }}>
+                                            <button type="button" className="btn btn-secondary" onClick={() => setShowTaskModal(false)}>{t('admin.modal.cancel')}</button>
+                                            <button type="submit" className="btn btn-primary">{t('admin.modal.save')}</button>
+                                        </div>
+                                    </form>
+                                </>
+                            ) : (
+                                <>
+                                    <h2 style={{ marginBottom: 'var(--space-lg)' }}>👤 Tạo tài khoản nhân viên</h2>
+                                    <form onSubmit={handleSaveStaff}>
+                                        <div className="form-group">
+                                            <label className="form-label">Tên hiển thị</label>
+                                            <input type="text" className="form-input" required value={staffForm.displayName} onChange={e => setStaffForm({ ...staffForm, displayName: e.target.value })} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Username</label>
+                                            <input type="text" className="form-input" required value={staffForm.username} onChange={e => setStaffForm({ ...staffForm, username: e.target.value })} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Email</label>
+                                            <input type="email" className="form-input" required value={staffForm.email} onChange={e => setStaffForm({ ...staffForm, email: e.target.value })} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Mật khẩu</label>
+                                            <input type="password" className="form-input" required value={staffForm.password} onChange={e => setStaffForm({ ...staffForm, password: e.target.value })} />
+                                        </div>
+                                        <div style={{ display: 'flex', gap: 'var(--space-md)', justifyContent: 'flex-end', marginTop: 'var(--space-xl)' }}>
+                                            <button type="button" className="btn btn-secondary" onClick={() => setShowStaffModal(false)}>Hủy</button>
+                                            <button type="submit" className="btn btn-primary">Tạo tài khoản</button>
+                                        </div>
+                                    </form>
+                                </>
+                            )}
                         </div>
                     </div>
                 )}
             </div>
         </div>
-    )
+    );
 }
 
-export default AdminDashboard
+export default AdminDashboard;

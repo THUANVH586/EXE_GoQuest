@@ -1603,16 +1603,16 @@ a:hover {
 .dsh-header {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 2000; /* Stay above Leaflet (1000) */
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0.9rem 2.5rem;
-  background: rgba(255, 255, 255, 0.97);
+  background: white; /* More solid to prevent map bleeding */
   border-bottom: 1px solid rgba(44, 89, 38, 0.1);
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
-  box-shadow: 0 2px 20px rgba(44, 89, 38, 0.06);
+  box-shadow: 0 2px 20px rgba(44, 89, 38, 0.08);
   gap: 1.5rem;
 }
 
@@ -2066,6 +2066,9 @@ a:hover {
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(44, 89, 38, 0.05);
   transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .dsh-task-card:hover {
@@ -2142,6 +2145,9 @@ a:hover {
 
 .dsh-task-body {
   padding: 1.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .dsh-task-body--done {
@@ -2263,7 +2269,7 @@ a:hover {
 .dsh-rank-card {
   background: linear-gradient(145deg, #1a3d18, #0f2610);
   border-radius: 1.25rem;
-  padding: 2rem;
+  padding: 1.75rem;
   color: #fff;
   position: relative;
   overflow: hidden;
@@ -2380,6 +2386,7 @@ a:hover {
   justify-content: center;
   font-size: 1.1rem;
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .dsh-activity-lbl {
@@ -2547,7 +2554,8 @@ a:hover {
   .dsh-body {
     flex-direction: column;
     padding: 1rem;
-    gap: 1.2rem;
+    gap: 1.5rem;
+    margin-top: 0; /* Header push already handles this */
   }
 
   .dsh-sidebar {
@@ -2565,9 +2573,10 @@ a:hover {
 
   .dsh-aside {
     width: 100%;
-    order: 2; /* Bản đồ & Rank đi ngay sau Hero/Nhiệm vụ */
+    order: 2;
     display: flex;
     flex-direction: column;
+    gap: 1.5rem;
   }
 
   .dsh-task-grid {
@@ -2610,6 +2619,11 @@ a:hover {
   }
 
   .dsh-search-box {
+    width: 40px;
+    padding: 0.5rem;
+    justify-content: center;
+  }
+  .dsh-search-input {
     display: none;
   }
 }

@@ -125,3 +125,36 @@ exports.deleteTask = async (req, res) => {
         res.status(500).json({ message: 'Lỗi xóa nhiệm vụ' });
     }
 };
+// @desc    Create a new staff account
+// @route   POST /api/admin/staff
+exports.createStaff = async (req, res) => {
+    try {
+        const { username, email, password, displayName } = req.body;
+
+        const userExists = await User.findOne({ $or: [{ email }, { username }] });
+        if (userExists) {
+            return res.status(400).json({ message: 'Tên đăng nhập hoặc email đã tồn tại' });
+        }
+
+        const staff = new User({
+            username,
+            email,
+            password,
+            displayName,
+            role: 'staff'
+        });
+
+        await staff.save();
+        res.status(201).json({
+            message: 'Đã tạo tài khoản nhân viên thành công',
+            staff: {
+                id: staff._id,
+                username: staff.username,
+                email: staff.email,
+                role: staff.role
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Lỗi tạo tài khoản nhân viên' });
+    }
+};
