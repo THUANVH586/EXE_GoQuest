@@ -72,6 +72,21 @@ const userSchema = new mongoose.Schema({
             default: false
         }
     },
+    redeemedGifts: [{
+        giftId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Gift'
+        },
+        giftTitle: String,
+        pointsSpent: {
+            type: Number,
+            default: 0
+        },
+        redeemedAt: {
+            type: Date,
+            default: Date.now
+        }
+    }],
     createdAt: {
         type: Date,
         default: Date.now

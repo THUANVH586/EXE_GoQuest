@@ -112,7 +112,7 @@
         "register": "Create account now"
     },
     "footer": {
-        "desc": "Community-based experiential travel application, pioneering the sustainable tourism model and cultural identity preservation in Southwestern Vietnam.",
+        "desc": "Community-based experiential travel platform, pioneering the sustainable tourism model and cultural identity preservation in Southwestern Vietnam.",
         "explore": "Explore",
         "contact": "Contact",
         "copyright": "© 2025 Go Quest. Developed for the local community."
@@ -154,6 +154,8 @@
             "completed_badge": "✓ Completed",
             "start_btn": "Start Now",
             "reward_btn": "Reward Received",
+            "retry_btn": "Expired - Retry (0.5 USD)",
+            "confirm_btn": "Confirm Completion",
             "empty_text": "Click \"Get Missions\" to start your journey!",
             "empty_btn": "Get Missions Now"
         },
@@ -329,6 +331,36 @@
         "errors": {
             "load": "Unable to load data. Must be an Admin to have this permission.",
             "title": "Error"
+        }
+    },
+    "task_data": {
+        "Trang trí Nón Lá": {
+            "title": "Conical Hat Decoration",
+            "desc": "Paint and decorate your own conical hat in your style."
+        },
+        "Học làm Bánh Dân Gian": {
+            "title": "Traditional Cake Workshop",
+            "desc": "Join a workshop to learn how to make traditional coconut leaf cakes."
+        },
+        "Hành trình khám phá": {
+            "title": "Discovery Journey",
+            "desc": "Explore Con Son by moving and accumulating at least 2000m."
+        },
+        "Bảo vệ Môi trường": {
+            "title": "Environmental Protection",
+            "desc": "Bring your personal water bottle, do not use plastic cups during the tour."
+        },
+        "Thưởng thức Chè Bưởi": {
+            "title": "Pomelo Sweet Soup Tasting",
+            "desc": "Taste the refreshing pomelo sweet soup, a specialty of Con Son."
+        },
+        "Thưởng thức Bánh Xèo": {
+            "title": "Banh Xeo Tasting",
+            "desc": "Experience the crispy Banh Xeo at the folk traditional cake stall."
+        },
+        "Trải nghiệm Bán Hàng": {
+            "title": "Sales Experience",
+            "desc": "Experience being a stall seller for mixed rice paper for 30 minutes."
         }
     }
 }

@@ -154,7 +154,7 @@ function LandingPage() {
             description: t('experiences.items.community.desc')
         },
         {
-            image: 'https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773065757/exp_4_ommyyg.png',
+            image: 'https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773458538/kham-pha-2khudulich-con-noi-tieng-ocantho-06-7-2018-6_ywyh6f.jpg',
             badgeText: t('experiences.items.explore.badge'),
             title: t('experiences.items.explore.title'),
             description: t('experiences.items.explore.desc')
@@ -172,9 +172,9 @@ function LandingPage() {
             {/* ===== LANDING NAVBAR ===== */}
             <nav className={`lp-nav ${scrolled ? 'lp-nav--scrolled' : ''}`}>
                 <div className="lp-nav-inner">
-                    <div className="lp-nav-brand">
-                        <span className="lp-nav-logo"></span>
-                        <span className="lp-nav-name">Go Quest</span>
+                    <div className="lp-nav-brand" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <img src="https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773476778/Asset_3_on57x4.png" alt="Go Quest Logo" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
+                        <span className="lp-nav-name" style={{ color: scrolled ? 'var(--color-text-primary)' : 'white' }}>Go Quest</span>
                     </div>
 
                     <div className="lp-nav-links">
@@ -213,8 +213,29 @@ function LandingPage() {
                             </Link>
                         ) : (
                             <>
-                                <Link to="/login" className="lp-nav-link">{t('nav.login')}</Link>
-                                <Link to="/register" className="btn btn-primary" style={{ padding: 'var(--space-sm) var(--space-xl)' }}>
+                                <Link 
+                                    to="/login" 
+                                    className="btn" 
+                                    style={{ 
+                                        padding: 'var(--space-sm) var(--space-xl)', 
+                                        background: scrolled ? 'rgba(45, 122, 58, 0.1)' : 'rgba(255, 255, 255, 0.2)',
+                                        color: scrolled ? 'var(--color-accent-primary)' : 'white',
+                                        fontSize: 'var(--font-size-sm)',
+                                        borderRadius: 'var(--radius-md)',
+                                        fontWeight: 600
+                                    }}
+                                >
+                                    {t('nav.login')}
+                                </Link>
+                                <Link 
+                                    to="/register" 
+                                    className="btn btn-primary" 
+                                    style={{ 
+                                        padding: 'var(--space-sm) var(--space-xl)',
+                                        fontSize: 'var(--font-size-sm)',
+                                        borderRadius: 'var(--radius-md)'
+                                    }}
+                                >
                                     {t('nav.register')}
                                 </Link>
                             </>
@@ -484,8 +505,9 @@ function LandingPage() {
                 <div className="container">
                     <div className="lp-footer-grid">
                         <div className="lp-footer-brand">
-                            <div className="navbar-brand" style={{ marginBottom: 'var(--space-md)' }}>
-                                <span>Go Quest</span>
+                            <div className="navbar-brand" style={{ marginBottom: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <img src="https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773476778/Asset_3_on57x4.png" alt="Go Quest Logo" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
+                                <span style={{ fontWeight: 800, fontSize: '1.5rem', color: 'white' }}>Go Quest</span>
                             </div>
                             <p className="lp-footer-desc">
                                 {t('footer.desc')}
@@ -506,8 +528,8 @@ function LandingPage() {
                             <h5 className="lp-footer-heading">{t('footer.contact')}</h5>
                             <ul className="lp-footer-links">
                                 <li>📍 Cồn Sơn, Bình Thủy, Cần Thơ</li>
-                                <li>✉️ hello@conson.travel</li>
-                                <li>📞 +84 (0) 123 456 789</li>
+                                <li>✉️ ConSonGoQuest@gmail.com</li>
+                                <li>📞 +84 (0) 942 004 995</li>
                             </ul>
                         </div>
                     </div>

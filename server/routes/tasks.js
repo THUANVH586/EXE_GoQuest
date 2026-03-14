@@ -120,10 +120,13 @@ router.get('/progress', authMiddleware, async (req, res) => {
             id: task._id || index
         }));
 
+        const pointsSpent = (user.redeemedGifts || []).reduce((sum, g) => sum + (g.pointsSpent || 0), 0);
+
         res.json({
             tasks: tasksWithProgress,
             longTermProgress: user.longTermProgress,
-            totalCompleted: user.completedTasks.length
+            totalCompleted: user.completedTasks.length,
+            pointsSpent
         });
     } catch (error) {
         console.error('Progress error:', error);

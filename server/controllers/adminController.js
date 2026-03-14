@@ -66,6 +66,29 @@ exports.getUsersReport = async (req, res) => {
     }
 };
 
+// @desc    Delete a user account
+// @route   DELETE /api/admin/users/:id
+exports.deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findById(id);
+
+        if (!user) {
+            return res.status(404).json({ message: 'Không tìm thấy người dùng' });
+        }
+
+        if (user.role === 'admin') {
+            return res.status(403).json({ message: 'Không thể xóa tài khoản admin' });
+        }
+
+        await User.findByIdAndDelete(id);
+
+        res.json({ message: 'Đã xóa người dùng thành công' });
+    } catch (error) {
+        res.status(500).json({ message: 'Lỗi xóa người dùng', error: error.message });
+    }
+};
+
 // @desc    Create a new task
 // @route   POST /api/admin/tasks
 exports.createTask = async (req, res) => {
