@@ -58,6 +58,11 @@ exports.startMission = async (req, res) => {
             return res.status(400).json({ message: 'ID nhiệm vụ không hợp lệ' });
         }
 
+        const task = await Task.findById(taskId);
+        if (!task) {
+            return res.status(404).json({ message: 'Không tìm thấy nhiệm vụ' });
+        }
+
         const user = await User.findById(req.userId);
         if (!user) {
             return res.status(404).json({ message: 'Không tìm thấy người dùng' });
@@ -68,23 +73,37 @@ exports.startMission = async (req, res) => {
         }
 
         const missionIndex = user.activeMissions.findIndex(m => m.taskId && m.taskId.toString() === taskId);
-        const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+        
+        // Calculate duration: use task duration or fallback. Long-term tasks get more time.
+        let durationMinutes = task.duration || 30;
+        if (task.category === 'long-term' && durationMinutes < 60) {
+            durationMinutes = 60; // Give at least 1 hour for long-term/distance tasks
+        }
+        
+        const expiresAt = new Date(Date.now() + durationMinutes * 60 * 1000);
 
         if (missionIndex > -1) {
             const mission = user.activeMissions[missionIndex];
-            // If already started and not expired
-            if (mission.status === 'started' && mission.expiresAt > new Date()) {
-                return res.status(400).json({ message: 'Nhiệm vụ này đang được thực hiện!', expiresAt: mission.expiresAt });
-            }
-            // If expired
-            if (mission.status === 'expired' || (mission.expiresAt && mission.expiresAt <= new Date())) {
-                return res.status(400).json({ message: 'Nhiệm vụ đã hết hạn. Vui lòng thanh toán để thực hiện lại.' });
-            }
+            
             // If completed
             if (mission.status === 'completed') {
                 return res.status(400).json({ message: 'Bạn đã hoàn thành nhiệm vụ này rồi!' });
             }
+
+            // If already started and NOT expired
+            if (mission.status === 'started' && mission.expiresAt > new Date()) {
+                return res.status(400).json({ missionStatus: 'started', message: 'Nhiệm vụ này đang được thực hiện!', expiresAt: mission.expiresAt });
+            }
+
+            // If mission is expired (manually or by time)
+            // If it's the first time they retry after expiring, we might want to prompt for payment
+            // Based on frontend logic, we return 400 with 'hết hạn' so it triggers handlePayment
+            return res.status(400).json({ 
+                missionStatus: 'expired',
+                message: 'Nhiệm vụ này đã hết hạn. Vui lòng thanh toán để gia hạn/thực hiện lại!' 
+            });
         } else {
+            // New mission start
             user.activeMissions.push({
                 taskId,
                 startTime: new Date(),
@@ -94,7 +113,7 @@ exports.startMission = async (req, res) => {
         }
 
         await user.save();
-        res.json({ message: 'Nhiệm vụ đã bắt đầu! Bạn có 30 phút để hoàn thành.', expiresAt });
+        res.json({ message: `Nhiệm vụ đã bắt đầu! Bạn có ${durationMinutes} phút để hoàn thành.`, expiresAt });
     } catch (error) {
         console.error('startMission error:', error);
         res.status(500).json({ message: 'Lỗi hệ thống khi bắt đầu nhiệm vụ', details: error.message });

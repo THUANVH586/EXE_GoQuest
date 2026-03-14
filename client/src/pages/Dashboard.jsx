@@ -49,15 +49,18 @@ export default function Dashboard() {
     const [toastMsg, setToastMsg] = useState(null)
     const [toastType, setToastType] = useState('success')
     const [verifyCodes, setVerifyCodes] = useState({})
+    const [gifts, setGifts] = useState([])
+    const [pointsSpent, setPointsSpent] = useState(0)
+    const [redeemModal, setRedeemModal] = useState(null) // { gift, code }
     const watchRef = useRef(null)
     const lastPosRef = useRef(null)
     const lastSavedDistanceRef = useRef(distance)
     const distanceRef = useRef(distance)
 
     function getRank(pts) {
-        if (pts >= 1000) return { name: t('dashboard.rank.gold'), icon: '🏆', next: null, need: 0 }
-        if (pts >= 500) return { name: t('dashboard.rank.silver'), icon: '🥈', next: t('dashboard.rank.gold'), need: 1000 - pts }
-        return { name: t('dashboard.rank.bronze'), icon: '🥉', next: t('dashboard.rank.silver'), need: 500 - pts }
+        if (pts >= 1000) return { name: t('dashboard.rank.gold'), icon: '🏆', next: null, need: 0, nextThreshold: 1000 }
+        if (pts >= 500) return { name: t('dashboard.rank.silver'), icon: '🥈', next: t('dashboard.rank.gold'), need: 1000 - pts, nextThreshold: 1000 }
+        return { name: t('dashboard.rank.bronze'), icon: '🥉', next: t('dashboard.rank.silver'), need: 500 - pts, nextThreshold: 500 }
     }
 
     // Keep distanceRef in sync with distance state
@@ -70,19 +73,45 @@ export default function Dashboard() {
         const fetchData = async () => {
             try {
                 const response = await api.get('/tasks/progress')
-                setTasks(response.data.tasks || [])
-                const done = response.data.tasks?.filter(t => t.isCompleted).map(t => t._id) || []
+                const allTasks = response.data.tasks || []
+                setTasks(allTasks)
+                
+                const done = allTasks.filter(t => t.isCompleted).map(t => t._id) || []
                 setCompletedIds(done)
                 if (response.data.longTermProgress) {
                     setDistance(response.data.longTermProgress.distance || 0)
                     lastSavedDistanceRef.current = response.data.longTermProgress.distance || 0
                     setPlasticCommit(response.data.longTermProgress.usingPersonalBottle || false)
                 }
+                if (response.data.pointsSpent !== undefined) {
+                    setPointsSpent(response.data.pointsSpent)
+                }
             } catch (err) {
                 console.error('Failed to fetch tasks:', err)
             }
         }
         fetchData()
+    }, [])
+
+    /* Sync journey tasks with rich data from server whenever tasks update */
+    useEffect(() => {
+        if (tasks.length > 0 && journeyTasks.length > 0) {
+            const updatedJourney = journeyTasks.map(jt => {
+                const richTask = tasks.find(t => t._id === jt._id);
+                return richTask ? { ...jt, ...richTask } : jt;
+            });
+
+            if (JSON.stringify(updatedJourney) !== JSON.stringify(journeyTasks)) {
+                setJourneyTasks(updatedJourney);
+                localStorage.setItem('journeyTasks', JSON.stringify(updatedJourney));
+                console.log('Journey tasks updated with rich data');
+            }
+        }
+    }, [tasks]);
+
+    /* fetch gifts */
+    useEffect(() => {
+        api.get('/gifts').then(res => setGifts(res.data)).catch(() => {})
     }, [])
 
     /* Tự động lấy vị trí ngay khi Dashboard load */
@@ -176,12 +205,35 @@ export default function Dashboard() {
         setTimeout(() => setToastMsg(null), 3000)
     }
 
-    const triggerConfetti = () => {
-        confetti({
-            particleCount: 150,
-            spread: 70,
-            origin: { y: 0.6 }
-        });
+    const triggerConfetti = (isGrand = false) => {
+        if (isGrand) {
+            const duration = 3000;
+            const end = Date.now() + duration;
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#2c5926', '#f59e0b', '#ffffff']
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#2c5926', '#f59e0b', '#ffffff']
+                });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        } else {
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#2c5926', '#10b981', '#f59e0b']
+            });
+        }
     };
 
     const handleStartMission = async (taskId) => {
@@ -223,7 +275,9 @@ export default function Dashboard() {
             setCelebrateId(taskId)
             
             if (newCompleted.length === 5) {
-                triggerConfetti();
+                triggerConfetti(true);
+            } else {
+                triggerConfetti(false);
             }
 
             setTimeout(() => setCelebrateId(null), 800)
@@ -271,9 +325,12 @@ export default function Dashboard() {
     /* computed */
     const REQUIRED_TASKS = 5;
     const basePts = tasks.filter(t => completedIds.includes(t._id)).reduce((s, t) => s + (t.points || 0), 0)
-    const totalPts = basePts + (plasticCommit ? 200 : 0)
+    const JOURNEY_GOAL = 2000;
+    const distanceReward = distance >= JOURNEY_GOAL ? 200 : 0
+    const totalPts = basePts + (plasticCommit ? 50 : 0) + distanceReward - pointsSpent
     const pct = tasks.length > 0 ? Math.min(Math.round((completedIds.length / REQUIRED_TASKS) * 100), 100) : 0
     const barPct = Math.min((totalPts / 1000) * 100, 100)
+    const journeyPct = Math.min((distance / JOURNEY_GOAL) * 100, 100)
     const rank = getRank(totalPts)
 
     const filteredTasks = tasks.filter(t =>
@@ -292,9 +349,91 @@ export default function Dashboard() {
     const navItems = [
         { key: 'journey', icon: '🗺️', label: t('dashboard.nav.journey') },
         { key: 'tasks', icon: '📋', label: t('dashboard.nav.tasks') },
-        { key: 'rank', icon: '🏆', label: t('dashboard.nav.rank') },
-        { key: 'challenges', icon: '✨', label: t('dashboard.nav.challenges') },
+        { key: 'rewards', icon: '🎁', label: 'Quà tặng' },
     ]
+
+    const renderTaskCard = (task, isJourneyMode = false) => {
+        const tData = tasks.find(t => t._id === task._id) || task;
+        const done = tData.isCompleted;
+        const celebrating = celebrateId === tData._id;
+        const isStarted = tData.missionStatus === 'started';
+        const isExpired = tData.missionStatus === 'expired' || (tData.expiresAt && new Date(tData.expiresAt) <= new Date());
+        
+        return (
+            <article key={tData._id} className={`dsh-task-card ${done ? 'dsh-task-card--done' : ''} ${celebrating ? 'dsh-task-card--celebrate' : ''}`}>
+                <div className="dsh-task-img-wrap">
+                    {tData.img ? (
+                        <img src={tData.img} alt={tData.title} className="dsh-task-img" loading="lazy" />
+                    ) : (
+                        <div className="dsh-task-img" style={{ 
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                            fontSize: '4.5rem', background: 'linear-gradient(135deg, #f0f7f1 0%, #e1ebe2 100%)',
+                            color: '#2c5926', filter: done ? 'grayscale(0.8)' : 'none'
+                        }}>
+                            {tData.icon || '🎯'}
+                        </div>
+                    )}
+                    <div className={`dsh-pts-badge ${done ? 'dsh-pts-badge--done' : ''}`}>
+                        {done ? t('dashboard.journey_tasks.completed_badge') : t('dashboard.journey_tasks.points_badge', { points: tData.points })}
+                    </div>
+                    {isJourneyMode && isStarted && !isExpired && !done && (
+                        <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 10 }}>
+                            <CountdownTimer expiresAt={tData.expiresAt} onExpire={() => {
+                                api.get('/tasks/progress').then(res => setTasks(res.data.tasks || []));
+                            }} />
+                        </div>
+                    )}
+                </div>
+                <div className={`dsh-task-body ${done ? 'dsh-task-body--done' : ''}`}>
+                    <h3 className="dsh-task-name">{t(`task_data.${tData.title}.title`, tData.title)}</h3>
+                    <p className="dsh-task-desc">{t(`task_data.${tData.title}.desc`, tData.description)}</p>
+                    
+                    {isJourneyMode ? (
+                        <div style={{ marginTop: 'auto' }}>
+                            {done ? (
+                                <button className="dsh-task-btn dsh-task-btn--done" disabled>
+                                    {t('dashboard.journey_tasks.reward_btn')}
+                                </button>
+                            ) : isStarted && !isExpired ? (
+                                <>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Mã xác nhận / Code" 
+                                        value={verifyCodes[tData._id] || ''}
+                                        onChange={(e) => setVerifyCodes(prev => ({ ...prev, [tData._id]: e.target.value }))}
+                                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '8px', fontSize: '14px' }}
+                                    />
+                                    <button className="dsh-task-btn" onClick={() => handleComplete(tData._id, verifyCodes[tData._id])}>
+                                        {t('dashboard.journey_tasks.confirm_btn', 'Xác nhận hoàn thành')}
+                                    </button>
+                                </>
+                            ) : isExpired ? (
+                                <button className="dsh-task-btn" style={{ background: '#ef4444' }} onClick={() => handlePayment(tData._id)}>
+                                    {t('dashboard.journey_tasks.retry_btn')}
+                                </button>
+                            ) : (
+                                <button className="dsh-task-btn" onClick={() => handleStartMission(tData._id)}>
+                                    {t('dashboard.journey_tasks.start_btn')}
+                                </button>
+                            )}
+                        </div>
+                    ) : (
+                        <div style={{ marginTop: 'auto', textAlign: 'right' }}>
+                            {done ? (
+                                <span style={{ background: '#10b981', color: 'white', padding: '6px 16px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 800 }}>
+                                    ✓ {t('dashboard.journey_tasks.completed_badge')}
+                                </span>
+                            ) : (
+                                <span style={{ background: 'rgba(44,89,38,0.08)', color: '#2c5926', padding: '6px 16px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 700 }}>
+                                    +{tData.points} PTS
+                                </span>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </article>
+        );
+    }
 
     /* ─── Render ─── */
     return (
@@ -303,9 +442,9 @@ export default function Dashboard() {
             {/* ══════════ HEADER ══════════ */}
             <header className="dsh-header">
                 <div className="dsh-header-left">
-                    <Link to="/" className="dsh-logo">
-                        <span className="dsh-logo-icon"></span>
-                        <span className="dsh-logo-name">Go Quest</span>
+                    <Link to="/" className="dsh-logo" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <img src="https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773476778/Asset_3_on57x4.png" alt="Go Quest Logo" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
+                        <span className="dsh-logo-name" style={{ margin: 0 }}>Go Quest</span>
                     </Link>
                     <nav className="dsh-top-nav">
                         <Link className="dsh-top-link" to="/">{t('dashboard.nav.intro')}</Link>
@@ -361,15 +500,53 @@ export default function Dashboard() {
                 {/* ── LEFT SIDEBAR ── */}
                 <aside className="dsh-sidebar">
                     <div className="dsh-sidebar-card">
-                        <div className="dsh-user-row">
-                            <div className="dsh-user-avatar">
-                                {(user?.displayName || user?.username || 'U')[0].toUpperCase()}
+                        {/* Avatar + name + rank in one compact row */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #f0f0f0' }}>
+                            <div style={{ position: 'relative', flexShrink: 0 }}>
+                                <div style={{ 
+                                    width: '52px', height: '52px', borderRadius: '14px', background: '#2c5926', color: 'white',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', fontWeight: 900,
+                                    boxShadow: '0 6px 14px rgba(44,89,38,0.22)'
+                                }}>
+                                    {(user?.displayName || user?.username || 'U')[0].toUpperCase()}
+                                </div>
+                                <div style={{ position: 'absolute', bottom: '-4px', right: '-4px', background: 'white', width: '22px', height: '22px', borderRadius: '7px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', boxShadow: '0 2px 6px rgba(0,0,0,0.12)' }}>
+                                    {rank.icon}
+                                </div>
                             </div>
-                            <div>
-                                <div className="dsh-user-name">{user?.displayName || user?.username}</div>
-                                <div className="dsh-user-sub">{t('dashboard.user.subtitle')}</div>
+                            <div style={{ minWidth: 0 }}>
+                                <div style={{ fontWeight: 900, fontSize: '1rem', color: '#1a3a1f', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {user?.displayName || user?.username}
+                                </div>
+                                <div style={{ fontSize: '0.75rem', color: '#5a7a5f', fontWeight: 600, marginTop: '2px' }}>{rank.name}</div>
                             </div>
                         </div>
+
+                        {/* Rank progress */}
+                        <div style={{ background: '#f4f7f4', borderRadius: '14px', padding: '12px 14px', marginBottom: '1rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                                <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#2c5926' }}>TÍCH LŨY</span>
+                                <span style={{ fontSize: '0.68rem', color: '#9ca3af', fontWeight: 600 }}>{totalPts} PTS</span>
+                            </div>
+                            <div style={{ height: '6px', background: '#e2e8e2', borderRadius: '3px', overflow: 'hidden' }}>
+                                <div style={{ height: '100%', width: `${barPct}%`, background: 'linear-gradient(90deg, #2c5926, #52b069)', borderRadius: '3px', transition: 'width 1s ease-out' }}></div>
+                            </div>
+                        </div>
+
+                        {/* Stats */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '0.85rem' }}>
+                            <div style={{ background: '#f4f7f4', padding: '10px', borderRadius: '12px', textAlign: 'center' }}>
+                                <div style={{ fontSize: '0.68rem', color: '#5a7a5f', fontWeight: 700 }}>ĐIỂM SỐ</div>
+                                <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#2c5926' }}>{totalPts}</div>
+                            </div>
+                            <div style={{ background: '#f4f7f4', padding: '10px', borderRadius: '12px', textAlign: 'center' }}>
+                                <div style={{ fontSize: '0.68rem', color: '#5a7a5f', fontWeight: 700 }}>NHIỆM VỤ</div>
+                                <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#2c5926' }}>{completedIds.length}</div>
+                            </div>
+                        </div>
+
+
+
                         <nav className="dsh-side-nav">
                             {navItems.map(item => (
                                 <button
@@ -381,33 +558,12 @@ export default function Dashboard() {
                                 </button>
                             ))}
                             <button className="dsh-side-link dsh-side-link--logout" onClick={handleLogout}>
-                                <span></span> {t('dashboard.logout')}
+                                <span>🚪</span> {t('dashboard.logout')}
                             </button>
                         </nav>
                     </div>
 
-                    {/* Weekly Challenge */}
-                    <div className="dsh-challenge-card">
-                        <div className="dsh-challenge-title">{t('dashboard.weekly_challenge.title')}</div>
-                        <div className="dsh-challenge-row">
-                            <span className="dsh-challenge-icon">🌿</span>
-                            <div>
-                                <div className="dsh-challenge-name">{t('dashboard.weekly_challenge.name')}</div>
-                                <div className="dsh-challenge-sub" style={{ fontSize: '0.85rem' }}>{t('dashboard.weekly_challenge.sub')}</div>
-                            </div>
-                        </div>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '16px 0 4px', cursor: 'pointer', background: 'rgba(255,255,255,0.08)', padding: '10px 12px', borderRadius: '12px', transition: 'all 0.3s' }}>
-                            <input
-                                type="checkbox"
-                                checked={plasticCommit}
-                                onChange={handlePlasticCommit}
-                                style={{ width: '20px', height: '20px', accentColor: 'var(--color-success)', cursor: 'pointer' }}
-                            />
-                            <span style={{ fontSize: '0.95rem', color: plasticCommit ? 'var(--color-success)' : 'inherit', fontWeight: plasticCommit ? 600 : 400 }}>
-                                {plasticCommit ? t('dashboard.weekly_challenge.committed') : t('dashboard.weekly_challenge.uncommitted')}
-                            </span>
-                        </label>
-                    </div>
+
                 </aside>
 
                 {/* ── MAIN ── */}
@@ -448,72 +604,15 @@ export default function Dashboard() {
                             <section>
                                 <div className="dsh-section-head">
                                     <h2 className="dsh-section-title">{t('dashboard.journey_tasks.title')}</h2>
-                                    <button className="dsh-see-all" style={{ background: '#2c5926', color: '#fff', padding: '6px 14px', borderRadius: '8px' }} onClick={handleReceiveTasks}>
-                                        {t('dashboard.journey_tasks.get_tasks')}
-                                    </button>
+                                    {journeyTasks.length < 5 && (
+                                        <button className="dsh-see-all" style={{ background: '#2c5926', color: '#fff', padding: '6px 14px', borderRadius: '8px' }} onClick={handleReceiveTasks}>
+                                            {t('dashboard.journey_tasks.get_tasks')}
+                                        </button>
+                                    )}
                                 </div>
                                 <div className="dsh-task-grid">
                                     {journeyTasks.length > 0 ? (
-                                        journeyTasks.map(task => {
-                                            // Sync with the latest task data from the main tasks state
-                                            const tData = tasks.find(t => t._id === task._id) || task;
-                                            const done = tData.isCompleted;
-                                            const celebrating = celebrateId === tData._id;
-                                            const isStarted = tData.missionStatus === 'started';
-                                            const isExpired = tData.missionStatus === 'expired' || (tData.expiresAt && new Date(tData.expiresAt) <= new Date());
-                                            
-                                            return (
-                                                <article key={tData._id} className={`dsh-task-card ${done ? 'dsh-task-card--done' : ''} ${celebrating ? 'dsh-task-card--celebrate' : ''}`}>
-                                                    <div className="dsh-task-img-wrap">
-                                                        <img src={tData.img} alt={tData.title} className="dsh-task-img" loading="lazy" />
-                                                        <div className={`dsh-pts-badge ${done ? 'dsh-pts-badge--done' : ''}`}>
-                                                            {done ? t('dashboard.journey_tasks.completed_badge') : t('dashboard.journey_tasks.points_badge', { points: tData.points })}
-                                                        </div>
-                                                        {isStarted && !isExpired && !done && (
-                                                            <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10 }}>
-                                                                <CountdownTimer expiresAt={tData.expiresAt} onExpire={() => {
-                                                                    const progressRes = api.get('/tasks/progress');
-                                                                    setTasks(progressRes.data.tasks || []);
-                                                                }} />
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <div className={`dsh-task-body ${done ? 'dsh-task-body--done' : ''}`}>
-                                                        <h3 className="dsh-task-name">{tData.title}</h3>
-                                                        <p className="dsh-task-desc">{tData.description}</p>
-                                                        
-                                                        <div style={{ marginTop: 'auto' }}>
-                                                            {done ? (
-                                                                <button className="dsh-task-btn dsh-task-btn--done" disabled>
-                                                                    {t('dashboard.journey_tasks.reward_btn')}
-                                                                </button>
-                                                            ) : isStarted && !isExpired ? (
-                                                                <>
-                                                                    <input 
-                                                                        type="text" 
-                                                                        placeholder="Nhập mã xác nhận" 
-                                                                        value={verifyCodes[tData._id] || ''}
-                                                                        onChange={(e) => setVerifyCodes(prev => ({ ...prev, [tData._id]: e.target.value }))}
-                                                                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '8px', fontSize: '14px' }}
-                                                                    />
-                                                                    <button className="dsh-task-btn" onClick={() => handleComplete(tData._id, verifyCodes[tData._id])}>
-                                                                        Xác nhận hoàn thành
-                                                                    </button>
-                                                                </>
-                                                            ) : isExpired ? (
-                                                                <button className="dsh-task-btn" style={{ background: '#ef4444' }} onClick={() => handlePayment(tData._id)}>
-                                                                    Hết hạn - Làm lại (5.000đ)
-                                                                </button>
-                                                            ) : (
-                                                                <button className="dsh-task-btn" onClick={() => handleStartMission(tData._id)}>
-                                                                    {t('dashboard.journey_tasks.start_btn')}
-                                                                </button>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </article>
-                                            )
-                                        })
+                                        journeyTasks.map(task => renderTaskCard(task, true))
                                     ) : (
                                         <div style={{ width: '100%', textAlign: 'center', padding: '2rem', background: 'rgba(44, 89, 38, 0.05)', borderRadius: '1rem', border: '1px dashed rgba(44, 89, 38, 0.2)' }}>
                                             <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>{t('dashboard.journey_tasks.empty_text')}</p>
@@ -531,164 +630,187 @@ export default function Dashboard() {
                                 <h2 className="dsh-section-title">{t('dashboard.all_tasks.title')}</h2>
                                 <div className="dsh-task-count">{t('dashboard.all_tasks.count', { count: tasks.length })}</div>
                             </div>
-                            <div className="dsh-task-grid">
-                                {filteredTasks.map(task => {
-                                    const done = task.isCompleted
-                                    const celebrating = celebrateId === task._id
-                                    const isStarted = task.missionStatus === 'started'
-                                    const isExpired = task.missionStatus === 'expired' || (task.expiresAt && new Date(task.expiresAt) <= new Date())
+                             <div className="dsh-task-grid">
+                                {tasks.filter(t => (t.title || '').toLowerCase().includes(searchVal.toLowerCase())).map(task => renderTaskCard(task))}
+                            </div>
+                        </section>
+                    )}
 
-                                    return (
-                                        <article key={task._id} className={`dsh-task-card ${done ? 'dsh-task-card--done' : ''} ${celebrating ? 'dsh-task-card--celebrate' : ''}`}>
-                                            <div className="dsh-task-img-wrap">
-                                                <img src={task.img} alt={task.title} className="dsh-task-img" loading="lazy" />
-                                                <div className={`dsh-pts-badge ${done ? 'dsh-pts-badge--done' : ''}`}>
-                                                    {done ? t('dashboard.journey_tasks.completed_badge') : t('dashboard.journey_tasks.points_badge', { points: task.points })}
+
+
+
+                    {activeNav === 'rewards' && (
+                        <section className="dsh-rewards-section">
+                            <div className="dsh-section-head">
+                                <h2 className="dsh-section-title">Danh sách quà tặng</h2>
+                                <div style={{ background: 'var(--color-accent-primary)', color: 'white', padding: '5px 15px', borderRadius: '20px', fontWeight: 700, fontSize: '0.9rem' }}>
+                                    {totalPts} Điểm hiện có
+                                </div>
+                            </div>
+
+                            {gifts.length === 0 ? (
+                                <div style={{ textAlign: 'center', padding: '3rem', background: 'rgba(44,89,38,0.04)', borderRadius: '20px', border: '1px dashed rgba(44,89,38,0.2)' }}>
+                                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎁</div>
+                                    <p style={{ color: '#5a7a5f', fontWeight: 600 }}>Chưa có quà tặng nào. Admin đang cập nhật!</p>
+                                </div>
+                            ) : (
+                                <div className="dsh-task-grid">
+                                    {gifts.map(gift => (
+                                        <article key={gift._id} className="dsh-task-card" style={{ 
+                                            opacity: totalPts >= gift.pointsRequired ? 1 : 0.8,
+                                            border: 'none',
+                                            background: 'white',
+                                            boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
+                                            borderRadius: '24px',
+                                            overflow: 'hidden'
+                                        }}>
+                                            <div className="dsh-task-img-wrap" style={{ height: '180px', background: '#f0f4f0', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                                                {gift.img ? (
+                                                    <img src={gift.img} alt={gift.title} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: totalPts >= gift.pointsRequired ? 'none' : 'grayscale(60%)' }} />
+                                                ) : (
+                                                    <div style={{ fontSize: '60px', filter: totalPts >= gift.pointsRequired ? 'none' : 'grayscale(100%) brightness(1.2)' }}>
+                                                        {gift.icon || '🎁'}
+                                                    </div>
+                                                )}
+                                                <div style={{ 
+                                                    position: 'absolute', bottom: '15px', left: '15px', 
+                                                    background: 'rgba(255,255,255,0.9)', padding: '5px 12px', 
+                                                    borderRadius: '10px', fontSize: '0.85rem', fontWeight: 800, color: '#2c5926',
+                                                    boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
+                                                }}>
+                                                    {gift.pointsRequired} PTS
                                                 </div>
-                                                {isStarted && !isExpired && !done && (
-                                                    <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10 }}>
-                                                        <CountdownTimer expiresAt={task.expiresAt} onExpire={() => {
-                                                            const progressRes = api.get('/tasks/progress');
-                                                            setTasks(progressRes.data.tasks || []);
-                                                        }} />
+                                                {gift.stock === 0 && (
+                                                    <div style={{ position: 'absolute', top: '15px', right: '15px', background: '#ef4444', color: 'white', padding: '4px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 700 }}>
+                                                        Hết hàng
                                                     </div>
                                                 )}
                                             </div>
-                                            <div className={`dsh-task-body ${done ? 'dsh-task-body--done' : ''}`}>
-                                                <h3 className="dsh-task-name">{task.title}</h3>
-                                                <p className="dsh-task-desc">{task.description}</p>
-                                                
-                                                    <div style={{ marginTop: 'auto' }}>
-                                                        {done ? (
-                                                            <button className="dsh-task-btn dsh-task-btn--done" disabled>
-                                                                {t('dashboard.journey_tasks.reward_btn')}
-                                                            </button>
-                                                        ) : isStarted && !isExpired ? (
-                                                            <>
-                                                                <input 
-                                                                    type="text" 
-                                                                    placeholder="Nhập mã xác nhận" 
-                                                                    value={verifyCodes[task._id] || ''}
-                                                                    onChange={(e) => setVerifyCodes(prev => ({ ...prev, [task._id]: e.target.value }))}
-                                                                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '8px', fontSize: '14px' }}
-                                                                />
-                                                                <button className="dsh-task-btn" onClick={() => handleComplete(task._id, verifyCodes[task._id])}>
-                                                                    Xác nhận hoàn thành
-                                                                </button>
-                                                            </>
-                                                        ) : isExpired ? (
-                                                            <button className="dsh-task-btn" style={{ background: '#ef4444' }} onClick={() => handlePayment(task._id)}>
-                                                                Hết hạn - Làm lại (5.000đ)
-                                                            </button>
-                                                        ) : (
-                                                            <button className="dsh-task-btn" onClick={() => handleStartMission(task._id)}>
-                                                                {t('dashboard.journey_tasks.start_btn')}
-                                                            </button>
-                                                        )}
-                                                    </div>
+                                            <div className="dsh-task-body" style={{ padding: '1.5rem' }}>
+                                                <h3 className="dsh-task-name" style={{ fontSize: '1.15rem', fontWeight: 900, marginBottom: '8px', color: '#1a3a1f' }}>{gift.title}</h3>
+                                                <p className="dsh-task-desc" style={{ fontSize: '0.9rem', color: '#5a7a5f', marginBottom: '20px', minHeight: '40px' }}>{gift.description}</p>
+                                                <button 
+                                                    className="dsh-task-btn" 
+                                                    disabled={totalPts < gift.pointsRequired || gift.stock === 0}
+                                                    onClick={() => setRedeemModal({ gift, code: '' })}
+                                                    style={{ 
+                                                        background: totalPts >= gift.pointsRequired && gift.stock !== 0 ? 'linear-gradient(90deg, #2c5926, #4a8c42)' : '#e5e7eb', 
+                                                        color: totalPts >= gift.pointsRequired && gift.stock !== 0 ? 'white' : '#9ca3af',
+                                                        fontWeight: 800,
+                                                        borderRadius: '14px',
+                                                        padding: '12px',
+                                                        boxShadow: totalPts >= gift.pointsRequired ? '0 10px 20px rgba(44, 89, 38, 0.2)' : 'none'
+                                                    }}
+                                                >
+                                                    {gift.stock === 0 ? 'Hết hàng' : totalPts >= gift.pointsRequired ? '🎁 Đổi quà ngay' : `Cần thêm ${gift.pointsRequired - totalPts} điểm`}
+                                                </button>
                                             </div>
                                         </article>
-                                    )
-                                })}
-                            </div>
-                        </section>
-                    )}
-
-                    {activeNav === 'rank' && (
-                        <section className="dsh-rank-section">
-                            <h2 className="dsh-section-title">{t('dashboard.rank.title')}</h2>
-                            <div className="card">
-                                <h3>{rank.name}</h3>
-                                <p>{t('dashboard.rank.current')} {rank.name} {rank.icon}</p>
-                            </div>
-                        </section>
-                    )}
-
-                    {activeNav === 'challenges' && (
-                        <section className="dsh-challenge-section">
-                            <h2 className="dsh-section-title">{t('dashboard.challenges.title')}</h2>
-                            <div className="card">
-                                <h3>{t('dashboard.weekly_challenge.name')}</h3>
-                                <p>{t('dashboard.weekly_challenge.sub')}</p>
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '16px', cursor: 'pointer', background: 'rgba(255,255,255,0.05)', padding: '12px 16px', borderRadius: '12px', width: 'fit-content', border: plasticCommit ? '1px solid var(--color-success)' : '1px solid transparent', transition: 'all 0.3s' }}>
-                                    <input
-                                        type="checkbox"
-                                        checked={plasticCommit}
-                                        onChange={handlePlasticCommit}
-                                        style={{ width: '22px', height: '22px', accentColor: 'var(--color-success)', cursor: 'pointer' }}
-                                    />
-                                    <span style={{ fontSize: '1.05rem', color: plasticCommit ? 'var(--color-success)' : 'inherit', fontWeight: plasticCommit ? 'bold' : 'normal' }}>
-                                        {plasticCommit ? t('dashboard.weekly_challenge.committed') : t('dashboard.weekly_challenge.uncommitted')}
-                                    </span>
-                                </label>
-                            </div>
-                        </section>
-                    )}
-
-                    {/* GPS Tracking card - Always visible at bottom */}
-                    <div className="dsh-gps-card" style={{
-                        background: isTracking ? 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(16,185,129,0.02))' : 'var(--bg-glass)',
-                        border: isTracking ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(255,255,255,0.05)',
-                        boxShadow: isTracking ? '0 8px 32px rgba(16,185,129,0.12)' : 'none',
-                        transition: 'all 0.4s ease',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        padding: '1.25rem',
-                        marginTop: '1.5rem',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        borderRadius: '16px'
-                    }}>
-                        {isTracking && (
-                            <div style={{
-                                position: 'absolute', top: 0, left: 0, width: '100%', height: '2px',
-                                background: 'linear-gradient(90deg, transparent, var(--color-success), transparent)',
-                                animation: 'pulse 2s infinite'
-                            }} />
-                        )}
-                        <div className="dsh-gps-left" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                            <div className="dsh-gps-icon" style={{
-                                background: isTracking ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.05)',
-                                color: isTracking ? 'var(--color-success)' : 'inherit',
-                                width: '56px', height: '56px', borderRadius: '50%',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: '28px', transition: 'all 0.3s',
-                                border: isTracking ? '2px solid rgba(16,185,129,0.4)' : '1px solid rgba(255,255,255,0.1)',
-                                boxSizing: 'border-box'
-                            }}>
-                                {isTracking ? '👣' : '📍'}
-                            </div>
-                            <div>
-                                <div className="dsh-gps-title" style={{ fontWeight: 600, fontSize: '1.15rem', marginBottom: '4px' }}>
-                                    {t('dashboard.gps.title')}
+                                    ))}
                                 </div>
-                                <div className="dsh-gps-dist" style={{
-                                    fontSize: '0.95rem',
-                                    color: isTracking ? 'var(--color-success)' : 'var(--color-text-muted)',
-                                    display: 'flex', alignItems: 'center', gap: '6px'
-                                }}>
-                                    <span style={{ fontSize: '1.4rem', fontWeight: 700, letterSpacing: '0.5px' }}>{Math.round(distance)}</span> m
-                                    {isTracking && <span style={{ fontSize: '0.8rem', opacity: 0.8, background: 'rgba(16,185,129,0.15)', padding: '2px 8px', borderRadius: '12px', marginLeft: '4px' }}>Đang ghi vị trí...</span>}
+                            )}
+                        </section>
+                    )}
+
+                    {activeNav === 'journey' && (
+                        <div className="dsh-gps-card" style={{
+                            background: 'linear-gradient(135deg, #f0f7f1 0%, #ffffff 100%)',
+                            border: isTracking ? '2px solid var(--color-success)' : '1px solid rgba(44, 89, 38, 0.15)',
+                            boxShadow: isTracking ? '0 12px 40px rgba(16,185,129,0.15)' : '0 8px 24px rgba(44, 89, 38, 0.08)',
+                            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            padding: '1.8rem',
+                            marginTop: '1.5rem',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '20px',
+                            borderRadius: '24px'
+                        }}>
+                            {isTracking && (
+                                <div style={{
+                                    position: 'absolute', top: 0, left: 0, width: '100%', height: '4px',
+                                    background: 'linear-gradient(90deg, transparent, var(--color-success), transparent)',
+                                    animation: 'pulse 2s infinite'
+                                }} />
+                            )}
+                            {/* Header: Logo + Title */}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                    <div style={{
+                                        background: isTracking ? 'rgba(16,185,129,0.15)' : 'rgba(255, 255, 255, 0.9)',
+                                        width: '48px', height: '48px', borderRadius: '12px',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        transition: 'all 0.3s', overflow: 'hidden', padding: '6px',
+                                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                                    }}>
+                                        <img src="https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773476778/Asset_3_on57x4.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                    </div>
+                                    <div style={{ minWidth: 0 }}>
+                                        <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#1a3a1f', letterSpacing: '-0.02em' }}>
+                                            {t('dashboard.gps.title')}
+                                        </div>
+                                        <div style={{ fontSize: '0.85rem', color: isTracking ? 'var(--color-success)' : '#5a7a5f', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            {isTracking ? (
+                                                <>
+                                                    <span style={{ width: '8px', height: '8px', background: 'var(--color-success)', borderRadius: '50%', display: 'inline-block', animation: 'pulse 1.5s infinite' }}></span>
+                                                    Ghi nhận hành trình...
+                                                </>
+                                            ) : 'Sẵn sàng khám phá'}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Middle: Distance Display */}
+                            <div style={{ margin: '1rem 0', textAlign: 'center', background: 'rgba(255,255,255,0.4)', borderRadius: '16px', padding: '1.5rem 1rem', border: '1px solid rgba(255,255,255,0.6)' }}>
+                                <div style={{ fontSize: '0.9rem', color: '#5a7a5f', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Quãng đường đã đi</div>
+                                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '8px' }}>
+                                    <span style={{ fontSize: '4rem', fontWeight: 900, color: '#1a3a1f', lineHeight: 1, letterSpacing: '-0.05em' }}>{Math.round(distance)}</span>
+                                    <span style={{ fontSize: '1.2rem', fontWeight: 700, color: '#5a7a5f' }}>/ {JOURNEY_GOAL} m</span>
+                                </div>
+                            </div>
+
+                            {/* Bottom: Progress Bar + Button Row */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                    <div style={{ flex: 1, height: '20px', background: 'rgba(0,0,0,0.05)', borderRadius: '10px', overflow: 'hidden', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)', position: 'relative' }}>
+                                        <div style={{ 
+                                            height: '100%', 
+                                            width: `${Math.min(journeyPct, 100)}%`, 
+                                            background: distance >= JOURNEY_GOAL ? 'var(--color-success)' : 'linear-gradient(90deg, #52b069, #2c5926)',
+                                            transition: 'width 1s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                                            borderRadius: '10px',
+                                            position: 'relative'
+                                        }}>
+                                            {distance > 0 && (
+                                                <div style={{ position: 'absolute', right: '4px', top: '50%', transform: 'translateY(-50%)', width: '8px', height: '8px', background: '#fff', borderRadius: '50%', boxShadow: '0 0 10px rgba(255,255,255,0.8)' }}></div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        className={`dsh-gps-btn ${isTracking ? 'dsh-gps-btn--stop' : ''}`}
+                                        onClick={() => setIsTracking(t_state => !t_state)}
+                                        style={{
+                                            padding: '12px 32px', borderRadius: '14px',
+                                            background: isTracking ? '#ff4d4f' : '#2c5926',
+                                            color: '#ffffff',
+                                            border: 'none', fontWeight: 800, transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', cursor: 'pointer',
+                                            fontSize: '1.1rem',
+                                            boxShadow: isTracking ? '0 4px 12px rgba(255,77,79,0.3)' : '0 8px 24px rgba(44, 89, 38, 0.25)',
+                                            whiteSpace: 'nowrap',
+                                            transform: 'translateY(-2px)'
+                                        }}
+                                        onMouseDown={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                        onMouseUp={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                    >
+                                        {isTracking ? t('dashboard.gps.stop') : t('dashboard.gps.start')}
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        <button
-                            className={`dsh-gps-btn ${isTracking ? 'dsh-gps-btn--stop' : ''}`}
-                            onClick={() => setIsTracking(t_state => !t_state)}
-                            style={{
-                                padding: '12px 28px', borderRadius: '30px',
-                                background: isTracking ? 'rgba(239,68,68,0.1)' : 'var(--color-accent-primary)',
-                                color: isTracking ? 'var(--color-error)' : '#fff',
-                                border: isTracking ? '1px solid rgba(239,68,68,0.3)' : 'none',
-                                fontWeight: 600, transition: 'all 0.3s', cursor: 'pointer',
-                                fontSize: '1rem',
-                                boxShadow: isTracking ? 'none' : '0 4px 12px rgba(124, 58, 237, 0.3)'
-                            }}
-                        >
-                            {isTracking ? t('dashboard.gps.stop') : t('dashboard.gps.start')}
-                        </button>
-                    </div>
+                    )}
                 </main>
 
                 {/* ── RIGHT SIDEBAR ── */}
@@ -761,24 +883,79 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    {/* Rank Card */}
-                    <div className="dsh-rank-card">
-                        <div className="dsh-rank-bg"></div>
-                        <div className="dsh-rank-content">
-                            <span className="dsh-rank-badge">{t('dashboard.rank.current')}</span>
-                            <h2 className="dsh-rank-name">{rank.name}</h2>
-                            {rank.next
-                                ? <p className="dsh-rank-desc">{t('dashboard.rank.next_rank', { points: rank.need, rank: rank.next })}</p>
-                                : <p className="dsh-rank-desc">{t('dashboard.rank.max_rank')}</p>
-                            }
-                            <div className="dsh-rank-icon-row">
-                                <span style={{ fontSize: '3.2rem' }}>{rank.icon}</span>
+                    {/* Plastic Commitment Card */}
+                    <div className="dsh-sidebar-card" style={{ 
+                        background: 'linear-gradient(135deg, #1e3a24 0%, #2c5926 100%)',
+                        color: 'white',
+                        padding: '1.5rem',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        borderRadius: '24px',
+                        marginBottom: '1.5rem',
+                        boxShadow: '0 12px 24px rgba(44, 89, 38, 0.15)'
+                    }}>
+                        <div style={{ position: 'absolute', top: '-20%', right: '-20%', width: '120px', height: '120px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }}></div>
+                        <div style={{ position: 'relative', zIndex: 1 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.2rem' }}>
+                                <div style={{ width: '36px', height: '36px', background: 'rgba(255,255,255,0.2)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>🌿</div>
                                 <div>
-                                    <div className="dsh-rank-pts-lbl">{t('dashboard.rank.next_points_label')}</div>
-                                    <div className="dsh-rank-pts">{rank.next ? (rank.next === t('dashboard.rank.silver') ? 500 : 1000) : '—'} Pts</div>
+                                    <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: 'white' }}>{t('dashboard.weekly_challenge.name')}</h3>
+                                    <p style={{ margin: 0, opacity: 0.7, fontSize: '0.75rem' }}>Đồng ý cam kết để nhận 50 điểm</p>
                                 </div>
                             </div>
-                            <button className="dsh-rank-btn">{t('dashboard.rank.view_privileges')}</button>
+
+                            <div style={{ background: 'rgba(255,255,255,0.08)', padding: '12px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                <h4 style={{ margin: '0 0 10px 0', fontSize: '0.85rem', fontWeight: 700, color: 'white' }}>Cam kết của tôi</h4>
+                                <label style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'space-between',
+                                    cursor: 'pointer',
+                                    padding: '12px',
+                                    borderRadius: '10px',
+                                    background: plasticCommit ? 'rgba(16, 185, 129, 0.25)' : 'rgba(255,255,255,0.05)',
+                                    border: plasticCommit ? '2px solid #10b981' : '1px solid rgba(255,255,255,0.1)',
+                                    transition: 'all 0.3s ease'
+                                }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <div style={{ 
+                                            width: '20px', 
+                                            height: '20px', 
+                                            borderRadius: '5px', 
+                                            border: '2px solid #fff',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            background: plasticCommit ? '#fff' : 'transparent',
+                                            transition: 'all 0.3s'
+                                        }}>
+                                            {plasticCommit && <span style={{ color: '#065f46', fontWeight: 900, fontSize: '12px' }}>✓</span>}
+                                        </div>
+                                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'white' }}>
+                                            {plasticCommit ? 'Đã cam kết' : 'Đồng ý cam kết'}
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="checkbox"
+                                        checked={plasticCommit}
+                                        onChange={handlePlasticCommit}
+                                        style={{ display: 'none' }}
+                                    />
+                                    {!plasticCommit && (
+                                        <div style={{ 
+                                            fontSize: '0.65rem', 
+                                            background: '#f59e0b', 
+                                            color: '#000', 
+                                            padding: '2px 8px', 
+                                            borderRadius: '12px',
+                                            fontWeight: 800
+                                        }}>+50 PTS</div>
+                                    )}
+                                </label>
+                                <p style={{ marginTop: '10px', fontSize: '0.7rem', opacity: 0.6, fontStyle: 'italic', lineHeight: 1.4, color: 'white' }}>
+                                    * Việc mang theo bình nước cá nhân giúp giảm thiểu rác thải nhựa tại Cồn Sơn. Cảm ơn bạn!
+                                </p>
+                            </div>
                         </div>
                     </div>
 
@@ -821,10 +998,111 @@ export default function Dashboard() {
                 </div>
             </footer>
 
-            {/* Toast */}
-            {toastMsg && (
-                <div className={`dsh-toast ${toastType === 'error' ? 'dsh-toast--error' : ''}`}>
-                    {toastMsg}
+
+
+            {/* Gift Redeem Modal */}
+            {redeemModal && (
+                <div style={{
+                    position: 'fixed', inset: 0, zIndex: 9000,
+                    background: 'rgba(0,0,0,0.6)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    backdropFilter: 'blur(6px)', padding: '1rem',
+                    animation: 'fadeIn 0.2s ease'
+                }} onClick={(e) => { if (e.target === e.currentTarget) setRedeemModal(null) }}>
+                    <div style={{
+                        background: 'white', borderRadius: '28px', padding: '2rem',
+                        width: '100%', maxWidth: '420px',
+                        boxShadow: '0 30px 60px rgba(0,0,0,0.2)',
+                        animation: 'fadeIn 0.3s ease'
+                    }}>
+                        {/* Header */}
+                        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                            <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>
+                                {redeemModal.gift.icon || '🎁'}
+                            </div>
+                            <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 900, color: '#1a3a1f' }}>
+                                Đổi quà: {redeemModal.gift.title}
+                            </h2>
+                            <p style={{ margin: '8px 0 0', fontSize: '0.85rem', color: '#5a7a5f' }}>
+                                Sẽ dùng <strong style={{ color: '#2c5926' }}>{redeemModal.gift.pointsRequired} điểm</strong> → còn lại <strong style={{ color: '#2c5926' }}>{totalPts - redeemModal.gift.pointsRequired} điểm</strong>
+                            </p>
+                        </div>
+
+                        {/* Code input */}
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#1a3a1f', marginBottom: '8px' }}>
+                                💬 Mã xác nhận từ nhân viên
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="Nhập mã xác nhận..."
+                                value={redeemModal.code}
+                                onChange={(e) => setRedeemModal(prev => ({ ...prev, code: e.target.value }))}
+                                style={{
+                                    width: '100%', padding: '14px 16px',
+                                    border: '2px solid rgba(44,89,38,0.2)',
+                                    borderRadius: '14px', fontSize: '1rem',
+                                    fontFamily: 'var(--font-family)',
+                                    outline: 'none',
+                                    transition: 'border 0.2s',
+                                    boxSizing: 'border-box'
+                                }}
+                                onFocus={(e) => e.target.style.borderColor = '#2c5926'}
+                                onBlur={(e) => e.target.style.borderColor = 'rgba(44,89,38,0.2)'}
+                                autoFocus
+                            />
+                            <p style={{ margin: '8px 0 0', fontSize: '0.75rem', color: '#9ca3af', fontStyle: 'italic' }}>
+                                ℹ️ Liên hệ nhân viên tại quầy đổi quà để nhận mã
+                            </p>
+                        </div>
+
+                        {/* Actions */}
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button
+                                onClick={() => setRedeemModal(null)}
+                                style={{
+                                    flex: 1, padding: '13px',
+                                    border: '2px solid rgba(44,89,38,0.15)',
+                                    borderRadius: '14px', background: 'transparent',
+                                    fontWeight: 700, fontSize: '0.95rem',
+                                    cursor: 'pointer', color: '#5a7a5f',
+                                    fontFamily: 'var(--font-family)'
+                                }}
+                            >
+                                Hủy bỏ
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    if (!redeemModal.code.trim()) {
+                                        showToast('Vui lòng nhập mã xác nhận', 'error');
+                                        return;
+                                    }
+                                    try {
+                                        const res = await api.post(`/gifts/${redeemModal.gift._id}/redeem`, { code: redeemModal.code });
+                                        showToast(res.data.message);
+                                        setPointsSpent(prev => prev + redeemModal.gift.pointsRequired);
+                                        setRedeemModal(null);
+                                        // Refresh gifts to update stock
+                                        api.get('/gifts').then(r => setGifts(r.data)).catch(() => {});
+                                    } catch (err) {
+                                        showToast(err.response?.data?.message || 'Lỗi đổi quà', 'error');
+                                    }
+                                }}
+                                style={{
+                                    flex: 2, padding: '13px',
+                                    border: 'none',
+                                    borderRadius: '14px',
+                                    background: 'linear-gradient(90deg, #2c5926, #4a8c42)',
+                                    color: 'white', fontWeight: 800, fontSize: '0.95rem',
+                                    cursor: 'pointer',
+                                    fontFamily: 'var(--font-family)',
+                                    boxShadow: '0 8px 20px rgba(44,89,38,0.25)'
+                                }}
+                            >
+                                ✓ Xác nhận đổi quà
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
 

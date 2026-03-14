@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
 import { useTranslation } from 'react-i18next'
+import toast, { Toaster } from 'react-hot-toast'
 
 function AdminDashboard() {
     const { t, i18n } = useTranslation()
@@ -13,10 +14,23 @@ function AdminDashboard() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [filter, setFilter] = useState('all') // all, completed, in-progress, not-started
-    const [activeTab, setActiveTab] = useState('leaderboard') // leaderboard, tasks, staff
+    const [searchQuery, setSearchQuery] = useState('')
+    const [activeTab, setActiveTab] = useState('leaderboard') // leaderboard, tasks, staff, gifts
     const [showTaskModal, setShowTaskModal] = useState(false)
     const [showStaffModal, setShowStaffModal] = useState(false)
+    const [showGiftModal, setShowGiftModal] = useState(false)
+    const [editingGift, setEditingGift] = useState(null)
+    const [confirmModal, setConfirmModal] = useState({ show: false, message: '', onConfirm: null })
     const [editingTask, setEditingTask] = useState(null)
+    const [gifts, setGifts] = useState([])
+    const [giftForm, setGiftForm] = useState({
+        title: '',
+        description: '',
+        pointsRequired: 100,
+        icon: '🎁',
+        img: '',
+        stock: -1
+    })
     const [staffForm, setStaffForm] = useState({
         username: '',
         email: '',
@@ -40,6 +54,7 @@ function AdminDashboard() {
 
     useEffect(() => {
         fetchAllData()
+        fetchGifts()
     }, [])
 
     const fetchAllData = async () => {
@@ -56,6 +71,15 @@ function AdminDashboard() {
             console.error(err)
         } finally {
             setLoading(false)
+        }
+    }
+
+    const fetchGifts = async () => {
+        try {
+            const res = await api.get('/gifts')
+            setGifts(res.data)
+        } catch (err) {
+            console.error('Error fetching gifts:', err)
         }
     }
 
@@ -88,9 +112,64 @@ function AdminDashboard() {
             setShowTaskModal(false)
             setEditingTask(null)
             fetchTasks()
+            toast.success(t('admin.tasks.save_success', 'Đã lưu nhiệm vụ thành công'))
         } catch (err) {
-            alert(t('admin.tasks.error_save'))
+            toast.error(t('admin.tasks.error_save'))
         }
+    }
+
+    const handleSaveGift = async (e) => {
+        e.preventDefault()
+        try {
+            if (editingGift) {
+                await api.put(`/gifts/${editingGift._id}`, giftForm)
+                toast.success('Đã cập nhật quà tặng thành công!')
+            } else {
+                await api.post('/gifts', giftForm)
+                toast.success('Đã thêm quà tặng mới!')
+            }
+            setShowGiftModal(false)
+            setEditingGift(null)
+            fetchGifts()
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Lỗi lưu quà tặng')
+        }
+    }
+
+    const handleDeleteGift = (id) => {
+        setConfirmModal({
+            show: true,
+            message: 'Bạn có chắc chắn muốn xóa quà tặng này?',
+            onConfirm: async () => {
+                setConfirmModal({ show: false, message: '', onConfirm: null })
+                try {
+                    await api.delete(`/gifts/${id}`)
+                    fetchGifts()
+                    toast.success('Đã xóa quà tặng')
+                } catch (err) {
+                    toast.error('Lỗi khi xóa quà tặng')
+                }
+            }
+        })
+    }
+
+    const openAddGiftModal = () => {
+        setEditingGift(null)
+        setGiftForm({ title: '', description: '', pointsRequired: 100, icon: '🎁', img: '', stock: -1 })
+        setShowGiftModal(true)
+    }
+
+    const openEditGiftModal = (gift) => {
+        setEditingGift(gift)
+        setGiftForm({
+            title: gift.title,
+            description: gift.description,
+            pointsRequired: gift.pointsRequired,
+            icon: gift.icon || '🎁',
+            img: gift.img || '',
+            stock: gift.stock ?? -1
+        })
+        setShowGiftModal(true)
     }
 
     const handleSaveStaff = async (e) => {
@@ -100,20 +179,44 @@ function AdminDashboard() {
             setShowStaffModal(false)
             setStaffForm({ username: '', email: '', password: '', displayName: '' })
             fetchAllData()
-            alert('Đã tạo tài khoản nhân viên thành công!')
+            toast.success('Đã tạo tài khoản nhân viên thành công!')
         } catch (err) {
-            alert(err.response?.data?.message || 'Lỗi tạo tài khoản nhân viên')
+            toast.error(err.response?.data?.message || 'Lỗi tạo tài khoản nhân viên')
         }
     }
 
-    const handleDeleteTask = async (id) => {
-        if (!window.confirm(t('admin.tasks.confirm_delete'))) return
-        try {
-            await api.delete(`/admin/tasks/${id}`)
-            fetchTasks()
-        } catch (err) {
-            alert(t('admin.tasks.error_delete'))
-        }
+    const handleDeleteTask = (id) => {
+        setConfirmModal({
+            show: true,
+            message: t('admin.tasks.confirm_delete', 'Bạn có chắc chắn muốn xóa nhiệm vụ này?'),
+            onConfirm: async () => {
+                setConfirmModal({ show: false, message: '', onConfirm: null })
+                try {
+                    await api.delete(`/admin/tasks/${id}`)
+                    fetchTasks()
+                    toast.success('Đã xóa nhiệm vụ')
+                } catch (err) {
+                    toast.error(t('admin.tasks.error_delete'))
+                }
+            }
+        })
+    }
+
+    const handleDeleteUser = (id) => {
+        setConfirmModal({
+            show: true,
+            message: 'Bạn có chắc chắn muốn xóa người dùng này?',
+            onConfirm: async () => {
+                setConfirmModal({ show: false, message: '', onConfirm: null })
+                try {
+                    await api.delete(`/admin/users/${id}`)
+                    fetchUsers()
+                    toast.success('Đã xóa người dùng thành công')
+                } catch (err) {
+                    toast.error('Lỗi khi xóa người dùng')
+                }
+            }
+        })
     }
 
     const openEditModal = (task) => {
@@ -153,8 +256,12 @@ function AdminDashboard() {
     }
 
     const filteredUsers = users.filter(u => {
-        if (filter === 'all') return true
-        return normalizeStatus(u.status) === filter
+        const matchesFilter = filter === 'all' ? true : normalizeStatus(u.status) === filter;
+        const searchLower = searchQuery.toLowerCase();
+        const matchesSearch = (u.displayName || '').toLowerCase().includes(searchLower) || 
+                              (u.username || '').toLowerCase().includes(searchLower) ||
+                              (u.email || '').toLowerCase().includes(searchLower);
+        return matchesFilter && matchesSearch;
     }).filter(u => u.role !== 'admin' || (u.role === 'admin' && filter === 'all')) // Hide other admins if filtering
 
     const displayStatus = (status) => {
@@ -214,6 +321,7 @@ function AdminDashboard() {
 
     return (
         <div className="page" style={{ paddingBottom: 'var(--space-2xl)' }}>
+            <Toaster position="top-right" />
             <div className="container">
                 {/* Header Section */}
                 <div className="page-header" style={{ 
@@ -226,19 +334,24 @@ function AdminDashboard() {
                     marginBottom: 'var(--space-xl)'
                 }}>
                     <div>
-                        <div style={{ 
-                            display: 'inline-flex', 
-                            alignItems: 'center', 
-                            gap: 'var(--space-xs)',
-                            background: 'rgba(45, 122, 58, 0.1)',
-                            color: 'var(--color-accent-primary)',
-                            padding: '4px 12px',
-                            borderRadius: '20px',
-                            fontSize: '0.75rem',
-                            fontWeight: 700,
-                            marginBottom: 'var(--space-sm)'
-                        }}>
-                            🛡️ HỆ THỐNG QUẢN TRỊ
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)', marginBottom: 'var(--space-sm)' }}>
+                            <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+                                <img src="https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773476778/Asset_3_on57x4.png" alt="Go Quest Logo" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
+                                <span style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--color-text-primary)' }}>Go Quest</span>
+                            </Link>
+                            <div style={{ 
+                                display: 'inline-flex', 
+                                alignItems: 'center', 
+                                gap: 'var(--space-xs)',
+                                background: 'rgba(45, 122, 58, 0.1)',
+                                color: 'var(--color-accent-primary)',
+                                padding: '4px 12px',
+                                borderRadius: '20px',
+                                fontSize: '0.75rem',
+                                fontWeight: 700
+                            }}>
+                                🛡️ HỆ THỐNG QUẢN TRỊ
+                            </div>
                         </div>
                         <h1 className="page-title" style={{ margin: 0 }}>{t('admin.title')}</h1>
                         <p className="page-subtitle" style={{ marginTop: '4px' }}>{t('admin.subtitle')}</p>
@@ -277,7 +390,8 @@ function AdminDashboard() {
                     {[
                         { key: 'leaderboard', label: t('admin.tabs.leaderboard'), icon: '📊' },
                         { key: 'tasks', label: t('admin.tabs.tasks'), icon: '🎯' },
-                        { key: 'staff', label: 'Quản lý nhân viên', icon: '👤' }
+                        { key: 'staff', label: 'Quản lý nhân viên', icon: '👤' },
+                        { key: 'gifts', label: 'Quản lý quà tặng', icon: '🎁' }
                     ].map(tab => (
                         <button
                             key={tab.key}
@@ -303,7 +417,7 @@ function AdminDashboard() {
                     ))}
                 </div>
 
-                {activeTab === 'leaderboard' ? (
+                {activeTab === 'leaderboard' && (
                     <div className="animate-fade-in">
                         <div className="dashboard-stats" style={{ 
                             display: 'grid',
@@ -325,33 +439,45 @@ function AdminDashboard() {
                             </div>
                         </div>
 
-                        <div className="section-header">
+                        <div className="section-header" style={{ flexWrap: 'wrap', gap: '10px' }}>
                             <h2 className="section-title">
                                 <span style={{ background: 'var(--color-accent-primary)', color: '#fff', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>🏆</span>
                                 {t('admin.leaderboard.title')}
                             </h2>
-                            <div style={{ display: 'flex', gap: 'var(--space-xs)', background: 'var(--color-bg-secondary)', padding: '4px', borderRadius: '10px' }}>
-                                {['all', 'completed', 'in-progress'].map((f) => (
-                                    <button
-                                        key={f}
-                                        onClick={() => setFilter(f)}
-                                        style={{ 
-                                            padding: '6px 14px', 
-                                            fontSize: '0.75rem', 
-                                            borderRadius: '8px', 
-                                            border: 'none',
-                                            fontWeight: 700,
-                                            cursor: 'pointer',
-                                            background: filter === f ? 'var(--color-accent-primary)' : 'transparent',
-                                            color: filter === f ? '#fff' : 'var(--color-text-muted)',
-                                            transition: 'all 0.2s'
-                                        }}
-                                    >
-                                        {f === 'all' ? t('admin.leaderboard.filter_all') :
-                                            f === 'completed' ? t('admin.leaderboard.filter_completed') :
-                                                t('admin.leaderboard.filter_in_progress')}
-                                    </button>
-                                ))}
+                            <div style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', background: 'var(--color-bg-secondary)', borderRadius: '10px', padding: '0 10px', border: '1px solid rgba(44, 89, 38, 0.1)' }}>
+                                    <span>🔍</span>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Tìm tên, username..." 
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        style={{ border: 'none', background: 'transparent', padding: '8px', outline: 'none', width: '200px' }}
+                                    />
+                                </div>
+                                <div style={{ display: 'flex', gap: 'var(--space-xs)', background: 'var(--color-bg-secondary)', padding: '4px', borderRadius: '10px' }}>
+                                    {['all', 'completed', 'in-progress'].map((f) => (
+                                        <button
+                                            key={f}
+                                            onClick={() => setFilter(f)}
+                                            style={{ 
+                                                padding: '6px 14px', 
+                                                fontSize: '0.75rem', 
+                                                borderRadius: '8px', 
+                                                border: 'none',
+                                                fontWeight: 700,
+                                                cursor: 'pointer',
+                                                background: filter === f ? 'var(--color-accent-primary)' : 'transparent',
+                                                color: filter === f ? '#fff' : 'var(--color-text-muted)',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            {f === 'all' ? t('admin.leaderboard.filter_all') :
+                                                f === 'completed' ? t('admin.leaderboard.filter_completed') :
+                                                    t('admin.leaderboard.filter_in_progress')}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
@@ -365,6 +491,7 @@ function AdminDashboard() {
                                         <th style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>{t('admin.leaderboard.missions')}</th>
                                         <th style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>{t('admin.leaderboard.total_points')}</th>
                                         <th style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>⏱️ Lần cuối</th>
+                                        <th style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -422,6 +549,18 @@ function AdminDashboard() {
                                                 <td style={{ padding: 'var(--space-lg)', textAlign: 'center', fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
                                                     {formatTime(u.lastCompletedAt)}
                                                 </td>
+                                                <td style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>
+                                                    {u.role !== 'admin' && (
+                                                        <button 
+                                                            className="btn btn-secondary" 
+                                                            style={{ padding: '4px 8px', fontSize: '0.75rem', borderColor: 'var(--color-error)', color: 'var(--color-error)' }} 
+                                                            onClick={() => handleDeleteUser(u.id || u._id)}
+                                                            title="Xóa người dùng"
+                                                        >
+                                                            🗑️ Xóa
+                                                        </button>
+                                                    )}
+                                                </td>
                                             </tr>
                                         );
                                     })}
@@ -435,7 +574,9 @@ function AdminDashboard() {
                             )}
                         </div>
                     </div>
-                ) : activeTab === 'staff' ? (
+                )}
+
+                {activeTab === 'staff' && (
                     <div className="animate-fade-in">
                         <div className="section-header">
                             <h2 className="section-title">
@@ -478,14 +619,16 @@ function AdminDashboard() {
                             )}
                         </div>
                     </div>
-                ) : (
+                )}
+
+                {activeTab === 'tasks' && (
                     <div className="animate-fade-in">
                         <div className="section-header">
                             <h2 className="section-title">
                                 <span style={{ background: 'var(--color-accent-primary)', color: '#fff', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>🎯</span>
                                 {t('admin.tasks.title')}
                             </h2>
-                            <button className="btn btn-primary" onClick={openAddModal}>+ {t('admin.tasks.add_btn')}</button>
+                            <button className="btn btn-primary" onClick={openAddModal}>{t('admin.tasks.add_btn')}</button>
                         </div>
 
                         <div className="card" style={{ padding: 0, border: '1px solid rgba(45, 122, 58, 0.1)' }}>
@@ -554,15 +697,140 @@ function AdminDashboard() {
                     </div>
                 )}
 
+                {activeTab === 'gifts' && (
+                    <div className="animate-fade-in">
+                        <div className="section-header">
+                            <h2 className="section-title">
+                                <span style={{ background: 'var(--color-accent-primary)', color: '#fff', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>🎁</span>
+                                Quản lý quà tặng
+                            </h2>
+                            <button className="btn btn-primary" onClick={openAddGiftModal}>+ Thêm quà tặng</button>
+                        </div>
+
+                        <div className="card" style={{ padding: 0, border: '1px solid rgba(45, 122, 58, 0.1)' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                                <thead>
+                                    <tr style={{ background: 'var(--color-bg-secondary)', borderBottom: '2px solid rgba(45, 122, 58, 0.1)' }}>
+                                        <th style={{ padding: 'var(--space-lg)' }}>Quà tặng</th>
+                                        <th style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>Số điểm cần</th>
+                                        <th style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>Tồn kho</th>
+                                        <th style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {gifts.map((gift) => (
+                                        <tr key={gift._id} style={{ borderBottom: '1px solid rgba(45, 122, 58, 0.05)' }}>
+                                            <td style={{ padding: 'var(--space-lg)' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+                                                    <div style={{ position: 'relative' }}>
+                                                        <div style={{ fontSize: '1.5rem', background: 'rgba(45, 122, 58, 0.05)', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px' }}>
+                                                            {gift.icon || '🎁'}
+                                                        </div>
+                                                        {gift.img && (
+                                                            <img src={gift.img} alt="" style={{ position: 'absolute', top: '-4px', right: '-4px', width: '28px', height: '28px', borderRadius: '6px', objectFit: 'cover', border: '2px solid #fff', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} />
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <div style={{ fontWeight: 700 }}>{gift.title}</div>
+                                                        <div style={{ fontSize: '0.75rem', opacity: 0.6, maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{gift.description}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style={{ padding: 'var(--space-lg)', textAlign: 'center', fontWeight: 900, color: 'var(--color-accent-primary)', fontSize: '1.1rem' }}>
+                                                {gift.pointsRequired} điểm
+                                            </td>
+                                            <td style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>
+                                                <span style={{ fontWeight: 700, color: gift.stock === -1 ? 'var(--color-success)' : gift.stock === 0 ? 'var(--color-error)' : 'inherit' }}>
+                                                    {gift.stock === -1 ? 'Vô hạn' : gift.stock === 0 ? 'Hết hàng' : gift.stock}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: 'var(--space-lg)', textAlign: 'center' }}>
+                                                <div style={{ display: 'flex', gap: 'var(--space-xs)', justifyContent: 'center' }}>
+                                                    <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.75rem' }} onClick={() => openEditGiftModal(gift)}>✏️</button>
+                                                    <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.75rem', borderColor: 'var(--color-error)', color: 'var(--color-error)' }} onClick={() => handleDeleteGift(gift._id)}>🗑️</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            {gifts.length === 0 && (
+                                <div className="empty-state">
+                                    <div className="empty-state-icon">🎁</div>
+                                    <p>Chưa có quà tặng nào. Hãy thêm quà tặng đầu tiên!</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
                 {/* Modals - Fixed alignment */}
-                {(showTaskModal || showStaffModal) && (
+                {confirmModal.show && (
+                    <div style={{
+                        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', 
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        zIndex: 2000, backdropFilter: 'blur(4px)', padding: 'var(--space-md)'
+                    }}>
+                        <div className="card animate-fade-in" style={{ width: '100%', maxWidth: '400px', textAlign: 'center' }}>
+                            <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>⚠️</div>
+                            <h3 style={{ marginBottom: 'var(--space-md)', fontSize: '1.2rem' }}>Xác nhận</h3>
+                            <p style={{ color: 'var(--color-text-secondary)', marginBottom: 'var(--space-xl)' }}>
+                                {confirmModal.message}
+                            </p>
+                            <div style={{ display: 'flex', gap: 'var(--space-md)', justifyItems: 'center', justifyContent: 'center' }}>
+                                <button className="btn btn-secondary" onClick={() => setConfirmModal({ show: false, message: '', onConfirm: null })}>Hủy bỏ</button>
+                                <button className="btn btn-primary" style={{ background: 'var(--color-error)' }} onClick={confirmModal.onConfirm}>Xác nhận xóa</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {(showTaskModal || showStaffModal || showGiftModal) && (
                     <div style={{
                         position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', 
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         zIndex: 1000, backdropFilter: 'blur(8px)', padding: 'var(--space-md)'
                     }}>
                         <div className="card animate-fade-in" style={{ width: '100%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto' }}>
-                            {showTaskModal ? (
+                            {showGiftModal ? (
+                                <>
+                                    <h2 style={{ marginBottom: 'var(--space-lg)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        {editingGift ? '📝 Sửa quà tặng' : '🎁 Thêm quà tặng mới'}
+                                    </h2>
+                                    <form onSubmit={handleSaveGift}>
+                                        <div className="form-group">
+                                            <label className="form-label">Tên quà tặng</label>
+                                            <input type="text" className="form-input" required value={giftForm.title} onChange={e => setGiftForm({ ...giftForm, title: e.target.value })} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Mô tả</label>
+                                            <textarea className="form-input" style={{ minHeight: '80px' }} required value={giftForm.description} onChange={e => setGiftForm({ ...giftForm, description: e.target.value })} />
+                                        </div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)', marginBottom: 'var(--space-lg)' }}>
+                                            <div className="form-group" style={{ marginBottom: 0 }}>
+                                                <label className="form-label">Điểm cần để đổi</label>
+                                                <input type="number" className="form-input" required min="1" value={giftForm.pointsRequired} onChange={e => setGiftForm({ ...giftForm, pointsRequired: parseInt(e.target.value) })} />
+                                            </div>
+                                            <div className="form-group" style={{ marginBottom: 0 }}>
+                                                <label className="form-label">Tồn kho (-1 = vô hạn)</label>
+                                                <input type="number" className="form-input" min="-1" value={giftForm.stock} onChange={e => setGiftForm({ ...giftForm, stock: parseInt(e.target.value) })} />
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Icon (emoji)</label>
+                                            <input type="text" className="form-input" value={giftForm.icon} onChange={e => setGiftForm({ ...giftForm, icon: e.target.value })} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">URL Ảnh (Cloudinary)</label>
+                                            <input type="text" className="form-input" placeholder="Dán link ảnh tại đây..." value={giftForm.img} onChange={e => setGiftForm({ ...giftForm, img: e.target.value })} />
+                                        </div>
+                                        <div style={{ display: 'flex', gap: 'var(--space-md)', justifyContent: 'flex-end', marginTop: 'var(--space-xl)' }}>
+                                            <button type="button" className="btn btn-secondary" onClick={() => setShowGiftModal(false)}>Hủy</button>
+                                            <button type="submit" className="btn btn-primary">Lưu quà tặng</button>
+                                        </div>
+                                    </form>
+                                </>
+                            ) : showTaskModal ? (
                                 <>
                                     <h2 style={{ marginBottom: 'var(--space-lg)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         {editingTask ? '📝 Sửa nhiệm vụ' : '✨ Thêm nhiệm vụ mới'}
