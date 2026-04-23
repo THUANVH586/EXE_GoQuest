@@ -2,6 +2,7 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
+const bcrypt = require('bcryptjs');
 const { connectDB } = require('./config/db');
 const { User, Task, Gift, UserActiveMission, UserCompletedTask } = require('./models');
 
@@ -10,22 +11,26 @@ const app = express();
 // Comprehensive Seed Data Function
 const seedInitialData = async () => {
   try {
+    const salt = await bcrypt.genSalt(10);
+
     // 1. Seed Admin
-    const [admin] = await User.findOrCreate({
-      where: { role: 'admin' },
+    const adminPassword = await bcrypt.hash('admin123', salt);
+    await User.findOrCreate({
+      where: { username: 'admin' },
       defaults: {
         username: 'admin',
         email: 'admin@conson.com',
-        password: 'admin123',
+        password: adminPassword,
         displayName: 'Quản trị viên',
         role: 'admin'
       }
     });
 
     // 2. Seed Staff
+    const staffPassword = await bcrypt.hash('staff123', salt);
     const staffData = [
-      { username: 'staff_nam', email: 'nam@conson.com', password: 'staff123', displayName: 'Nguyễn Văn Nam', role: 'staff' },
-      { username: 'staff_lan', email: 'lan@conson.com', password: 'staff123', displayName: 'Trần Thị Lan', role: 'staff' }
+      { username: 'staff_nam', email: 'nam@conson.com', password: staffPassword, displayName: 'Nguyễn Văn Nam', role: 'staff' },
+      { username: 'staff_lan', email: 'lan@conson.com', password: staffPassword, displayName: 'Trần Thị Lan', role: 'staff' }
     ];
     for (const s of staffData) {
       await User.findOrCreate({ where: { username: s.username }, defaults: s });
@@ -41,32 +46,34 @@ const seedInitialData = async () => {
         { title: 'Hành trình khám phá', type: 'health', points: 200, icon: '🏃', category: 'long-term' }
       ];
       await Task.bulkCreate(sampleTasks);
-      console.log('✅ Tasks seeded');
     }
 
     // 4. Seed Mock Tourists (Players)
+    const userPassword = await bcrypt.hash('user123', salt);
     const touristData = [
-      { username: 'minh_quan', email: 'quan@gmail.com', password: 'user123', displayName: 'Minh Quân', role: 'user', points: 120 },
-      { username: 'thu_thao', email: 'thao@gmail.com', password: 'user123', displayName: 'Thu Thảo', role: 'user', points: 45 },
-      { username: 'hoang_long', email: 'long@gmail.com', password: 'user123', displayName: 'Hoàng Long', role: 'user', points: 210 }
+      { username: 'minh_quan', email: 'quan@gmail.com', password: userPassword, displayName: 'Minh Quân', role: 'user', points: 120 },
+      { username: 'thu_thao', email: 'thao@gmail.com', password: userPassword, displayName: 'Thu Thảo', role: 'user', points: 45 },
+      { username: 'hoang_long', email: 'long@gmail.com', password: userPassword, displayName: 'Hoàng Long', role: 'user', points: 210 }
     ];
+    
     for (const t of touristData) {
       const [user, created] = await User.findOrCreate({ where: { username: t.username }, defaults: t });
       
-      if (created) {
-        // Link some tasks to show "Activity"
+      // Force update password if user already exists but login fails (common issue in seeding)
+      if (!created) {
+        user.password = userPassword;
+        await user.save();
+      } else {
+        // Link some tasks to show "Activity" for NEW users
         const tasks = await Task.findAll({ limit: 2 });
         if (tasks.length >= 2) {
-            // User 1: Completed one, Started one
             if (t.username === 'minh_quan') {
                 await user.addCompletedTask(tasks[0]);
-                await UserActiveMission.create({ UserId: user.id, TaskId: tasks[1].id, status: 'started' });
+                await UserActiveMission.findOrCreate({ where: { UserId: user.id, TaskId: tasks[1].id }, defaults: { status: 'started' } });
             }
-            // User 2: Started two
             if (t.username === 'thu_thao') {
-                await UserActiveMission.create({ UserId: user.id, TaskId: tasks[0].id, status: 'started' });
+                await UserActiveMission.findOrCreate({ where: { UserId: user.id, TaskId: tasks[0].id }, defaults: { status: 'started' } });
             }
-            // User 3: Completed two
             if (t.username === 'hoang_long') {
                 await user.addCompletedTask(tasks[0]);
                 await user.addCompletedTask(tasks[1]);
@@ -75,7 +82,7 @@ const seedInitialData = async () => {
       }
     }
 
-    console.log('✨ Mock data (Staff & Tourists) seeded successfully!');
+    console.log('✨ Mock data (Staff & Tourists) synchronized and secured!');
   } catch (error) {
     console.error('❌ Error seeding data:', error.message);
   }
