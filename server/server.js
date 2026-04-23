@@ -3,7 +3,7 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 const { connectDB } = require('./config/db');
-const { User, Task, Gift, UserActiveMission, UserCompletedTask } = require('./models');
+const { User, Task, Gift, UserActiveMission, UserCompletedTask, sequelize } = require('./models');
 
 const app = express();
 
@@ -24,10 +24,10 @@ const sampleGifts = [
     { title: 'Bộ Bánh Dân Gian', description: 'Hộp quà gồm các loại bánh dân gian đặc sản địa phương.', pointsRequired: 300, icon: '🍱', stock: 20 }
 ];
 
-// Comprehensive Seed Data Function with De-duplication
+// Comprehensive Seed Data Function with FORCE CLEANING
 const seedInitialData = async () => {
   try {
-    console.log('🔄 Synchronizing database and removing duplicates...');
+    console.log('🧹 Force cleaning and re-seeding tasks/gifts...');
 
     // 1. Seed Admin
     const [admin] = await User.findOrCreate({
@@ -37,46 +37,17 @@ const seedInitialData = async () => {
     admin.password = 'admin123';
     await admin.save();
 
-    // 2. Seed Staff
-    const staffData = [
-      { username: 'staff_nam', email: 'nam@conson.com', password: 'staff123', displayName: 'Nguyễn Văn Nam', role: 'staff' },
-      { username: 'staff_lan', email: 'lan@conson.com', password: 'staff123', displayName: 'Trần Thị Lan', role: 'staff' }
-    ];
-    for (const s of staffData) {
-      const [staff] = await User.findOrCreate({ where: { username: s.username }, defaults: s });
-      staff.password = s.password;
-      await staff.save();
-    }
+    // 2. Clear and Re-seed Tasks
+    await Task.destroy({ where: {}, truncate: false, cascade: true }); // Clean all
+    await Task.bulkCreate(sampleTasks);
+    console.log('✅ Tasks cleaned and re-seeded (7 unique tasks)');
 
-    // 3. Seed Tasks (Using findOrCreate to prevent duplicates)
-    for (const t of sampleTasks) {
-      await Task.findOrCreate({
-        where: { title: t.title },
-        defaults: t
-      });
-    }
+    // 3. Clear and Re-seed Gifts
+    await Gift.destroy({ where: {}, truncate: false, cascade: true });
+    await Gift.bulkCreate(sampleGifts);
+    console.log('✅ Gifts cleaned and re-seeded');
 
-    // 4. Seed Gifts
-    for (const g of sampleGifts) {
-      await Gift.findOrCreate({
-        where: { title: g.title },
-        defaults: g
-      });
-    }
-
-    // 5. Cleanup Duplicates (if any tasks have same title)
-    // This is a safety measure to ensure "random" feel without repeats
-    const allTasks = await Task.findAll();
-    const seenTitles = new Set();
-    for (const task of allTasks) {
-      if (seenTitles.has(task.title)) {
-        await task.destroy();
-      } else {
-        seenTitles.add(task.title);
-      }
-    }
-
-    // 6. Seed Mock Tourists
+    // 4. Seed Mock Tourists
     const touristData = [
       { username: 'minh_quan', email: 'quan@gmail.com', password: 'user123', displayName: 'Minh Quân', role: 'user', points: 120 },
       { username: 'thu_thao', email: 'thao@gmail.com', password: 'user123', displayName: 'Thu Thảo', role: 'user', points: 45 },
@@ -89,7 +60,7 @@ const seedInitialData = async () => {
       await user.save();
     }
 
-    console.log('✅ Database cleaned and fully synchronized with real data!');
+    console.log('✨ DATABASE IS NOW CLEAN AND SYNCED!');
   } catch (error) {
     console.error('❌ Error seeding data:', error.message);
   }

@@ -77,7 +77,7 @@ export default function Dashboard() {
                 const allTasks = response.data.tasks || []
                 setTasks(allTasks)
                 
-                const done = allTasks.filter(t => t.isCompleted).map(t => t._id) || []
+                const done = allTasks.filter(t => t.isCompleted).map(t => t.id) || []
                 setCompletedIds(done)
                 if (response.data.longTermProgress) {
                     setDistance(response.data.longTermProgress.distance || 0)
@@ -98,7 +98,7 @@ export default function Dashboard() {
     useEffect(() => {
         if (tasks.length > 0 && journeyTasks.length > 0) {
             const updatedJourney = journeyTasks.map(jt => {
-                const richTask = tasks.find(t => t._id === jt._id);
+                const richTask = tasks.find(t => t.id === jt.id);
                 return richTask ? { ...jt, ...richTask } : jt;
             });
 
@@ -327,7 +327,7 @@ export default function Dashboard() {
 
     /* computed */
     const REQUIRED_TASKS = 5;
-    const basePts = tasks.filter(t => completedIds.includes(t._id)).reduce((s, t) => s + (t.points || 0), 0)
+    const basePts = tasks.filter(t => completedIds.includes(t.id)).reduce((s, t) => s + (t.points || 0), 0)
     const JOURNEY_GOAL = 2000;
     const distanceReward = distance >= JOURNEY_GOAL ? 200 : 0
     const totalPts = basePts + (plasticCommit ? 50 : 0) + distanceReward - pointsSpent
@@ -342,7 +342,7 @@ export default function Dashboard() {
     )
 
     /* recent activity — show completed tasks */
-    const recentDone = tasks.filter(t => completedIds.includes(t._id)).slice(-3).reverse()
+    const recentDone = tasks.filter(t => completedIds.includes(t.id)).slice(-3).reverse()
     const activities = recentDone.map(t_item => ({
         emoji: t_item.icon || '✅',
         label: t('dashboard.recent_activity.completed_text', { title: t_item.title }),
@@ -356,14 +356,14 @@ export default function Dashboard() {
     ]
 
     const renderTaskCard = (task, isJourneyMode = false) => {
-        const tData = tasks.find(t => t._id === task._id) || task;
+        const tData = tasks.find(t => t.id === task.id) || task;
         const done = tData.isCompleted;
-        const celebrating = celebrateId === tData._id;
+        const celebrating = celebrateId === tData.id;
         const isStarted = tData.missionStatus === 'started';
         const isExpired = tData.missionStatus === 'expired' || (tData.expiresAt && new Date(tData.expiresAt) <= new Date());
         
         return (
-            <article key={tData._id} className={`dsh-task-card ${done ? 'dsh-task-card--done' : ''} ${celebrating ? 'dsh-task-card--celebrate' : ''}`}>
+            <article key={tData.id} className={`dsh-task-card ${done ? 'dsh-task-card--done' : ''} ${celebrating ? 'dsh-task-card--celebrate' : ''}`}>
                 <div className="dsh-task-img-wrap">
                     {tData.img ? (
                         <img src={tData.img} alt={tData.title} className="dsh-task-img" loading="lazy" />
@@ -402,20 +402,20 @@ export default function Dashboard() {
                                     <input 
                                         type="text" 
                                         placeholder="Mã xác nhận / Code" 
-                                        value={verifyCodes[tData._id] || ''}
-                                        onChange={(e) => setVerifyCodes(prev => ({ ...prev, [tData._id]: e.target.value }))}
+                                        value={verifyCodes[tData.id] || ''}
+                                        onChange={(e) => setVerifyCodes(prev => ({ ...prev, [tData.id]: e.target.value }))}
                                         style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '8px', fontSize: '14px' }}
                                     />
-                                    <button className="dsh-task-btn" onClick={() => handleComplete(tData._id, verifyCodes[tData._id])}>
+                                    <button className="dsh-task-btn" onClick={() => handleComplete(tData.id, verifyCodes[tData.id])}>
                                         {t('dashboard.journey_tasks.confirm_btn', 'Xác nhận hoàn thành')}
                                     </button>
                                 </>
                             ) : isExpired ? (
-                                <button className="dsh-task-btn" style={{ background: '#ef4444' }} onClick={() => handlePayment(tData._id)}>
+                                <button className="dsh-task-btn" style={{ background: '#ef4444' }} onClick={() => handlePayment(tData.id)}>
                                     {t('dashboard.journey_tasks.retry_btn')}
                                 </button>
                             ) : (
-                                <button className="dsh-task-btn" onClick={() => handleStartMission(tData._id)}>
+                                <button className="dsh-task-btn" onClick={() => handleStartMission(tData.id)}>
                                     {t('dashboard.journey_tasks.start_btn')}
                                 </button>
                             )}
@@ -659,7 +659,7 @@ export default function Dashboard() {
                             ) : (
                                 <div className="dsh-task-grid">
                                     {gifts.map(gift => (
-                                        <article key={gift._id} className="dsh-task-card" style={{ 
+                                        <article key={gift.id} className="dsh-task-card" style={{ 
                                             opacity: totalPts >= gift.pointsRequired ? 1 : 0.8,
                                             border: 'none',
                                             background: 'white',
