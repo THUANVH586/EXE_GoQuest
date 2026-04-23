@@ -1,7 +1,7 @@
 const fs = require('fs/promises');
 const path = require('path');
 
-let cachedChunks = null;
+const cachedChunksByLanguage = {};
 
 function normalizeText(text) {
     return String(text || '')
@@ -56,20 +56,28 @@ async function readChunksFromDir(dirPath, namespace) {
     }
 }
 
-async function loadKnowledgeChunks() {
-    if (cachedChunks) return cachedChunks;
+async function loadKnowledgeChunks(language = 'vi') {
+    const lang = language === 'en' ? 'en' : 'vi';
+    if (cachedChunksByLanguage[lang]) return cachedChunksByLanguage[lang];
 
     const rootKnowledgeDir = path.join(__dirname, '..', '..', 'knowledge');
-    const economyDir = path.join(rootKnowledgeDir, 'economy_chunks');
-    const historyCultureDir = path.join(rootKnowledgeDir, 'history_culture_chunks');
+    let chunkLoadTasks = [];
 
-    const [economyChunks, historyCultureChunks] = await Promise.all([
-        readChunksFromDir(economyDir, 'economy'),
-        readChunksFromDir(historyCultureDir, 'history_culture'),
-    ]);
+    if (lang === 'en') {
+        const englishDir = path.join(rootKnowledgeDir, 'english_chunks');
+        chunkLoadTasks = [readChunksFromDir(englishDir, 'english')];
+    } else {
+        const economyDir = path.join(rootKnowledgeDir, 'economy_chunks');
+        const historyCultureDir = path.join(rootKnowledgeDir, 'history_culture_chunks');
+        chunkLoadTasks = [
+            readChunksFromDir(economyDir, 'economy'),
+            readChunksFromDir(historyCultureDir, 'history_culture'),
+        ];
+    }
 
-    cachedChunks = [...economyChunks, ...historyCultureChunks];
-    return cachedChunks;
+    const loadedSets = await Promise.all(chunkLoadTasks);
+    cachedChunksByLanguage[lang] = loadedSets.flat();
+    return cachedChunksByLanguage[lang];
 }
 
 function chooseTopChunks(message, chunks, topK = 3) {
@@ -85,7 +93,8 @@ function chooseTopChunks(message, chunks, topK = 3) {
     return scored;
 }
 
-function buildSystemPrompt(userMessage, topChunks) {
+function buildSystemPrompt(userMessage, topChunks, language = 'vi') {
+    const isEnglish = language === 'en';
     const contextText = topChunks.length
         ? topChunks
               .map(
@@ -93,7 +102,33 @@ function buildSystemPrompt(userMessage, topChunks) {
                       `CONTEXT ${index + 1} (${chunk.id}):\n${chunk.content}`
               )
               .join('\n\n---\n\n')
-        : 'Không có context nội bộ phù hợp. Hãy trả lời tổng quan và thận trọng.';
+        : isEnglish
+          ? 'No suitable internal context is available. Provide a careful high-level answer only.'
+          : 'Không có context nội bộ phù hợp. Hãy trả lời tổng quan và thận trọng.';
+
+    if (isEnglish) {
+        return `
+You are the official AI assistant for the Go Quest website (experiential tourism in Con Son - Can Tho, Vietnam).
+
+ROLE:
+- Advise users about Go Quest experiences, destinations, culture, local history, and general model information.
+- Prioritize internal context when available.
+- If the question is outside available context, answer briefly and clearly state the current information scope.
+
+RESPONSE RULES:
+1) Always answer in clear, natural English.
+2) Prioritize accuracy and do not invent exact figures.
+3) If historical/cultural data is incomplete, explicitly say "based on currently aggregated data".
+4) Do not provide unsafe or illegal guidance.
+5) Optionally suggest 1-2 follow-up questions.
+
+INTERNAL CONTEXT:
+${contextText}
+
+USER QUESTION:
+${userMessage}
+`;
+    }
 
     return `
 Bạn là trợ lý AI chính thức của website Go Quest (du lịch trải nghiệm Cồn Sơn - Cần Thơ).
@@ -121,20 +156,22 @@ ${userMessage}
 exports.chatWithAI = async (req, res) => {
     try {
         const userMessage = req.body?.message;
+        const language = req.body?.language === 'en' ? 'en' : 'vi';
 
         if (!userMessage || !String(userMessage).trim()) {
             return res.status(400).json({ error: 'Message is required' });
         }
 
-        const chunks = await loadKnowledgeChunks();
+        const chunks = await loadKnowledgeChunks(language);
         const topChunks = chooseTopChunks(userMessage, chunks, 3);
-        const systemPrompt = buildSystemPrompt(userMessage, topChunks);
+        const systemPrompt = buildSystemPrompt(userMessage, topChunks, language);
 
         const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
         if (!GEMINI_API_KEY) {
             return res.status(200).json({
-                reply:
-                    'Trợ lý AI chưa được cấu hình API key. Vui lòng thêm GEMINI_API_KEY vào biến môi trường server để sử dụng chatbox.',
+                reply: language === 'en'
+                    ? 'The AI assistant is not configured with an API key yet. Please add GEMINI_API_KEY to server environment variables.'
+                    : 'Trợ lý AI chưa được cấu hình API key. Vui lòng thêm GEMINI_API_KEY vào biến môi trường server để sử dụng chatbox.',
             });
         }
 
@@ -161,13 +198,17 @@ exports.chatWithAI = async (req, res) => {
 
         if (data.error) {
             return res.status(200).json({
-                reply: `Lỗi AI: ${data.error.message}`,
+                reply: language === 'en'
+                    ? `AI error: ${data.error.message}`
+                    : `Lỗi AI: ${data.error.message}`,
             });
         }
 
         const reply =
             data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-            'Mình chưa thể trả lời lúc này. Bạn vui lòng thử lại sau ít phút nhé.';
+            (language === 'en'
+                ? 'I cannot answer right now. Please try again in a few minutes.'
+                : 'Mình chưa thể trả lời lúc này. Bạn vui lòng thử lại sau ít phút nhé.');
 
         return res.status(200).json({
             reply,
@@ -175,7 +216,9 @@ exports.chatWithAI = async (req, res) => {
         });
     } catch (error) {
         return res.status(200).json({
-            reply: 'Hệ thống đang bận, bạn vui lòng thử lại sau.',
+            reply: req.body?.language === 'en'
+                ? 'The system is busy. Please try again later.'
+                : 'Hệ thống đang bận, bạn vui lòng thử lại sau.',
         });
     }
 };
