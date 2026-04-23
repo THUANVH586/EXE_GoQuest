@@ -29,8 +29,8 @@ const seedInitialData = async () => {
   try {
     console.log('🔄 Synchronizing database and seeding data (stable IDs)...');
     
-    // ONE-TIME CLEAN WIPE to fix ID corruption
-    await sequelize.sync({ force: true });
+    // Sync structure changes (like new ENUM values)
+    await sequelize.sync({ alter: true });
 
     // 1. Seed Admin
     const [admin] = await User.findOrCreate({
