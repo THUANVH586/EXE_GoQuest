@@ -30,12 +30,17 @@ router.post('/:id/redeem', authMiddleware, async (req, res) => {
         if (gift.stock === 0) return res.status(400).json({ message: 'Quà tặng này đã hết hàng' });
 
         const user = await User.findByPk(req.userId, {
-            include: ['completedTasks']
+            include: ['completedTasks', 'redeemedGifts']
         });
         if (!user) return res.status(404).json({ message: 'Không tìm thấy người dùng' });
 
-        // Calculate current user points (Simplified for SQL version)
-        const totalPts = user.points || 0;
+        // Calculate current user points based on tasks, distance, and plastic commit
+        const basePts = (user.completedTasks || []).reduce((sum, t) => sum + (t.points || 0), 0);
+        const plasticCommitReward = user.usingPersonalBottle ? 50 : 0;
+        const distanceReward = (user.distance || 0) >= 2000 ? 200 : 0;
+        const pointsSpent = (user.redeemedGifts || []).reduce((sum, g) => sum + (g.UserRedeemedGift?.pointsSpent || 0), 0);
+        
+        const totalPts = basePts + plasticCommitReward + distanceReward - pointsSpent;
 
         if (totalPts < gift.pointsRequired) {
             return res.status(400).json({ 
