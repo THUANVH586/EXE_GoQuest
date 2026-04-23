@@ -52,7 +52,7 @@ const EcosystemLanding = () => {
     return (
         <div className="eco-wrapper">
             {/* Nav */}
-            <nav className="lp-nav lp-nav--scrolled">
+            <nav className={`lp-nav ${scrolled ? 'lp-nav--scrolled' : ''}`}>
                 <div className="lp-nav-inner">
                     <div className="lp-nav-brand">
                         <img src="https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773476778/Asset_3_on57x4.png" alt="Logo" style={{ height: '35px' }} />

@@ -170,7 +170,7 @@ function LandingPage() {
     return (
         <div className="lp-wrapper">
             {/* ===== LANDING NAVBAR ===== */}
-            <nav className="lp-nav lp-nav--scrolled">
+            <nav className={`lp-nav ${scrolled ? 'lp-nav--scrolled' : ''}`}>
                 <div className="lp-nav-inner">
                     <div className="lp-nav-brand" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <img src="https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773476778/Asset_3_on57x4.png" alt="Go Quest Logo" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
