@@ -1,0 +1,22 @@
+CHUNK 02 - CUSTOMER SEGMENTS (PHAN KHUC KHACH HANG)
+
+Phan khuc khach hang chinh:
+1) Du khach trai nghiem tai Con Son
+- Nhom khach thich hoat dong tuong tac, van hoa ban dia, va cac hinh thuc du lich co muc tieu.
+- Nhu cau: ro rang lo trinh, co huong dan, co phan thuong, co ky niem doc dao.
+
+2) Nhom quan ly diem den / van hanh tour
+- Can cong cu de dieu phoi nhiem vu, kiem tra tien do, va do hieu qua theo tung nhom khach.
+- Can dashboard de theo doi nguoi choi, nhiem vu, va diem so.
+
+3) Nhom staff tai diem
+- La nguoi xac nhan khach da hoan thanh hoat dong.
+- Giu vai tro quan trong trong chat luong dich vu va tinh cong bang cua phan thuong.
+
+4) Doi tac cung cap gia tri bo sung
+- Co so luu tru, am thuc, cua hang qua tang, ho dan lam nghe truyen thong.
+- Huong loi gian tiep tu luong khach co thoi gian luu lai va muc chi tieu cao hon.
+
+Y nghia kinh te:
+- Mo hinh co ca ben chi tra truc tiep (du khach) va ben huong loi gian tiep (cong dong, doi tac).
+- Gia tri thuong hieu tang nho dinh vi du lich ben vung + gamification.

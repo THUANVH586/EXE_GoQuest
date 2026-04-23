@@ -1,0 +1,28 @@
+GO QUEST - ECONOMIC KNOWLEDGE INDEX
+
+Muc tieu:
+- Tap trung vao noi dung kinh te cua website Go Quest.
+- Khong chua thong tin ky thuat lap trinh.
+- Dung de tao embedding va truy xuat context cho AI tra loi user.
+
+Danh sach chunk:
+- 01_value_proposition.txt
+- 02_customer_segments.txt
+- 03_revenue_streams.txt
+- 04_cost_structure.txt
+- 05_unit_economics_retry_task.txt
+- 06_rewards_and_points_economy.txt
+- 07_local_community_impact.txt
+- 08_partner_ecosystem_and_distribution.txt
+- 09_growth_kpi_business.txt
+- 10_risks_and_controls.txt
+- 11_pricing_positioning.txt
+- 12_faq_business_answers.txt
+
+Huong dan nhanh truy xuat:
+- Cau hoi ve doanh thu -> uu tien 03, 05, 11.
+- Cau hoi ve chi phi -> uu tien 04, 10.
+- Cau hoi ve tac dong kinh te dia phuong -> uu tien 07, 08.
+- Cau hoi ve hieu qua kinh doanh/KPI -> uu tien 09.
+- Cau hoi tong quan mo hinh -> uu tien 01, 02, 03, 04.
+- Cau hoi ve quyen loi user va doi qua -> uu tien 06, 12.

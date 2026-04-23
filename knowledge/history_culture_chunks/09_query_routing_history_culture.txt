@@ -1,0 +1,18 @@
+CHUNK 09 - QUERY ROUTING FOR HISTORY CULTURE
+
+Muc tieu:
+Route cau hoi user vao dung chunk truoc khi goi LLM.
+
+Bang route nhanh:
+- Tu khoa: "lich su can tho", "tay do", "song nuoc" -> 01
+- Tu khoa: "ninh kieu", "ben ninh kieu", "bieu tuong" -> 02
+- Tu khoa: "cai rang", "cho noi", "beo hang", "di san" -> 03
+- Tu khoa: "con son", "du lich cong dong", "cu lao" -> 04
+- Tu khoa: "don ca tai tu", "am nhac truyen thong", "unesco" -> 05
+- Tu khoa: "lang nghe", "banh trang", "nha co", "dinh" -> 06
+- Tu khoa: "am thuc", "banh xeo", "hu tieu", "an gi" -> 07
+- Tu khoa: "tra loi sao", "nguyen tac tra loi" -> 08
+
+Neu cau hoi nhieu y:
+- Lay top 2-3 chunk co do tuong dong cao nhat.
+- Ghep context theo thu tu: boi canh lich su -> gia tri van hoa -> lien he Go Quest.

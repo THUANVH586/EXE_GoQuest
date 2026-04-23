@@ -1,0 +1,24 @@
+CHUNK 03 - REVENUE STREAMS (NGUON DOANH THU)
+
+Nguon doanh thu hien tai thay ro:
+1) Phi mo lai nhiem vu khi het han
+- Neu khach de nhiem vu qua han, he thong cho phep thanh toan de mo lai.
+- Muc phi duoc truyen thong tren giao dien: 0.5 USD cho moi lan retry.
+- Vai tro: tao dong doanh thu nho nhung lap lai, dong thoi khuyen khich khach hoan thanh dung han.
+
+Nguon doanh thu tiem nang (co the khai thac tu cung mo hinh):
+2) Goi trai nghiem premium
+- Ban goi uu tien/bo sung nhiem vu co gia tri cao hon.
+
+3) Hop tac thuong mai voi doi tac dia phuong
+- Chia se doanh thu voi cua hang qua tang, am thuc, hoat dong thu cong.
+
+4) Phi dich vu B2B/B2G
+- Cung cap nen tang van hanh cho diem du lich khac theo mo hinh license hoac service fee.
+
+5) Tai tro thuong hieu xanh
+- Thuong hieu dong hanh tai cac chien dich hanh vi xanh.
+
+Luu y:
+- Doanh thu truc tiep hien tai duoc xac dinh ro nhat la khoan retry 0.5 USD.
+- Cac nguon con lai la huong phat trien phu hop voi mo hinh kinh doanh dang co.

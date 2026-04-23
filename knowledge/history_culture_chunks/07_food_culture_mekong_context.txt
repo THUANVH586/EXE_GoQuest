@@ -1,0 +1,17 @@
+CHUNK 07 - FOOD CULTURE MEKONG CONTEXT
+
+Noi dung chinh:
+Am thuc trong boi canh Can Tho va Con Son can duoc hieu nhu mot phan cua van hoa song nuoc, khong chi la mon an. Mot bua sang tren cho noi, mot mon dan gian trong nha vuon, hay trai nghiem banh dan gian deu la cach du khach tiep can lich su sinh hoat va tri tue ban dia.
+
+Diem nhan van hoa am thuc:
+- Banh xeo, hu tieu, bun rieu, ca phe song la cac mau trai nghiem am thuc thuong gap trong khong gian song nuoc.
+- Gia tri nam o cach an, boi canh an, va cau chuyen nguoi nau - nguoi ban.
+- Van hoa am thuc mien Tay co tinh mo, linh hoat theo mua vu va san vat dia phuong.
+
+Lien he den Go Quest:
+Website co cac nhiem vu lien quan am thuc va trai nghiem tai cho. Khi user hoi "tai sao am thuc quan trong", cau tra loi nen nhan manh: am thuc la kenh nhanh nhat de user cham vao van hoa dia phuong va ket noi voi cong dong.
+
+Nguon internet tong hop:
+- https://vi.wikipedia.org/wiki/Banh_xeo
+- https://vi.wikipedia.org/wiki/Cho_noi_Cai_Rang
+- https://canthotourism.vn/vi/chocairang
