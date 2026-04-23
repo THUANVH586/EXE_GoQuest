@@ -170,11 +170,11 @@ function LandingPage() {
     return (
         <div className="lp-wrapper">
             {/* ===== LANDING NAVBAR ===== */}
-            <nav className={`lp-nav ${scrolled ? 'lp-nav--scrolled' : ''}`}>
+            <nav className="lp-nav lp-nav--scrolled">
                 <div className="lp-nav-inner">
                     <div className="lp-nav-brand" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <img src="https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773476778/Asset_3_on57x4.png" alt="Go Quest Logo" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
-                        <span className="lp-nav-name" style={{ color: scrolled ? 'var(--color-text-primary)' : 'white' }}>Go Quest</span>
+                        <span className="lp-nav-name" style={{ color: 'var(--color-accent-primary)' }}>Go Quest</span>
                     </div>
 
                     <div className="lp-nav-links">
@@ -184,9 +184,9 @@ function LandingPage() {
                     </div>
 
                     <div className="lp-nav-actions">
-                        <div className="lang-switcher" style={{ display: 'flex', background: scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)', padding: '4px', borderRadius: '24px', marginRight: 'var(--space-md)' }}>
+                        <div className="lang-switcher" style={{ display: 'flex', background: 'rgba(0,0,0,0.05)', padding: '4px', borderRadius: '24px', marginRight: 'var(--space-md)' }}>
                             <button
-                                style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '20px', border: 'none', background: i18n.language === 'vi' ? 'var(--color-accent-primary)' : 'transparent', color: i18n.language === 'vi' ? '#fff' : (scrolled ? 'var(--color-text-primary)' : 'inherit'), cursor: 'pointer', transition: 'all 0.3s' }}
+                                style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '20px', border: 'none', background: i18n.language === 'vi' ? 'var(--color-accent-primary)' : 'transparent', color: i18n.language === 'vi' ? '#fff' : 'var(--color-text-primary)', cursor: 'pointer', transition: 'all 0.3s' }}
                                 onClick={() => changeLanguage('vi')}
                                 title="Tiếng Việt"
                             >
@@ -194,7 +194,7 @@ function LandingPage() {
                                 <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>VI</span>
                             </button>
                             <button
-                                style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '20px', border: 'none', background: i18n.language === 'en' ? 'var(--color-accent-primary)' : 'transparent', color: i18n.language === 'en' ? '#fff' : (scrolled ? 'var(--color-text-primary)' : 'inherit'), cursor: 'pointer', transition: 'all 0.3s' }}
+                                style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '20px', border: 'none', background: i18n.language === 'en' ? 'var(--color-accent-primary)' : 'transparent', color: i18n.language === 'en' ? '#fff' : 'var(--color-text-primary)', cursor: 'pointer', transition: 'all 0.3s' }}
                                 onClick={() => changeLanguage('en')}
                                 title="English"
                             >
@@ -213,28 +213,16 @@ function LandingPage() {
                             </Link>
                         ) : (
                             <>
-                                <Link 
-                                    to="/login" 
-                                    className="btn" 
-                                    style={{ 
-                                        padding: 'var(--space-sm) var(--space-xl)', 
-                                        background: scrolled ? 'rgba(45, 122, 58, 0.1)' : 'rgba(255, 255, 255, 0.2)',
-                                        color: scrolled ? 'var(--color-accent-primary)' : 'white',
-                                        fontSize: 'var(--font-size-sm)',
-                                        borderRadius: 'var(--radius-md)',
-                                        fontWeight: 600
-                                    }}
+                                <Link
+                                    to="/login"
+                                    className="btn"
+                                    style={{ marginRight: '10px', color: 'var(--color-accent-primary)', fontWeight: 600 }}
                                 >
                                     {t('nav.login')}
                                 </Link>
-                                <Link 
-                                    to="/register" 
-                                    className="btn btn-primary" 
-                                    style={{ 
-                                        padding: 'var(--space-sm) var(--space-xl)',
-                                        fontSize: 'var(--font-size-sm)',
-                                        borderRadius: 'var(--radius-md)'
-                                    }}
+                                <Link
+                                    to="/register"
+                                    className="btn btn-primary"
                                 >
                                     {t('nav.register')}
                                 </Link>
@@ -458,44 +446,6 @@ function LandingPage() {
                             <h3 className="lp-step-title">{t('how_it_works.step3.title')}</h3>
                             <p className="lp-step-desc">{t('how_it_works.step3.desc')}</p>
                         </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* ===== CTA SECTION ===== */}
-            <section className="lp-cta-section" id="lp-join">
-                <div className="container">
-                    <div className="lp-cta-card">
-                        <div className="lp-cta-glow" />
-                        <h2 className="lp-cta-title">{t('cta_section.title')}</h2>
-                        <p className="lp-cta-subtitle">
-                            {t('cta_section.subtitle')}
-                        </p>
-
-                        {emailSent ? (
-                            <div className="lp-cta-success">
-                                <span></span> {t('cta_section.success')}
-                            </div>
-                        ) : (
-                            <form className="lp-cta-form" onSubmit={handleEmailSubmit}>
-                                <input
-                                    type="email"
-                                    className="form-input lp-cta-input"
-                                    placeholder={t('cta_section.email_placeholder')}
-                                    value={email}
-                                    onChange={e => setEmail(e.target.value)}
-                                    required
-                                />
-                                <button type="submit" className="btn btn-primary">{t('cta_section.submit')}</button>
-                            </form>
-                        )}
-
-                        <div className="lp-cta-or">
-                            <span>{t('cta_section.or')}</span>
-                        </div>
-                        <Link to="/register" className="btn btn-secondary lp-btn-large">
-                            {t('cta_section.register')}
-                        </Link>
                     </div>
                 </div>
             </section>

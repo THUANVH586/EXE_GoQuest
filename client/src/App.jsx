@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard'
 import AdminDashboard from './pages/AdminDashboard'
 import StaffDashboard from './pages/StaffDashboard'
 import LandingPage from './pages/LandingPage'
+import EcosystemLanding from './pages/EcosystemLanding'
 import PaymentSuccess from './pages/PaymentSuccess'
 import PaymentCancel from './pages/PaymentCancel'
 import { Toaster } from 'react-hot-toast'
@@ -101,7 +102,7 @@ function PublicRoute({ children }) {
 // Hide global Navbar on pages with their own embedded header
 function NavbarWrapper() {
     const location = useLocation()
-    const noNavbar = ['/', '/dashboard', '/staff', '/admin']
+    const noNavbar = ['/', '/con-son', '/dashboard', '/staff', '/admin']
     if (noNavbar.includes(location.pathname)) return null
     return <Navbar />
 }
@@ -111,8 +112,11 @@ function AppContent() {
         <Router>
             <NavbarWrapper />
             <Routes>
-                {/* Landing Page - public, no redirect */}
-                <Route path="/" element={<LandingPage />} />
+                {/* Global Ecosystem Homepage */}
+                <Route path="/" element={<EcosystemLanding />} />
+                
+                {/* Specific Côn Sơn Quest Page */}
+                <Route path="/con-son" element={<LandingPage />} />
 
                 <Route
                     path="/login"

@@ -1,14 +1,17 @@
-const User = require('../models/User');
-const VerificationCode = require('../models/VerificationCode');
+const { User, Task, VerificationCode, UserActiveMission } = require('../models');
+const { Op } = require('sequelize');
 
 // Helper to get or generate current verification code
 const getActiveCode = async () => {
-    let current = await VerificationCode.findOne({ expiresAt: { $gt: new Date() } }).sort({ createdAt: -1 });
+    let current = await VerificationCode.findOne({ 
+        where: { expiresAt: { [Op.gt]: new Date() } },
+        order: [['createdAt', 'DESC']]
+    });
+    
     if (!current) {
         const code = Math.floor(100000 + Math.random() * 900000).toString();
         const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
-        current = new VerificationCode({ code, expiresAt });
-        await current.save();
+        current = await VerificationCode.create({ code, expiresAt });
     }
     return current;
 };
@@ -17,30 +20,36 @@ const getActiveCode = async () => {
 // @route   GET /api/staff/dashboard
 exports.getStaffDashboard = async (req, res) => {
     try {
-        const totalPlayers = await User.countDocuments({ role: 'user' });
-        const activePlayers = await User.find({ 
-            role: 'user',
-            'activeMissions.status': 'started'
-        })
-        .select('username displayName activeMissions')
-        .populate('activeMissions.taskId', 'title');
+        const totalPlayers = await User.count({ where: { role: 'user' } });
+        
+        // Find users with at least one started mission
+        const playersWithActiveMissions = await User.findAll({
+            where: { role: 'user' },
+            include: [{
+                model: Task,
+                as: 'activeMissions',
+                through: {
+                    where: { status: 'started' }
+                }
+            }]
+        });
+
+        const activePlayers = playersWithActiveMissions.filter(u => u.activeMissions?.length > 0);
 
         const currentCodeObj = await getActiveCode();
 
         res.json({
             totalPlayers,
             activePlayers: activePlayers.map(u => ({
-                id: u._id,
+                id: u.id,
                 username: u.username,
                 displayName: u.displayName,
-                activeMissions: u.activeMissions
-                    .filter(m => m.status === 'started' && m.taskId)
-                    .map(m => ({
-                        taskId: m.taskId._id,
-                        title: m.taskId.title,
-                        startTime: m.startTime
-                    })),
-                activeMissionsCount: u.activeMissions.filter(m => m.status === 'started').length
+                activeMissions: u.activeMissions.map(m => ({
+                    taskId: m.id,
+                    title: m.title,
+                    startTime: m.UserActiveMission.startTime
+                })),
+                activeMissionsCount: u.activeMissions.length
             })),
             currentCode: currentCodeObj.code,
             expiresAt: currentCodeObj.expiresAt
@@ -57,8 +66,7 @@ exports.resetCode = async (req, res) => {
     try {
         const code = Math.floor(100000 + Math.random() * 900000).toString();
         const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
-        const newCode = new VerificationCode({ code, expiresAt });
-        await newCode.save();
+        const newCode = await VerificationCode.create({ code, expiresAt });
 
         res.json({
             message: 'Đã tạo mã mới thành công',

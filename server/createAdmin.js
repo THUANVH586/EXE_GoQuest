@@ -1,11 +1,13 @@
 require('dotenv').config();
-const mongoose = require('mongoose');
-const User = require('./models/User');
+const { User } = require('./models');
+const { connectDB, sequelize } = require('./config/db');
 
 const createAdmin = async () => {
     try {
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log('Connected to MongoDB...');
+        await connectDB();
+        
+        // Sync models to ensure tables exist
+        await sequelize.sync();
 
         const adminData = {
             username: 'admin',
@@ -16,10 +18,12 @@ const createAdmin = async () => {
         };
 
         const existingAdmin = await User.findOne({
-            $or: [
-                { email: adminData.email },
-                { username: adminData.username }
-            ]
+            where: {
+                [require('sequelize').Op.or]: [
+                    { email: adminData.email },
+                    { username: adminData.username }
+                ]
+            }
         });
 
         if (existingAdmin) {
@@ -29,8 +33,7 @@ const createAdmin = async () => {
             await existingAdmin.save();
             console.log('Admin updated successfully!');
         } else {
-            const admin = new User(adminData);
-            await admin.save();
+            await User.create(adminData);
             console.log('Admin created successfully!');
         }
 

@@ -444,7 +444,7 @@ export default function Dashboard() {
                 <div className="dsh-header-left">
                     <Link to="/" className="dsh-logo" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <img src="https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773476778/Asset_3_on57x4.png" alt="Go Quest Logo" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
-                        <span className="dsh-logo-name" style={{ margin: 0 }}>Go Quest</span>
+                        <span className="dsh-logo-name" style={{ margin: 0, color: 'var(--color-accent-primary)' }}>Go Quest</span>
                     </Link>
                     <nav className="dsh-top-nav">
                         <Link className="dsh-top-link" to="/">{t('dashboard.nav.intro')}</Link>

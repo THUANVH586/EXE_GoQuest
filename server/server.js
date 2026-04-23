@@ -1,12 +1,12 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const connectDB = require('./config/db');
+const { connectDB } = require('./config/db');
 const User = require('./models/User');
 
 const app = express();
 
-// Kết nối MongoDB
+// Kết nối SQL Server
 connectDB();
 
 // Middleware
@@ -24,10 +24,10 @@ app.use('/api/gifts', require('./routes/giftRoutes'));
 // Health check
 app.get('/api/health', async (req, res) => {
   try {
-    const userCount = await User.countDocuments();
+    const userCount = await User.count();
     res.json({
       status: 'ok',
-      message: 'Cồn Sơn Tourism API is running with MongoDB!',
+      message: 'Cồn Sơn Tourism API is running with SQL Server!',
       users: userCount
     });
   } catch (error) {
@@ -39,7 +39,7 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📝 Database: MongoDB Atlas`);
+  console.log(`📝 Database: SQL Server (SSMS)`);
   console.log(`\n🔗 API Endpoints:`);
   console.log(`   POST /api/auth/register - Đăng ký`);
   console.log(`   POST /api/auth/login    - Đăng nhập`);

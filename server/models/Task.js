@@ -1,57 +1,63 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/db');
 
-const taskSchema = new mongoose.Schema({
+const Task = sequelize.define('Task', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
     title: {
-        type: String,
-        required: true,
-        trim: true
+        type: DataTypes.STRING,
+        allowNull: false
     },
     description: {
-        type: String,
-        required: true
+        type: DataTypes.TEXT,
+        allowNull: false
     },
     type: {
-        type: String,
-        enum: ['food', 'craft', 'community', 'health', 'environment'],
-        required: true
+        type: DataTypes.ENUM('food', 'craft', 'community', 'health', 'environment'),
+        allowNull: false
     },
     category: {
-        type: String,
-        enum: ['short-term', 'long-term'],
-        default: 'short-term'
+        type: DataTypes.ENUM('short-term', 'long-term'),
+        defaultValue: 'short-term'
     },
-    location: {
-        name: String,
-        description: String
+    locationName: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    locationDescription: {
+        type: DataTypes.TEXT,
+        allowNull: true
     },
     duration: {
-        type: Number, // in minutes
-        default: 15
+        type: DataTypes.INTEGER,
+        defaultValue: 15
     },
     points: {
-        type: Number,
-        default: 10
+        type: DataTypes.INTEGER,
+        defaultValue: 10
     },
     icon: {
-        type: String,
-        default: '🎯'
+        type: DataTypes.STRING,
+        defaultValue: '🎯'
     },
     img: {
-        type: String,
-        default: ''
+        type: DataTypes.STRING,
+        defaultValue: ''
     },
     isActive: {
-        type: Boolean,
-        default: true
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
     },
     order: {
-        type: Number,
-        default: 0
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     }
+}, {
+    timestamps: true,
+    tableName: 'Tasks'
 });
 
-module.exports = mongoose.model('Task', taskSchema);
+module.exports = Task;

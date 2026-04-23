@@ -1,46 +1,52 @@
-const User = require('../models/User');
-const Task = require('../models/Task');
+const { User, Task } = require('../models');
+const { Op } = require('sequelize');
 
 // @desc    Get all users (Dashboard data)
 // @route   GET /api/admin/users
 exports.getUsersReport = async (req, res) => {
     try {
-        const tasks = await Task.find({ isActive: true });
-        const totalTasksAvailable = tasks.length;
-        const users = await User.find({});
+        const tasks = await Task.findAll({ where: { isActive: true } });
+        const users = await User.findAll({
+            include: ['completedTasks']
+        });
 
         const allUsers = users.map(u => {
             const REQUIRED_TASKS = 5;
+            
             // Calculate total points
             const userPoints = tasks
-                .filter(t => u.completedTasks.some(ct => ct.taskId.toString() === t._id.toString()))
+                .filter(t => (u.completedTasks || []).some(ct => ct.id === t.id))
                 .reduce((sum, t) => sum + t.points, 0);
 
             // Get last completion time
-            const lastCompletedAt = u.completedTasks.length > 0
-                ? new Date(Math.max(...u.completedTasks.map(t => new Date(t.completedAt))))
+            const lastCompletedAt = (u.completedTasks || []).length > 0
+                ? new Date(Math.max(...u.completedTasks.map(t => new Date(t.UserCompletedTask.completedAt))))
                 : null;
 
             // Determine status
             let status = 'Chưa bắt đầu';
-            if (u.completedTasks.length >= REQUIRED_TASKS) {
+            if ((u.completedTasks || []).length >= REQUIRED_TASKS) {
                 status = 'Đã hoàn thành';
-            } else if (u.completedTasks.length > 0 || u.longTermProgress.steps > 0) {
+            } else if ((u.completedTasks || []).length > 0 || u.steps > 0) {
                 status = 'Đang thực hiện';
             }
 
             return {
-                id: u._id,
+                id: u.id,
                 username: u.username,
                 email: u.email,
                 displayName: u.displayName,
                 role: u.role,
-                completedCount: u.completedTasks.length,
+                completedCount: (u.completedTasks || []).length,
                 totalTasks: REQUIRED_TASKS,
                 points: userPoints,
                 lastCompletedAt,
                 status,
-                longTermProgress: u.longTermProgress
+                longTermProgress: {
+                    steps: u.steps,
+                    distance: u.distance,
+                    usingPersonalBottle: u.usingPersonalBottle
+                }
             };
         });
 
@@ -62,6 +68,7 @@ exports.getUsersReport = async (req, res) => {
 
         res.json(sortedUsers);
     } catch (error) {
+        console.error('getUsersReport error:', error);
         res.status(500).json({ message: 'Lỗi lấy danh sách người dùng' });
     }
 };
@@ -71,7 +78,7 @@ exports.getUsersReport = async (req, res) => {
 exports.deleteUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const user = await User.findById(id);
+        const user = await User.findByPk(id);
 
         if (!user) {
             return res.status(404).json({ message: 'Không tìm thấy người dùng' });
@@ -81,7 +88,7 @@ exports.deleteUser = async (req, res) => {
             return res.status(403).json({ message: 'Không thể xóa tài khoản admin' });
         }
 
-        await User.findByIdAndDelete(id);
+        await user.destroy();
 
         res.json({ message: 'Đã xóa người dùng thành công' });
     } catch (error) {
@@ -95,12 +102,13 @@ exports.createTask = async (req, res) => {
     try {
         const { title, description, type, category, location, duration, points, icon, img, order } = req.body;
 
-        const task = new Task({
+        const task = await Task.create({
             title,
             description,
             type,
             category,
-            location,
+            locationName: location?.name,
+            locationDescription: location?.description,
             duration,
             points,
             icon,
@@ -108,9 +116,9 @@ exports.createTask = async (req, res) => {
             order
         });
 
-        await task.save();
         res.status(201).json(task);
     } catch (error) {
+        console.error('createTask error:', error);
         res.status(500).json({ message: 'Lỗi tạo nhiệm vụ mới' });
     }
 };
@@ -120,14 +128,24 @@ exports.createTask = async (req, res) => {
 exports.updateTask = async (req, res) => {
     try {
         const { id } = req.params;
-        const task = await Task.findByIdAndUpdate(id, req.body, { new: true });
+        const task = await Task.findByPk(id);
 
         if (!task) {
             return res.status(404).json({ message: 'Không tìm thấy nhiệm vụ' });
         }
 
+        const { location, ...otherData } = req.body;
+        const updateData = { ...otherData };
+        if (location) {
+            updateData.locationName = location.name;
+            updateData.locationDescription = location.description;
+        }
+
+        await task.update(updateData);
+
         res.json(task);
     } catch (error) {
+        console.error('updateTask error:', error);
         res.status(500).json({ message: 'Lỗi cập nhật nhiệm vụ' });
     }
 };
@@ -137,29 +155,37 @@ exports.updateTask = async (req, res) => {
 exports.deleteTask = async (req, res) => {
     try {
         const { id } = req.params;
-        const task = await Task.findByIdAndUpdate(id, { isActive: false }, { new: true });
+        const task = await Task.findByPk(id);
 
         if (!task) {
             return res.status(404).json({ message: 'Không tìm thấy nhiệm vụ' });
         }
+
+        await task.update({ isActive: false });
 
         res.json({ message: 'Đã xóa nhiệm vụ thành công' });
     } catch (error) {
         res.status(500).json({ message: 'Lỗi xóa nhiệm vụ' });
     }
 };
+
 // @desc    Create a new staff account
 // @route   POST /api/admin/staff
 exports.createStaff = async (req, res) => {
     try {
         const { username, email, password, displayName } = req.body;
 
-        const userExists = await User.findOne({ $or: [{ email }, { username }] });
+        const userExists = await User.findOne({ 
+            where: { 
+                [Op.or]: [{ email }, { username }] 
+            } 
+        });
+        
         if (userExists) {
             return res.status(400).json({ message: 'Tên đăng nhập hoặc email đã tồn tại' });
         }
 
-        const staff = new User({
+        const staff = await User.create({
             username,
             email,
             password,
@@ -167,17 +193,17 @@ exports.createStaff = async (req, res) => {
             role: 'staff'
         });
 
-        await staff.save();
         res.status(201).json({
             message: 'Đã tạo tài khoản nhân viên thành công',
             staff: {
-                id: staff._id,
+                id: staff.id,
                 username: staff.username,
                 email: staff.email,
                 role: staff.role
             }
         });
     } catch (error) {
+        console.error('createStaff error:', error);
         res.status(500).json({ message: 'Lỗi tạo tài khoản nhân viên' });
     }
 };

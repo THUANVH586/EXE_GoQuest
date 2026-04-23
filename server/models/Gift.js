@@ -1,40 +1,44 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/db');
 
-const giftSchema = new mongoose.Schema({
+const Gift = sequelize.define('Gift', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
     title: {
-        type: String,
-        required: true,
-        trim: true
+        type: DataTypes.STRING,
+        allowNull: false
     },
     description: {
-        type: String,
-        required: true
+        type: DataTypes.TEXT,
+        allowNull: false
     },
     pointsRequired: {
-        type: Number,
-        required: true,
-        default: 100
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 100
     },
     img: {
-        type: String,
-        default: ''
+        type: DataTypes.STRING,
+        defaultValue: ''
     },
     icon: {
-        type: String,
-        default: '🎁'
+        type: DataTypes.STRING,
+        defaultValue: '🎁'
     },
     stock: {
-        type: Number,
-        default: -1 // -1 = unlimited
+        type: DataTypes.INTEGER,
+        defaultValue: -1 // -1 = unlimited
     },
     isActive: {
-        type: Boolean,
-        default: true
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
     }
+}, {
+    timestamps: true,
+    tableName: 'Gifts'
 });
 
-module.exports = mongoose.model('Gift', giftSchema);
+module.exports = Gift;

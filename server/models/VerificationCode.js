@@ -1,18 +1,23 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/db');
 
-const verificationCodeSchema = new mongoose.Schema({
+const VerificationCode = sequelize.define('VerificationCode', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
     code: {
-        type: String,
-        required: true
+        type: DataTypes.STRING,
+        allowNull: false
     },
     expiresAt: {
-        type: Date,
-        required: true
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
+        type: DataTypes.DATE,
+        allowNull: false
     }
+}, {
+    timestamps: true,
+    tableName: 'VerificationCodes'
 });
 
-module.exports = mongoose.model('VerificationCode', verificationCodeSchema);
+module.exports = VerificationCode;

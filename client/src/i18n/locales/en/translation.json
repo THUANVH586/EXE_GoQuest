@@ -362,5 +362,102 @@
             "title": "Sales Experience",
             "desc": "Experience being a stall seller for mixed rice paper for 30 minutes."
         }
+    },
+    "ecosystem": {
+        "nav": {
+            "destinations": "Destinations",
+            "hotels": "Accommodation",
+            "foods": "Cuisine"
+        },
+        "hero": {
+            "badge": "Explore Can Tho",
+            "title": "Smart Tourism",
+            "title_highlight": "Ecosystem",
+            "subtitle": "Experience the beauty of Tay Do through the lens of technology and sustainability.",
+            "cta": "Start the journey"
+        },
+        "destinations": {
+            "label": "CTGQ Ecosystem",
+            "title": "Featured Destinations",
+            "explore_btn": "Explore now \u2192"
+        },
+        "hotels": {
+            "label": "Accommodation",
+            "title": "Hotels & Motels",
+            "per_night": "/night",
+            "view_rooms": "View Rooms"
+        },
+        "foods": {
+            "label": "Cuisine",
+            "title": "Best Restaurants"
+        },
+        "reviews": {
+            "label": "Community",
+            "title": "Real Reviews"
+        },
+        "footer": {
+            "explore": "Explore",
+            "experiences": "Experiences",
+            "hotels": "Accommodation",
+            "foods": "Cuisine",
+            "reviews": "Reviews",
+            "contact": "Contact",
+            "copyright": "\u00a9 2026 Go Quest. Developed for the local community."
+        },
+        "spots": {
+            "con-son": {
+                "title": "Con Son Quest",
+                "description": "Community ecotourism experience with engaging environmental protection missions."
+            },
+            "cai-rang": {
+                "title": "Cai Rang Floating Market",
+                "description": "Discover the unique river culture of the Mekong Delta in the early morning."
+            },
+            "my-khanh": {
+                "title": "My Khanh Tourist Village",
+                "description": "Enjoy the orchard atmosphere, taste fresh fruits, and play traditional folk games."
+            }
+        },
+        "hotels_data": {
+            "vinpearl": {
+                "description": "The tallest hotel in the city with a 360-degree view of the Hau River."
+            },
+            "victoria": {
+                "description": "Classic French architecture on the romantic riverbank."
+            },
+            "azerai": {
+                "description": "An isolated resort on Con Au island offering absolute privacy."
+            }
+        },
+        "restaurants_data": {
+            "lau-mam": {
+                "name": "Da Ly Fermented Fish Hotpot",
+                "description": "The most famous spot to enjoy authentic Can Tho fermented fish hotpot."
+            },
+            "banh-xeo": {
+                "name": "Banh Xeo 7 Toi (Sizzling Crepes)",
+                "description": "Crispy sizzling crepes with duck and coconut shoot filling, served with wild herbs."
+            },
+            "vit-nau-chao": {
+                "name": "Thanh Giao Duck with Fermented Tofu",
+                "description": "A rustic yet flavorful local specialty with a long-standing tradition."
+            },
+            "nem-nuong": {
+                "name": "Thanh Van Grilled Pork Rolls",
+                "description": "Enjoy fragrant Cai Rang grilled pork rolls wrapped in rice paper with fresh vegetables."
+            },
+            "banh-cong": {
+                "name": "Co Ut Banh Cong Cakes",
+                "description": "Hot and crispy specialty cakes filled with shrimp and mung beans."
+            }
+        },
+        "reviews_data": {
+            "review1": {
+                "comment": "Can Tho GoQuest is truly an amazing experience. I love how they integrate environmental protection into tourism."
+            },
+            "review2": {
+                "comment": "The sizzling crepes at Con Son are delicious and the locals are incredibly friendly."
+            }
+        }
     }
 }

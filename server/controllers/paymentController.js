@@ -1,6 +1,5 @@
 const PayOS = require('@payos/node');
-const User = require('../models/User');
-const Task = require('../models/Task');
+const { User, Task, UserActiveMission } = require('../models');
 
 // Robust initialization for different export styles
 const payos = new (PayOS.default || PayOS)(
@@ -14,13 +13,13 @@ const payos = new (PayOS.default || PayOS)(
 exports.createPaymentLink = async (req, res) => {
     try {
         const { taskId } = req.body;
-        const user = await User.findById(req.userId);
+        const user = await User.findByPk(req.userId);
         
         if (!user) {
             return res.status(404).json({ message: 'Không tìm thấy người dùng' });
         }
 
-        const task = await Task.findById(taskId);
+        const task = await Task.findByPk(taskId);
         if (!task) {
             return res.status(404).json({ message: 'Không tìm thấy nhiệm vụ' });
         }
@@ -72,16 +71,11 @@ exports.createPaymentLink = async (req, res) => {
     }
 };
 
-// @desc    Handle PayOS Webhook (Optional but recommended for robustness)
+// @desc    Handle PayOS Webhook
 // @route   POST /api/payment/webhook
 exports.handleWebhook = async (req, res) => {
     try {
         const webhookData = payos.verifyPaymentWebhookData(req.body);
-        
-        // Logic to update user task status after successful payment
-        // Note: For simplicity, we can also use the returnUrl to trigger the update on frontend
-        // but webhook is more reliable.
-        
         res.json({ message: 'Webhook received' });
     } catch (error) {
         res.status(400).json({ message: 'Invalid webhook data' });
@@ -94,36 +88,33 @@ exports.verifySuccess = async (req, res) => {
     try {
         const { taskId, orderCode } = req.body;
         console.log('Verifying payment for taskId:', taskId, 'orderCode:', orderCode);
-        const user = await User.findById(req.userId);
+        const user = await User.findByPk(req.userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'Không tìm thấy người dùng' });
+        }
 
         // Verify with PayOS if orderCode is paid
         const paymentInfo = await payos.getPaymentLinkInformation(Number(orderCode));
         console.log('PayOS Payment Info:', paymentInfo.status);
         
         if (paymentInfo.status === 'PAID') {
-            const missionIndex = user.activeMissions.findIndex(m => m.taskId.toString() === taskId);
-            
             const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // Give another 30 mins
 
-            if (missionIndex > -1) {
-                user.activeMissions[missionIndex].status = 'started';
-                user.activeMissions[missionIndex].expiresAt = expiresAt;
-                user.activeMissions[missionIndex].startTime = new Date();
-            } else {
-                user.activeMissions.push({
-                    taskId,
-                    startTime: new Date(),
-                    expiresAt,
-                    status: 'started'
-                });
-            }
+            await UserActiveMission.upsert({
+                UserId: user.id,
+                TaskId: taskId,
+                startTime: new Date(),
+                expiresAt,
+                status: 'started'
+            });
 
-            await user.save();
             return res.json({ message: 'Thanh toán thành công! Nhiệm vụ đã được đặt lại.', expiresAt });
         } else {
             return res.status(400).json({ message: 'Giao dịch chưa được thanh toán thành công.' });
         }
     } catch (error) {
+        console.error('verifySuccess error:', error);
         res.status(500).json({ message: 'Lỗi xác nhận thanh toán' });
     }
 };

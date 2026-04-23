@@ -1,12 +1,14 @@
-const Task = require('../models/Task');
-const User = require('../models/User');
-const VerificationCode = require('../models/VerificationCode');
+const { Task, User, VerificationCode, UserActiveMission, UserCompletedTask } = require('../models');
+const { Op } = require('sequelize');
 
 // @desc    Get all tasks
 // @route   GET /api/tasks
 exports.getTasks = async (req, res) => {
     try {
-        const tasks = await Task.find({ isActive: true }).sort({ order: 1 });
+        const tasks = await Task.findAll({ 
+            where: { isActive: true },
+            order: [['order', 'ASC']]
+        });
         res.json(tasks);
     } catch (error) {
         res.status(500).json({ message: 'Lỗi lấy danh sách nhiệm vụ' });
@@ -17,102 +19,105 @@ exports.getTasks = async (req, res) => {
 // @route   GET /api/tasks/progress
 exports.getProgress = async (req, res) => {
     try {
-        const user = await User.findById(req.userId);
+        const user = await User.findByPk(req.userId, {
+            include: [
+                { association: 'completedTasks' },
+                { association: 'activeMissions' }
+            ]
+        });
+        
         if (!user) {
             return res.status(404).json({ message: 'Không tìm thấy người dùng' });
         }
 
-        const tasks = await Task.find({ isActive: true }).sort({ order: 1 });
-        const completedTaskIds = (user.completedTasks || []).map(t => t.taskId ? t.taskId.toString() : null).filter(Boolean);
+        const tasks = await Task.findAll({ 
+            where: { isActive: true },
+            order: [['order', 'ASC']]
+        });
+
+        const completedTaskIds = (user.completedTasks || []).map(t => t.id);
 
         const tasksWithProgress = tasks.map(task => {
-            const mission = (user.activeMissions || []).find(m => m.taskId && m.taskId.toString() === task._id.toString());
+            const mission = (user.activeMissions || []).find(m => m.id === task.id);
             return {
-                ...task._doc,
-                isCompleted: completedTaskIds.includes(task._id.toString()),
-                missionStatus: mission ? mission.status : null,
-                expiresAt: mission ? mission.expiresAt : null
+                ...task.get({ plain: true }),
+                isCompleted: completedTaskIds.includes(task.id),
+                missionStatus: mission ? mission.UserActiveMission.status : null,
+                expiresAt: mission ? mission.UserActiveMission.expiresAt : null
             };
         });
 
         res.json({
             tasks: tasksWithProgress,
-            longTermProgress: user.longTermProgress,
+            longTermProgress: {
+                steps: user.steps,
+                distance: user.distance,
+                usingPersonalBottle: user.usingPersonalBottle
+            },
             totalCompleted: (user.completedTasks || []).length
         });
     } catch (error) {
+        console.error('getProgress error:', error);
         res.status(500).json({ message: 'Lỗi lấy tiến độ nhiệm vụ' });
     }
 };
 
-
-
-// @desc    Start a mission (set 30min timer)
+// @desc    Start a mission (set timer)
 // @route   POST /api/tasks/start/:taskId
 exports.startMission = async (req, res) => {
     try {
         const { taskId } = req.params;
-        const mongoose = require('mongoose');
 
-        if (!mongoose.Types.ObjectId.isValid(taskId)) {
-            return res.status(400).json({ message: 'ID nhiệm vụ không hợp lệ' });
-        }
-
-        const task = await Task.findById(taskId);
+        const task = await Task.findByPk(taskId);
         if (!task) {
             return res.status(404).json({ message: 'Không tìm thấy nhiệm vụ' });
         }
 
-        const user = await User.findById(req.userId);
+        const user = await User.findByPk(req.userId);
         if (!user) {
             return res.status(404).json({ message: 'Không tìm thấy người dùng' });
         }
-        
-        if (!user.activeMissions) {
-            user.activeMissions = [];
-        }
 
-        const missionIndex = user.activeMissions.findIndex(m => m.taskId && m.taskId.toString() === taskId);
-        
-        // Calculate duration: use task duration or fallback. Long-term tasks get more time.
+        // Check if mission already exists in join table
+        const existingMission = await UserActiveMission.findOne({
+            where: { UserId: user.id, TaskId: task.id }
+        });
+
         let durationMinutes = task.duration || 30;
         if (task.category === 'long-term' && durationMinutes < 60) {
-            durationMinutes = 60; // Give at least 1 hour for long-term/distance tasks
+            durationMinutes = 60;
         }
-        
         const expiresAt = new Date(Date.now() + durationMinutes * 60 * 1000);
 
-        if (missionIndex > -1) {
-            const mission = user.activeMissions[missionIndex];
-            
-            // If completed
-            if (mission.status === 'completed') {
+        if (existingMission) {
+            if (existingMission.status === 'completed') {
                 return res.status(400).json({ message: 'Bạn đã hoàn thành nhiệm vụ này rồi!' });
             }
 
-            // If already started and NOT expired
-            if (mission.status === 'started' && mission.expiresAt > new Date()) {
-                return res.status(400).json({ missionStatus: 'started', message: 'Nhiệm vụ này đang được thực hiện!', expiresAt: mission.expiresAt });
+            if (existingMission.status === 'started' && existingMission.expiresAt > new Date()) {
+                return res.status(400).json({ 
+                    missionStatus: 'started', 
+                    message: 'Nhiệm vụ này đang được thực hiện!', 
+                    expiresAt: existingMission.expiresAt 
+                });
             }
 
-            // If mission is expired (manually or by time)
-            // If it's the first time they retry after expiring, we might want to prompt for payment
-            // Based on frontend logic, we return 400 with 'hết hạn' so it triggers handlePayment
+            // Retry/Update expired mission
             return res.status(400).json({ 
                 missionStatus: 'expired',
                 message: 'Nhiệm vụ này đã hết hạn. Vui lòng thanh toán để gia hạn/thực hiện lại!' 
             });
         } else {
             // New mission start
-            user.activeMissions.push({
-                taskId,
+            await UserActiveMission.create({
+                UserId: user.id,
+                TaskId: task.id,
                 startTime: new Date(),
                 expiresAt,
                 status: 'started'
             });
         }
 
-        await user.save();
         res.json({ message: `Nhiệm vụ đã bắt đầu! Bạn có ${durationMinutes} phút để hoàn thành.`, expiresAt });
     } catch (error) {
         console.error('startMission error:', error);
@@ -126,13 +131,17 @@ exports.completeTask = async (req, res) => {
     try {
         const { taskId } = req.params;
         const { code } = req.body;
-        const user = await User.findById(req.userId);
+
+        const user = await User.findByPk(req.userId);
         if (!user) {
             return res.status(404).json({ message: 'Không tìm thấy người dùng' });
         }
 
         // 1. Check if mission exists and is not expired
-        const mission = user.activeMissions.find(m => m.taskId && m.taskId.toString() === taskId);
+        const mission = await UserActiveMission.findOne({
+            where: { UserId: user.id, TaskId: taskId }
+        });
+
         if (!mission) {
             return res.status(400).json({ message: 'Vui lòng bắt đầu nhiệm vụ trước!' });
         }
@@ -143,14 +152,16 @@ exports.completeTask = async (req, res) => {
 
         if (new Date() > mission.expiresAt) {
             mission.status = 'expired';
-            await user.save();
+            await mission.save();
             return res.status(400).json({ message: 'Nhiệm vụ đã hết hạn. Vui lòng thanh toán để thực hiện lại.' });
         }
 
         // 2. Validate Code
         const validCode = await VerificationCode.findOne({ 
-            code, 
-            expiresAt: { $gt: new Date() } 
+            where: {
+                code,
+                expiresAt: { [Op.gt]: new Date() }
+            }
         });
 
         if (!validCode) {
@@ -159,17 +170,19 @@ exports.completeTask = async (req, res) => {
 
         // 3. Mark as completed
         mission.status = 'completed';
-        if (!user.completedTasks) {
-            user.completedTasks = [];
-        }
-        user.completedTasks.push({ taskId, completedAt: new Date() });
-        await user.save();
+        await mission.save();
+
+        // Add to completed tasks join table
+        await UserCompletedTask.findOrCreate({
+            where: { UserId: user.id, TaskId: taskId },
+            defaults: { completedAt: new Date() }
+        });
 
         res.json({
-            message: '🎉 Chúc mừng! Bạn đã hoàn thành nhiệm vụ!',
-            completedTasks: user.completedTasks
+            message: '🎉 Chúc mừng! Bạn đã hoàn thành nhiệm vụ!'
         });
     } catch (error) {
+        console.error('completeTask error:', error);
         res.status(500).json({ message: 'Lỗi hoàn thành nhiệm vụ' });
     }
 };
@@ -179,20 +192,24 @@ exports.completeTask = async (req, res) => {
 exports.updateLongTermProgress = async (req, res) => {
     try {
         const { distance, steps, usingPersonalBottle } = req.body;
-        const user = await User.findById(req.userId);
+        const user = await User.findByPk(req.userId);
         if (!user) {
             return res.status(404).json({ message: 'Không tìm thấy người dùng' });
         }
 
-        if (steps !== undefined) user.longTermProgress.steps = steps;
-        if (distance !== undefined) user.longTermProgress.distance = distance;
-        if (usingPersonalBottle !== undefined) user.longTermProgress.usingPersonalBottle = usingPersonalBottle;
+        if (steps !== undefined) user.steps = steps;
+        if (distance !== undefined) user.distance = distance;
+        if (usingPersonalBottle !== undefined) user.usingPersonalBottle = usingPersonalBottle;
 
         await user.save();
 
         res.json({
             message: 'Cập nhật tiến trình thành công!',
-            longTermProgress: user.longTermProgress
+            longTermProgress: {
+                steps: user.steps,
+                distance: user.distance,
+                usingPersonalBottle: user.usingPersonalBottle
+            }
         });
     } catch (error) {
         res.status(500).json({ message: 'Lỗi cập nhật tiến trình' });

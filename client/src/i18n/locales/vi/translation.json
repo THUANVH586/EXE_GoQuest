@@ -365,5 +365,102 @@
             "title": "Trải nghiệm Bán Hàng",
             "desc": "Trải nghiệm làm người đứng quầy bán bánh tráng trộn trong 30 phút"
         }
+    },
+    "ecosystem": {
+        "nav": {
+            "destinations": "Điểm đến",
+            "hotels": "Lưu trú",
+            "foods": "Ẩm thực"
+        },
+        "hero": {
+            "badge": "Khám phá Cần Thơ",
+            "title": "Hệ Sinh Thái",
+            "title_highlight": "Du Lịch Thông Minh",
+            "subtitle": "Trải nghiệm nét đẹp Tây Đô qua góc nhìn công nghệ và bền vững.",
+            "cta": "Bắt đầu hành trình"
+        },
+        "destinations": {
+            "label": "Hệ sinh thái CTGQ",
+            "title": "Điểm đến tiêu biểu",
+            "explore_btn": "Khám phá ngay →"
+        },
+        "hotels": {
+            "label": "Lưu trú",
+            "title": "Khách sạn & Motel",
+            "per_night": "/đêm",
+            "view_rooms": "Xem phòng"
+        },
+        "foods": {
+            "label": "Ẩm thực",
+            "title": "Quán ăn ngon"
+        },
+        "reviews": {
+            "label": "Cộng đồng",
+            "title": "Đánh giá thực tế"
+        },
+        "footer": {
+            "explore": "Khám phá",
+            "experiences": "Trải nghiệm",
+            "hotels": "Lưu trú",
+            "foods": "Ẩm thực",
+            "reviews": "Đánh giá",
+            "contact": "Liên hệ",
+            "copyright": "© 2026 Go Quest. Phát triển vì cộng đồng địa phương."
+        },
+        "spots": {
+            "con-son": {
+                "title": "Cồn Sơn Quest",
+                "description": "Trải nghiệm du lịch sinh thái cộng đồng với các nhiệm vụ bảo vệ môi trường hấp dẫn."
+            },
+            "cai-rang": {
+                "title": "Chợ Nổi Cái Răng",
+                "description": "Khám phá nét văn hóa sông nước độc đáo của miền Tây Nam Bộ vào sáng sớm."
+            },
+            "my-khanh": {
+                "title": "Làng Du Lịch Mỹ Khánh",
+                "description": "Tận hưởng không gian miệt vườn, thưởng thức trái cây và các trò chơi dân gian."
+            }
+        },
+        "hotels_data": {
+            "vinpearl": {
+                "description": "Khách sạn cao nhất thành phố với tầm nhìn 360 độ ra sông Hậu."
+            },
+            "victoria": {
+                "description": "Kiến trúc Pháp cổ kính bên bờ sông thơ mộng."
+            },
+            "azerai": {
+                "description": "Khu nghỉ dưỡng biệt lập trên Cồn Ấu mang lại sự riêng tư tuyệt đối."
+            }
+        },
+        "restaurants_data": {
+            "lau-mam": {
+                "name": "Lẩu Mắm Dạ Lý",
+                "description": "Địa điểm nổi tiếng nhất để thưởng thức lẩu mắm chuẩn vị Cần Thơ."
+            },
+            "banh-xeo": {
+                "name": "Bánh Xèo 7 Tới",
+                "description": "Bánh xèo giòn tan với nhân vịt củ hũ dừa đặc trưng, ăn kèm rất nhiều rau rừng."
+            },
+            "vit-nau-chao": {
+                "name": "Vịt Nấu Chao Thành Giao",
+                "description": "Món ăn đặc sản dân dã nhưng đậm đà, quán đã có truyền thống lâu đời."
+            },
+            "nem-nuong": {
+                "name": "Nem Nướng Thanh Vân",
+                "description": "Thưởng thức nem nướng Cái Răng thơm nức mũi, cuốn kèm bánh tráng và rau sống."
+            },
+            "banh-cong": {
+                "name": "Bánh Cống Cô Út",
+                "description": "Món bánh đặc sản nóng hổi, giòn rụm với tôm và đậu xanh bên trong."
+            }
+        },
+        "reviews_data": {
+            "review1": {
+                "comment": "Cần Thơ GoQuest thực sự là một trải nghiệm tuyệt vời, mình rất thích cách kết hợp bảo vệ môi trường vào du lịch."
+            },
+            "review2": {
+                "comment": "Bánh xèo ở Cồn Sơn ngon tuyệt, người dân thì vô cùng thân thiện."
+            }
+        }
     }
 }

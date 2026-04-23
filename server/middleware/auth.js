@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const { User } = require('../models');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'conson_super_secret_key_2024';
 
@@ -22,7 +22,7 @@ exports.authMiddleware = async (req, res, next) => {
 exports.authorize = (...roles) => {
     return async (req, res, next) => {
         try {
-            const user = await User.findById(req.userId);
+            const user = await User.findByPk(req.userId);
             if (!user) {
                 return res.status(404).json({ message: 'Không tìm thấy người dùng' });
             }
