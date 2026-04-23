@@ -7,7 +7,7 @@ exports.getUsersReport = async (req, res) => {
     try {
         const tasks = await Task.findAll({ where: { isActive: true } });
         const users = await User.findAll({
-            include: ['completedTasks']
+            include: ['completedTasks', 'activeMissions']
         });
 
         const allUsers = users.map(u => {
