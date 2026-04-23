@@ -2,69 +2,57 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
-const bcrypt = require('bcryptjs');
 const { connectDB } = require('./config/db');
 const { User, Task, Gift, UserActiveMission, UserCompletedTask } = require('./models');
 
 const app = express();
 
-// Comprehensive Seed Data Function
+// Direct Database Seeding Function
 const seedInitialData = async () => {
   try {
-    const salt = await bcrypt.genSalt(10);
+    console.log('🔄 Checking and seeding database data...');
 
     // 1. Seed Admin
-    const adminPassword = await bcrypt.hash('admin123', salt);
-    await User.findOrCreate({
+    const [admin] = await User.findOrCreate({
       where: { username: 'admin' },
       defaults: {
         username: 'admin',
         email: 'admin@conson.com',
-        password: adminPassword,
+        password: 'admin123', // Let the model hook hash it
         displayName: 'Quản trị viên',
         role: 'admin'
       }
     });
+    // Force update password to plain text so the hook hashes it correctly if it was double-hashed before
+    admin.password = 'admin123';
+    await admin.save();
 
     // 2. Seed Staff
-    const staffPassword = await bcrypt.hash('staff123', salt);
     const staffData = [
-      { username: 'staff_nam', email: 'nam@conson.com', password: staffPassword, displayName: 'Nguyễn Văn Nam', role: 'staff' },
-      { username: 'staff_lan', email: 'lan@conson.com', password: staffPassword, displayName: 'Trần Thị Lan', role: 'staff' }
+      { username: 'staff_nam', email: 'nam@conson.com', password: 'staff123', displayName: 'Nguyễn Văn Nam', role: 'staff' },
+      { username: 'staff_lan', email: 'lan@conson.com', password: 'staff123', displayName: 'Trần Thị Lan', role: 'staff' }
     ];
     for (const s of staffData) {
-      await User.findOrCreate({ where: { username: s.username }, defaults: s });
+      const [staff] = await User.findOrCreate({ where: { username: s.username }, defaults: s });
+      staff.password = s.password;
+      await staff.save();
     }
 
-    // 3. Seed Tasks (if empty)
-    const taskCount = await Task.count();
-    if (taskCount === 0) {
-      const sampleTasks = [
-        { title: 'Thưởng thức Bánh Xèo', type: 'food', points: 15, icon: '🥞', category: 'short-term' },
-        { title: 'Trang trí Nón Lá', type: 'craft', points: 25, icon: '🎨', category: 'short-term' },
-        { title: 'Bảo vệ Môi trường', type: 'environment', points: 75, icon: '🌿', category: 'long-term' },
-        { title: 'Hành trình khám phá', type: 'health', points: 200, icon: '🏃', category: 'long-term' }
-      ];
-      await Task.bulkCreate(sampleTasks);
-    }
-
-    // 4. Seed Mock Tourists (Players)
-    const userPassword = await bcrypt.hash('user123', salt);
+    // 3. Seed Mock Tourists (Players)
     const touristData = [
-      { username: 'minh_quan', email: 'quan@gmail.com', password: userPassword, displayName: 'Minh Quân', role: 'user', points: 120 },
-      { username: 'thu_thao', email: 'thao@gmail.com', password: userPassword, displayName: 'Thu Thảo', role: 'user', points: 45 },
-      { username: 'hoang_long', email: 'long@gmail.com', password: userPassword, displayName: 'Hoàng Long', role: 'user', points: 210 }
+      { username: 'minh_quan', email: 'quan@gmail.com', password: 'user123', displayName: 'Minh Quân', role: 'user', points: 120 },
+      { username: 'thu_thao', email: 'thao@gmail.com', password: 'user123', displayName: 'Thu Thảo', role: 'user', points: 45 },
+      { username: 'hoang_long', email: 'long@gmail.com', password: 'user123', displayName: 'Hoàng Long', role: 'user', points: 210 }
     ];
     
     for (const t of touristData) {
       const [user, created] = await User.findOrCreate({ where: { username: t.username }, defaults: t });
       
-      // Force update password if user already exists but login fails (common issue in seeding)
-      if (!created) {
-        user.password = userPassword;
-        await user.save();
-      } else {
-        // Link some tasks to show "Activity" for NEW users
+      // Force update password
+      user.password = t.password;
+      await user.save();
+      
+      if (created) {
         const tasks = await Task.findAll({ limit: 2 });
         if (tasks.length >= 2) {
             if (t.username === 'minh_quan') {
@@ -82,7 +70,7 @@ const seedInitialData = async () => {
       }
     }
 
-    console.log('✨ Mock data (Staff & Tourists) synchronized and secured!');
+    console.log('✅ All data inserted directly into database successfully!');
   } catch (error) {
     console.error('❌ Error seeding data:', error.message);
   }
