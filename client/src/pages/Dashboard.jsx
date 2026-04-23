@@ -38,15 +38,7 @@ export default function Dashboard() {
     const [completedIds, setCompletedIds] = useState([])
     const [currentPos, setCurrentPos] = useState(null)
     const [isMapExpanded, setIsMapExpanded] = useState(false)
-    const [journeyTasks, setJourneyTasks] = useState(() => {
-        try {
-            const userId = user?.id || 'guest'
-            const saved = localStorage.getItem(`journeyTasks_${userId}`)
-            return saved ? JSON.parse(saved) : []
-        } catch (e) {
-            return []
-        }
-    })
+    const [journeyTasks, setJourneyTasks] = useState([])
     const [toastMsg, setToastMsg] = useState(null)
     const [toastType, setToastType] = useState('success')
     const [verifyCodes, setVerifyCodes] = useState({})
@@ -76,6 +68,7 @@ export default function Dashboard() {
                 const response = await api.get('/tasks/progress')
                 const allTasks = response.data.tasks || []
                 setTasks(allTasks)
+                setJourneyTasks(response.data.assignedTasks || [])
                 
                 const done = allTasks.filter(t => t.isCompleted).map(t => t.id) || []
                 setCompletedIds(done)
@@ -95,21 +88,7 @@ export default function Dashboard() {
     }, [])
 
     /* Sync journey tasks with rich data from server whenever tasks update */
-    useEffect(() => {
-        if (tasks.length > 0 && journeyTasks.length > 0) {
-            const updatedJourney = journeyTasks.map(jt => {
-                const richTask = tasks.find(t => t.id === jt.id);
-                return richTask ? { ...jt, ...richTask } : jt;
-            });
-
-            if (JSON.stringify(updatedJourney) !== JSON.stringify(journeyTasks)) {
-                setJourneyTasks(updatedJourney);
-                const userId = user?.id || 'guest'
-                localStorage.setItem(`journeyTasks_${userId}`, JSON.stringify(updatedJourney));
-                console.log('Journey tasks updated with rich data');
-            }
-        }
-    }, [tasks]);
+    // Server-side sync is now handled by the initial fetch and assign API
 
     /* fetch gifts */
     useEffect(() => {
@@ -298,14 +277,18 @@ export default function Dashboard() {
             showToast(t('dashboard.toasts.load_error'), 'error')
             return
         }
-        // Filter out completed tasks first? Or just any 5?
-        // User said "random nhiệm vụ", usually means from all available.
         const shuffled = [...tasks].sort(() => 0.5 - Math.random())
         const selected = shuffled.slice(0, 5)
-        setJourneyTasks(selected)
-        const userId = user?.id || 'guest'
-        localStorage.setItem(`journeyTasks_${userId}`, JSON.stringify(selected))
-        showToast(t('dashboard.toasts.refresh_tasks'))
+        
+        // Save to Database
+        api.post('/tasks/assign', { taskIds: selected.map(t => t.id) })
+            .then(() => {
+                setJourneyTasks(selected)
+                showToast(t('dashboard.toasts.refresh_tasks'))
+            })
+            .catch(err => {
+                showToast('Lỗi lưu nhiệm vụ lên server', 'error')
+            })
     }
 
     const handleLogout = () => { logout(); navigate('/') }
