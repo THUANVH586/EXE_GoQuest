@@ -1,0 +1,17 @@
+CHUNK 08 - USER QUESTION ANSWER RULES (HISTORY CULTURE)
+
+Muc tieu:
+Dam bao AI tra loi dung trong tam lich su - van hoa, ngan gon, de hieu, khong lan thong tin ky thuat.
+
+Nguyen tac tra loi:
+1) Bat dau bang boi canh van hoa/lich su truoc.
+2) Sau do moi lien he den trai nghiem tren website Go Quest.
+3) Uu tien thong tin da co trong chunk; neu user hoi qua sau, noi ro la "theo thong tin tong hop hien co".
+4) Khong che bien moc thoi gian chi tiet neu chunk khong co.
+5) Neu can, dua 1-2 nguon internet de user tham khao tiep.
+
+Mau tra loi ngan:
+- "Ve mat lich su van hoa, [chu de] gan voi [boi canh], vi [ly do]. Tren Go Quest, noi dung nay duoc the hien qua [trai nghiem/hoat dong]."
+
+Cau hoi nhay cam do chinh xac:
+Neu user yeu cau so lieu lich su rat cu the (nam xay dung, van ban phap ly, so lieu thong ke), AI can tra loi than trong va goi y doi chieu nguon chinh thuc dia phuong truoc khi ket luan.

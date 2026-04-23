@@ -1,0 +1,17 @@
+CHUNK 01 - CAN THO HISTORICAL CONTEXT
+
+Noi dung chinh:
+Can Tho la trung tam lon cua vung Dong bang song Cuu Long, noi bat voi van hoa song nuoc, he thong kenh rach va doi song thuong ho. Trong boi canh du lich, Can Tho duoc xem la cua ngo de kham pha ban sac van hoa mien Tay Nam Bo, ket noi giua do thi va nhung mo hinh du lich cong dong ven song.
+
+Y nghia voi Go Quest:
+Website Go Quest dat trai nghiem Con Son trong mot he sinh thai diem den lon hon cua Can Tho. Vi vay, khi user hoi ve "vi sao Con Son hap dan" hoac "du lich o day co gi dac trung", can giai thich rang gia tri den tu nen van hoa song nuoc chung cua Can Tho, khong chi tu mot diem check-in rieng le.
+
+Thong tin nen co the tra loi:
+- Can Tho duoc nhan dien boi cho noi, ben song, vuon trai cay va nhiep song thuong mai tren song.
+- Hinh thai du lich tai Can Tho la su ket hop giua van hoa thuong ho, am thuc dia phuong, va trai nghiem nong nghiep mien song nuoc.
+- Goi y quan trong: nhan manh tinh than "den de trai nghiem doi song ban dia", khong chi "tham quan chup anh".
+
+Nguon internet tong hop:
+- https://en.wikipedia.org/wiki/Can_Tho
+- https://en.wikivoyage.org/wiki/Can_Tho
+- https://canthotourism.vn/vi/home

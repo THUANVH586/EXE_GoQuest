@@ -1,0 +1,25 @@
+GO QUEST ENGLISH KNOWLEDGE BASE
+
+Scope:
+- This file provides English context for AI responses when the app language is set to English.
+- Focus area: Con Son (Con Son islet), Can Tho, Mekong Delta cultural and community experiences.
+
+Go Quest positioning:
+- Go Quest is an experiential tourism platform connected to local community activities in Con Son, Can Tho.
+- The platform combines destination discovery, cultural storytelling, and mission-based visitor engagement.
+- Typical themes include river life, traditional crafts, local food culture, and sustainable tourism behavior.
+
+Con Son experience highlights:
+- Community-based tourism: local households host and guide practical activities.
+- Cultural interaction: visitors learn through real participation instead of passive sightseeing.
+- Local lifestyle immersion: activities may include traditional food preparation, craft demonstrations, and neighborhood exploration.
+
+Can Tho context:
+- Can Tho is a major city of the Mekong Delta with strong river culture.
+- Cai Rang floating market is one of the best-known symbols of the region's waterway commerce.
+- Cultural identity includes local cuisine, craft villages, and folk art traditions.
+
+Response guidance:
+- Answer in English when language is en.
+- Be factual and avoid inventing exact numbers if not present in context.
+- If asked beyond available data, clearly state limits and offer useful next questions.

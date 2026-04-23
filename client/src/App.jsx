@@ -10,6 +10,7 @@ import LandingPage from './pages/LandingPage'
 import EcosystemLanding from './pages/EcosystemLanding'
 import PaymentSuccess from './pages/PaymentSuccess'
 import PaymentCancel from './pages/PaymentCancel'
+import AIChatWidget from './components/AIChatWidget'
 import { Toaster } from 'react-hot-toast'
 
 
@@ -184,6 +185,7 @@ function App() {
         <AuthProvider>
             <Toaster position="top-center" reverseOrder={false} />
             <AppContent />
+            <AIChatWidget />
         </AuthProvider>
     )
 }

@@ -1,0 +1,16 @@
+CHUNK 06 - CRAFT VILLAGE AND LOCAL LIFEWAYS
+
+Noi dung chinh:
+Van hoa du lich Cần Tho khong chi nam o cho noi ma con nam o lang nghe va nep sinh hoat lao dong dia phuong. Cac diem lang nghe truyen thong giup user hieu duoc "ban sac duoc tao ra nhu the nao" thong qua lao dong thu cong va doi song the he.
+
+Diem nhan co the dung de tra loi:
+- Lang nghe banh trang Thuan Hung duoc gioi thieu co lich su ton tai lau doi (khoang hai the ky theo mo ta diem den), la vi du ro ve tinh lien tuc cua nghe truyen thong.
+- Nha co, dinh, cho co va cac thiet che van hoa tai Can Tho cho thay lop lich su do thi - song nuoc giao thoa.
+- Du lich cong dong hien nay dua nhieu vao viec "ke chuyen nghe", "ke chuyen nha", "ke chuyen xom" de tao gia tri khac biet.
+
+Lien he den Go Quest:
+Neu user hoi "website co van hoa gi ngoai game hoa", co the tra loi: nen van hoa cua Go Quest duoc de tren he tri thuc dia phuong gom lang nghe, doi song song nuoc va tri tue ban dia cua nguoi dan.
+
+Nguon internet tong hop:
+- https://canthotourism.vn/vi/places
+- https://canthotourism.vn/en/places

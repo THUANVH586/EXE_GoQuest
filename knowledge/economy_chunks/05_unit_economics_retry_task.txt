@@ -1,0 +1,25 @@
+CHUNK 05 - UNIT ECONOMICS CHO RETRY NHIEM VU
+
+Don vi phan tich de xuat: 1 lan retry nhiem vu.
+
+Doanh thu don vi:
+- Gia ban hien thi: 0.5 USD / lan retry.
+
+Chi phi bien co the gan voi 1 lan retry:
+- Phi thanh toan cong giao dich.
+- Chi phi ho tro khach neu phat sinh loi giao dich.
+- Chi phi van hanh bo sung neu retry tao tang tai cho staff.
+
+Bien loi nhuan don vi (khung tu duy):
+- Unit Margin = 0.5 USD - (Payment Fee + Support Cost + Variable Ops Cost)
+
+Diem can theo doi de toi uu:
+- Ty le nhiem vu het han tren tong so nhiem vu da bat dau.
+- Ty le khach chap nhan retry sau khi het han.
+- So lan retry trung binh moi user.
+- Ty le hoan tat sau retry (neu cao thi retry co gia tri that).
+
+Ham y kinh te:
+- Retry la nguon thu bo sung va la co che dieu tiet hanh vi.
+- Neu retry qua cao co the gay bo cuoc; neu retry qua thap co the khong du bu chi phi.
+- Muc 0.5 USD dang dinh vi theo huong de tiep can, phu hop trai nghiem dai chung.

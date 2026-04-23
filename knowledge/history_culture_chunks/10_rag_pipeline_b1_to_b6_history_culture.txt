@@ -1,0 +1,29 @@
+CHUNK 10 - RAG PIPELINE B1 TO B6 (HISTORY CULTURE)
+
+B1 - Chia nho file thanh chunk:
+- Don vi chunk: 1 chu de ro rang/1 file (nhu 01..09).
+- Moi chunk nen 150-350 tu de de retrieval.
+
+B2 - Tao embedding cho moi chunk:
+- Input: noi dung tung file txt.
+- Output: vector embedding + metadata (chunk_id, topic, source_urls).
+
+B3 - Luu vector:
+- Luu vao vector DB (vd: FAISS, Qdrant, Pinecone, Weaviate).
+- Metadata bat buoc: file_name, topic, source, last_update.
+
+Khi user hoi:
+B4 - Convert cau hoi thanh vector:
+- Embed query text cua user.
+
+B5 - Tim chunk giong nhat:
+- Top-k de xuat: k=3.
+- Loc theo namespace: history_culture_chunks truoc, sau do moi mo rong ra economy_chunks neu can.
+
+B6 - Chi gui chunk lien quan cho AI:
+- Prompt context chi gom cac chunk top-k.
+- Yeu cau AI tra loi ngan gon, dung trong tam lich su-van hoa, co lien he website Go Quest.
+
+Goi y truy van ket hop:
+- Neu query co tu "lich su", "van hoa", "di san", "truyen thong" => uu tien namespace history_culture_chunks.
+- Neu query co tu "doanh thu", "chi phi", "gia", "kinh doanh" => uu tien namespace economy_chunks.

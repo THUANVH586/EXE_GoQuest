@@ -1,4 +1,5 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 const { connectDB } = require('./config/db');
@@ -20,6 +21,7 @@ app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/staff', require('./routes/staffRoutes'));
 app.use('/api/payment', require('./routes/paymentRoutes'));
 app.use('/api/gifts', require('./routes/giftRoutes'));
+app.use('/api/ai', require('./routes/aiRoutes'));
 
 // Health check
 app.get('/api/health', async (req, res) => {

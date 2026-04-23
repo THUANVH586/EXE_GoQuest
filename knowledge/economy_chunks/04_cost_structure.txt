@@ -1,0 +1,28 @@
+CHUNK 04 - COST STRUCTURE (CAU TRUC CHI PHI)
+
+Nhom chi phi van hanh chinh:
+1) Chi phi van hanh trai nghiem tai diem
+- Nhan su staff tai cho.
+- Dieu phoi hoat dong xac nhan nhiem vu.
+- Ho tro khach trong qua trinh trai nghiem.
+
+2) Chi phi qua tang doi diem
+- Gia tri qua tang vat ly.
+- Chi phi ton kho va bo sung ton.
+- Rui ro ton kho het han/khong quay vong nhanh.
+
+3) Chi phi marketing va tang truong
+- Thu hut khach moi.
+- Noi dung thuong hieu du lich xanh va cong dong.
+- Hop tac voi kenh du lich dia phuong.
+
+4) Chi phi thanh toan va doi soat
+- Phi giao dich thanh toan cho retry.
+- Chi phi doi soat va xu ly giao dich thanh cong/that bai.
+
+5) Chi phi quan tri chat luong
+- Dam bao trai nghiem dong deu giua cac staff va ca nhiem vu.
+- Xu ly khieu nai va ho tro sau trai nghiem.
+
+Goc nhin kinh te:
+- Loi nhuan phu thuoc vao can bang giua doanh thu retry + doanh thu bo sung va tong chi phi van hanh + qua tang + marketing.
