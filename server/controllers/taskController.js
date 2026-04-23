@@ -5,7 +5,7 @@ const { Op } = require('sequelize');
 // @route   GET /api/tasks
 exports.getTasks = async (req, res) => {
     try {
-        const tasks = await Task.findAll({ 
+        const tasks = await Task.findAll({
             where: { isActive: true },
             order: [['order', 'ASC']]
         });
@@ -55,13 +55,13 @@ exports.getProgress = async (req, res) => {
                 { association: 'activeMissions' }
             ]
         });
-        
+
         if (!user) {
             return res.status(404).json({ message: 'Không tìm thấy người dùng' });
         }
 
         // Return all tasks but mark those assigned/completed
-        const allTasks = await Task.findAll({ 
+        const allTasks = await Task.findAll({
             where: { isActive: true },
             order: [['order', 'ASC']]
         });
@@ -119,7 +119,7 @@ exports.startMission = async (req, res) => {
             });
         } else {
             if (mission.status === 'completed') return res.status(400).json({ message: 'Đã hoàn thành!' });
-            
+
             mission.status = 'started';
             mission.startTime = new Date();
             mission.expiresAt = new Date(Date.now() + (task.duration || 30) * 60 * 1000);
@@ -149,7 +149,7 @@ exports.completeTask = async (req, res) => {
         }
 
         // Validate Code
-        const validCode = await VerificationCode.findOne({ 
+        const validCode = await VerificationCode.findOne({
             where: { code, expiresAt: { [Op.gt]: new Date() } }
         });
 
@@ -166,9 +166,8 @@ exports.completeTask = async (req, res) => {
             defaults: { completedAt: new Date() }
         });
 
-        // Add points
-        const task = await Task.findByPk(taskId);
-        await user.increment('points', { by: task.points });
+        // Hủy mã sau khi dùng để mỗi nhiệm vụ là một mã duy nhất
+        await validCode.destroy();
 
         res.json({ message: '🎉 Chúc mừng bạn đã hoàn thành!' });
     } catch (error) {
