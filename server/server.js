@@ -7,8 +7,29 @@ const User = require('./models/User');
 
 const app = express();
 
-// Kết nối SQL Server
-connectDB();
+// Seed Admin Function
+const seedAdmin = async () => {
+  try {
+    const adminExists = await User.findOne({ where: { role: 'admin' } });
+    if (!adminExists) {
+      await User.create({
+        username: 'admin',
+        email: 'admin@conson.com',
+        password: 'admin123',
+        displayName: 'Quản trị viên',
+        role: 'admin'
+      });
+      console.log('✅ Default admin account created (admin/admin123)');
+    }
+  } catch (error) {
+    console.error('❌ Error seeding admin:', error.message);
+  }
+};
+
+// Connect to Database and Seed
+connectDB().then(() => {
+  seedAdmin();
+});
 
 // Middleware
 app.use(cors());
@@ -29,7 +50,7 @@ app.get('/api/health', async (req, res) => {
     const userCount = await User.count();
     res.json({
       status: 'ok',
-      message: 'Cồn Sơn Tourism API is running with SQL Server!',
+      message: 'Go Quest API is running!',
       users: userCount
     });
   } catch (error) {
@@ -41,7 +62,6 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📝 Database: SQL Server (SSMS)`);
   console.log(`\n🔗 API Endpoints:`);
   console.log(`   POST /api/auth/register - Đăng ký`);
   console.log(`   POST /api/auth/login    - Đăng nhập`);
