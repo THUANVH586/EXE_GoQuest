@@ -10,6 +10,7 @@ export default function StaffDashboard() {
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [timeLeft, setTimeLeft] = useState('00:00');
 
     const fetchStats = async () => {
         try {
@@ -27,6 +28,25 @@ export default function StaffDashboard() {
         const interval = setInterval(fetchStats, 3000); // Auto refresh every 3s
         return () => clearInterval(interval);
     }, []);
+
+    useEffect(() => {
+        if (!stats?.expiresAt) return;
+        
+        const updateTimer = () => {
+            const diff = new Date(stats.expiresAt) - new Date();
+            if (diff <= 0) {
+                setTimeLeft('00:00');
+            } else {
+                const m = Math.floor(diff / 1000 / 60); // calculate total minutes left
+                const s = Math.floor((diff / 1000) % 60);
+                setTimeLeft(`${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`);
+            }
+        };
+
+        updateTimer();
+        const interval = setInterval(updateTimer, 1000);
+        return () => clearInterval(interval);
+    }, [stats?.expiresAt]);
 
     const handleResetCode = async () => {
         try {
@@ -152,7 +172,7 @@ export default function StaffDashboard() {
                             width: '100%'
                         }}>
                             <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', margin: 0 }}>
-                                ⏱️ Hết hạn: <strong>{new Date(stats?.expiresAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong>
+                                ⏱️ Hết hạn sau: <strong>{timeLeft}</strong>
                             </p>
                         </div>
 
