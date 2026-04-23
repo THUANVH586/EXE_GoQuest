@@ -23,8 +23,8 @@ const UserActiveMission = sequelize.define('UserActiveMission', {
         type: DataTypes.DATE
     },
     status: {
-        type: DataTypes.ENUM('started', 'completed', 'expired'),
-        defaultValue: 'started'
+        type: DataTypes.ENUM('assigned', 'started', 'completed', 'expired'),
+        defaultValue: 'assigned'
     }
 }, { timestamps: false });
 
