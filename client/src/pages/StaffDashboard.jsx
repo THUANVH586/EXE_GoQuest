@@ -149,7 +149,7 @@ export default function StaffDashboard() {
                             fontWeight: 700,
                             marginBottom: 'var(--space-lg)'
                         }}>
-                            MÃ XÁC NHẬN NHIỆM VỤ
+                            MÃ XÁC NHẬN (NHIỆM VỤ & ĐỔI QUÀ)
                         </div>
 
                         <div className="animate-pulse" style={{
@@ -270,9 +270,10 @@ export default function StaffDashboard() {
                         fontSize: '0.85rem',
                         margin: 0
                     }}>
-                        <li style={{ marginBottom: 'var(--space-xs)' }}>Kiểm tra xem khách đã thực hiện đúng yêu cầu chưa.</li>
-                        <li style={{ marginBottom: 'var(--space-xs)' }}>Nếu hoàn thành, cung cấp <strong>mã bên trên</strong> cho khách.</li>
-                        <li style={{ marginBottom: 0 }}>Mã này thay đổi sau mỗi 30 phút.</li>
+                        <li style={{ marginBottom: 'var(--space-xs)' }}><strong>Đối với Nhiệm vụ:</strong> Kiểm tra xem khách đã thực hiện đúng yêu cầu chưa trước khi cấp mã.</li>
+                        <li style={{ marginBottom: 'var(--space-xs)' }}><strong>Đối với Đổi quà:</strong> Kiểm tra xem khách đang có đủ điểm và phần thưởng còn hàng không, sau đó cấp mã cho khách.</li>
+                        <li style={{ marginBottom: 'var(--space-xs)' }}>Cung cấp <strong>mã bên trên</strong> cho khách (dùng chung cho cả 2 trường hợp).</li>
+                        <li style={{ marginBottom: 0 }}>Mã thay đổi tự động ngay khi khách dùng thành công hoặc sau 30 phút.</li>
                     </ul>
                 </div>
             </div>

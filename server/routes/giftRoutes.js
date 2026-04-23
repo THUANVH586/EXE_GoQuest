@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Gift, User, Task, VerificationCode } = require('../models');
+const { Gift, User, Task, VerificationCode, UserRedeemedGift } = require('../models');
 const { authMiddleware, authorize } = require('../middleware/auth');
 const { Op } = require('sequelize');
 
@@ -58,10 +58,16 @@ router.post('/:id/redeem', authMiddleware, async (req, res) => {
         if (gift.stock > 0) {
             await gift.decrement('stock');
         }
-        await user.decrement('points', { by: gift.pointsRequired });
-
-        // Record redemption (This assumes UserRedeemedGift exists as a record or relationship)
-        // For simplicity in this demo, we just return success after deducting points
+        
+        await UserRedeemedGift.create({
+            UserId: user.id,
+            GiftId: gift.id,
+            giftTitle: gift.title,
+            pointsSpent: gift.pointsRequired
+        });
+        
+        // Hủy mã sau khi dùng
+        await validCode.destroy();
         
         res.json({ 
             message: `🎁 Chúc mừng! Bạn đã đổi thành công "${gift.title}"!`,
