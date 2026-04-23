@@ -27,7 +27,10 @@ const sampleGifts = [
 // Comprehensive Seed Data Function with FORCE CLEANING
 const seedInitialData = async () => {
   try {
-    console.log('🧹 Force cleaning and re-seeding tasks/gifts...');
+    console.log('🧹 Syncing database structure and cleaning tasks...');
+    
+    // Sync structure changes (like new ENUM values)
+    await sequelize.sync({ alter: true });
 
     // 1. Seed Admin
     const [admin] = await User.findOrCreate({
