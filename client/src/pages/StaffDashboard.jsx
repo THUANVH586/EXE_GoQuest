@@ -24,7 +24,7 @@ export default function StaffDashboard() {
 
     useEffect(() => {
         fetchStats();
-        const interval = setInterval(fetchStats, 30000); // Auto refresh every 30s
+        const interval = setInterval(fetchStats, 3000); // Auto refresh every 3s
         return () => clearInterval(interval);
     }, []);
 
