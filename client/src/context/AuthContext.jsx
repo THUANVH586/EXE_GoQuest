@@ -49,8 +49,7 @@ export function AuthProvider({ children }) {
     }
 
     const logout = () => {
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
+        localStorage.clear()
         delete api.defaults.headers.common['Authorization']
         setUser(null)
     }

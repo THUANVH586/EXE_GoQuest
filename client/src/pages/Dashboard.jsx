@@ -40,7 +40,8 @@ export default function Dashboard() {
     const [isMapExpanded, setIsMapExpanded] = useState(false)
     const [journeyTasks, setJourneyTasks] = useState(() => {
         try {
-            const saved = localStorage.getItem('journeyTasks')
+            const userId = user?.id || 'guest'
+            const saved = localStorage.getItem(`journeyTasks_${userId}`)
             return saved ? JSON.parse(saved) : []
         } catch (e) {
             return []
@@ -103,7 +104,8 @@ export default function Dashboard() {
 
             if (JSON.stringify(updatedJourney) !== JSON.stringify(journeyTasks)) {
                 setJourneyTasks(updatedJourney);
-                localStorage.setItem('journeyTasks', JSON.stringify(updatedJourney));
+                const userId = user?.id || 'guest'
+                localStorage.setItem(`journeyTasks_${userId}`, JSON.stringify(updatedJourney));
                 console.log('Journey tasks updated with rich data');
             }
         }
@@ -301,7 +303,8 @@ export default function Dashboard() {
         const shuffled = [...tasks].sort(() => 0.5 - Math.random())
         const selected = shuffled.slice(0, 5)
         setJourneyTasks(selected)
-        localStorage.setItem('journeyTasks', JSON.stringify(selected))
+        const userId = user?.id || 'guest'
+        localStorage.setItem(`journeyTasks_${userId}`, JSON.stringify(selected))
         showToast(t('dashboard.toasts.refresh_tasks'))
     }
 
