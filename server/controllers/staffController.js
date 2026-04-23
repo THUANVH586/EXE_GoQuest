@@ -38,6 +38,30 @@ exports.getStaffDashboard = async (req, res) => {
 
         const currentCodeObj = await getActiveCode();
 
+        // Get redemption history
+        const usersWithGifts = await User.findAll({
+            include: [{ association: 'redeemedGifts' }]
+        });
+        
+        const redemptionHistory = [];
+        usersWithGifts.forEach(u => {
+            if (u.redeemedGifts) {
+                u.redeemedGifts.forEach(g => {
+                    redemptionHistory.push({
+                        id: g.UserRedeemedGift.GiftId + '_' + g.UserRedeemedGift.UserId + '_' + new Date(g.UserRedeemedGift.redeemedAt).getTime(),
+                        username: u.username,
+                        displayName: u.displayName,
+                        giftTitle: g.UserRedeemedGift.giftTitle || g.title,
+                        pointsSpent: g.UserRedeemedGift.pointsSpent,
+                        redeemedAt: g.UserRedeemedGift.redeemedAt
+                    });
+                });
+            }
+        });
+        // Sort newest first, take top 50
+        redemptionHistory.sort((a, b) => new Date(b.redeemedAt) - new Date(a.redeemedAt));
+        const recentRedemptions = redemptionHistory.slice(0, 50);
+
         res.json({
             totalPlayers,
             activePlayers: activePlayers.map(u => ({
@@ -52,7 +76,8 @@ exports.getStaffDashboard = async (req, res) => {
                 activeMissionsCount: u.activeMissions.length
             })),
             currentCode: currentCodeObj.code,
-            expiresAt: currentCodeObj.expiresAt
+            expiresAt: currentCodeObj.expiresAt,
+            recentRedemptions
         });
     } catch (error) {
         console.error('Error fetching staff dashboard:', error);

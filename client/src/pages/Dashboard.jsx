@@ -1064,7 +1064,8 @@ export default function Dashboard() {
                                         return;
                                     }
                                     try {
-                                        const res = await api.post(`/gifts/${redeemModal.gift._id}/redeem`, { code: redeemModal.code });
+                                        const giftId = redeemModal.gift.id || redeemModal.gift._id;
+                                        const res = await api.post(`/gifts/${giftId}/redeem`, { code: redeemModal.code });
                                         showToast(res.data.message);
                                         setPointsSpent(prev => prev + redeemModal.gift.pointsRequired);
                                         setRedeemModal(null);

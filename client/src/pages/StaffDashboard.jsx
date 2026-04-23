@@ -257,6 +257,51 @@ export default function StaffDashboard() {
                     </div>
                 </div>
 
+                {/* Redemption History */}
+                <div className="card animate-fade-in" style={{ animationDelay: '0.2s', marginTop: 'var(--space-xl)' }}>
+                    <div className="section-header" style={{ marginBottom: '16px' }}>
+                        <h2 className="section-title">🎁 Lịch sử đổi quà gần đây</h2>
+                    </div>
+                    <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                            <thead>
+                                <tr style={{ borderBottom: '2px solid rgba(45, 122, 58, 0.1)' }}>
+                                    <th style={{ padding: 'var(--space-md) 0', color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>THỜI GIAN</th>
+                                    <th style={{ padding: 'var(--space-md) 0', color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>KHÁCH HÀNG</th>
+                                    <th style={{ padding: 'var(--space-md) 0', color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>QUÀ TẶNG</th>
+                                    <th style={{ padding: 'var(--space-md) 0', color: 'var(--color-text-muted)', fontSize: '0.85rem', textAlign: 'right' }}>ĐIỂM TRỪ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {stats?.recentRedemptions?.map(r => (
+                                    <tr key={r.id} style={{ borderBottom: '1px solid rgba(45, 122, 58, 0.05)' }}>
+                                        <td style={{ padding: 'var(--space-md) 0', fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
+                                            {new Date(r.redeemedAt).toLocaleString('vi-VN')}
+                                        </td>
+                                        <td style={{ padding: 'var(--space-md) 0' }}>
+                                            <div style={{ fontWeight: 600 }}>{r.displayName}</div>
+                                            <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>@{r.username}</div>
+                                        </td>
+                                        <td style={{ padding: 'var(--space-md) 0', fontWeight: 600, color: 'var(--color-accent-primary)' }}>
+                                            {r.giftTitle}
+                                        </td>
+                                        <td style={{ padding: 'var(--space-md) 0', textAlign: 'right', fontWeight: 700, color: '#ef4444' }}>
+                                            -{r.pointsSpent}
+                                        </td>
+                                    </tr>
+                                ))}
+                                {(!stats?.recentRedemptions || stats.recentRedemptions.length === 0) && (
+                                    <tr>
+                                        <td colSpan="4" style={{ textAlign: 'center', padding: 'var(--space-2xl)', color: 'var(--color-text-muted)' }}>
+                                            Chưa có lượt đổi quà nào
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 {/* Info Section */}
                 <div className="card" style={{
                     background: 'rgba(255, 255, 255, 0.5)',
