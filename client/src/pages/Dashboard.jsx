@@ -51,9 +51,9 @@ export default function Dashboard() {
     const distanceRef = useRef(distance)
 
     function getRank(pts) {
-        if (pts >= 1000) return { name: t('dashboard.rank.gold'), icon: '🏆', next: null, need: 0, nextThreshold: 1000 }
-        if (pts >= 500) return { name: t('dashboard.rank.silver'), icon: '🥈', next: t('dashboard.rank.gold'), need: 1000 - pts, nextThreshold: 1000 }
-        return { name: t('dashboard.rank.bronze'), icon: '🥉', next: t('dashboard.rank.silver'), need: 500 - pts, nextThreshold: 500 }
+        if (pts >= 800) return { name: t('dashboard.rank.gold', 'Hạng Vàng'), icon: '🏆', next: null, need: 0, nextThreshold: 800 }
+        if (pts >= 300) return { name: t('dashboard.rank.silver', 'Hạng Bạc'), icon: '🥈', next: t('dashboard.rank.gold', 'Hạng Vàng'), need: 800 - pts, nextThreshold: 800 }
+        return { name: t('dashboard.rank.bronze', 'Hạng Đồng'), icon: '🥉', next: t('dashboard.rank.silver', 'Hạng Bạc'), need: 300 - pts, nextThreshold: 300 }
     }
 
     // Keep distanceRef in sync with distance state
@@ -315,9 +315,9 @@ export default function Dashboard() {
     const distanceReward = distance >= JOURNEY_GOAL ? 200 : 0
     const totalPts = basePts + (plasticCommit ? 50 : 0) + distanceReward - pointsSpent
     const pct = tasks.length > 0 ? Math.min(Math.round((completedIds.length / REQUIRED_TASKS) * 100), 100) : 0
-    const barPct = Math.min((totalPts / 1000) * 100, 100)
     const journeyPct = Math.min((distance / JOURNEY_GOAL) * 100, 100)
     const rank = getRank(totalPts)
+    const barPct = Math.min((totalPts / rank.nextThreshold) * 100, 100)
 
     const filteredTasks = tasks.filter(t =>
         (t.title || '').toLowerCase().includes(searchVal.toLowerCase()) ||
@@ -578,7 +578,7 @@ export default function Dashboard() {
                                 <div className="dsh-hero-bar-wrap">
                                     <div className="dsh-hero-bar-labels">
                                         <span>{t('dashboard.hero.current_progress')}</span>
-                                        <span>{t('dashboard.hero.target')}</span>
+                                        <span>{t('dashboard.hero.target').replace('1000', rank.nextThreshold).replace('1000', rank.nextThreshold)}</span>
                                     </div>
                                     <div className="dsh-hero-bar-track">
                                         <div className="dsh-hero-bar-fill" style={{ width: `${barPct}%` }} />
