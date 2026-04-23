@@ -24,10 +24,10 @@ const sampleGifts = [
     { title: 'Bộ Bánh Dân Gian', description: 'Hộp quà gồm các loại bánh dân gian đặc sản địa phương.', pointsRequired: 300, icon: '🍱', stock: 20 }
 ];
 
-// Comprehensive Seed Data Function with FORCE CLEANING
+// Stable Seed Data Function
 const seedInitialData = async () => {
   try {
-    console.log('🧹 Syncing database structure and cleaning tasks...');
+    console.log('🔄 Synchronizing database and seeding data (stable IDs)...');
     
     // Sync structure changes (like new ENUM values)
     await sequelize.sync({ alter: true });
@@ -40,15 +40,21 @@ const seedInitialData = async () => {
     admin.password = 'admin123';
     await admin.save();
 
-    // 2. Clear and Re-seed Tasks
-    await Task.destroy({ where: {}, truncate: false, cascade: true }); // Clean all
-    await Task.bulkCreate(sampleTasks);
-    console.log('✅ Tasks cleaned and re-seeded (7 unique tasks)');
+    // 2. Seed Tasks (Use findOrCreate to keep IDs stable)
+    for (const t of sampleTasks) {
+      await Task.findOrCreate({
+        where: { title: t.title },
+        defaults: t
+      });
+    }
 
-    // 3. Clear and Re-seed Gifts
-    await Gift.destroy({ where: {}, truncate: false, cascade: true });
-    await Gift.bulkCreate(sampleGifts);
-    console.log('✅ Gifts cleaned and re-seeded');
+    // 3. Seed Gifts
+    for (const g of sampleGifts) {
+      await Gift.findOrCreate({
+        where: { title: g.title },
+        defaults: g
+      });
+    }
 
     // 4. Seed Mock Tourists
     const touristData = [
@@ -63,7 +69,7 @@ const seedInitialData = async () => {
       await user.save();
     }
 
-    console.log('✨ DATABASE IS NOW CLEAN AND SYNCED!');
+    console.log('✅ DATABASE SYNCED AND READY (STABLE)!');
   } catch (error) {
     console.error('❌ Error seeding data:', error.message);
   }
