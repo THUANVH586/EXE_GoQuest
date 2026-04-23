@@ -14,6 +14,7 @@ function AdminDashboard() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [filter, setFilter] = useState('all') // all, completed, in-progress, not-started
+    const [roleFilter, setRoleFilter] = useState('all') // all, user, staff
     const [searchQuery, setSearchQuery] = useState('')
     const [activeTab, setActiveTab] = useState('leaderboard') // leaderboard, tasks, staff, gifts
     const [showTaskModal, setShowTaskModal] = useState(false)
@@ -257,12 +258,13 @@ function AdminDashboard() {
 
     const filteredUsers = users.filter(u => {
         const matchesFilter = filter === 'all' ? true : normalizeStatus(u.status) === filter;
+        const matchesRole = roleFilter === 'all' ? true : u.role === roleFilter;
         const searchLower = searchQuery.toLowerCase();
         const matchesSearch = (u.displayName || '').toLowerCase().includes(searchLower) || 
                               (u.username || '').toLowerCase().includes(searchLower) ||
                               (u.email || '').toLowerCase().includes(searchLower);
-        return matchesFilter && matchesSearch;
-    }).filter(u => u.role !== 'admin' || (u.role === 'admin' && filter === 'all')) // Hide other admins if filtering
+        return matchesFilter && matchesRole && matchesSearch;
+    }).filter(u => u.role !== 'admin' || (u.role === 'admin' && filter === 'all' && roleFilter === 'all')) // Hide other admins if filtering
 
     const displayStatus = (status) => {
         const norm = normalizeStatus(status)
@@ -456,6 +458,27 @@ function AdminDashboard() {
                                     />
                                 </div>
                                 <div style={{ display: 'flex', gap: 'var(--space-xs)', background: 'var(--color-bg-secondary)', padding: '4px', borderRadius: '10px' }}>
+                                    {['all', 'user', 'staff'].map((r) => (
+                                        <button
+                                            key={r}
+                                            onClick={() => setRoleFilter(r)}
+                                            style={{ 
+                                                padding: '6px 14px', 
+                                                fontSize: '0.75rem', 
+                                                borderRadius: '8px', 
+                                                border: 'none',
+                                                fontWeight: 700,
+                                                cursor: 'pointer',
+                                                background: roleFilter === r ? '#2c5926' : 'transparent',
+                                                color: roleFilter === r ? '#fff' : 'var(--color-text-muted)',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            {r === 'all' ? 'Tất cả' : r === 'user' ? 'Khách (User)' : 'Nhân viên (Staff)'}
+                                        </button>
+                                    ))}
+                                </div>
+                                <div style={{ display: 'flex', gap: 'var(--space-xs)', background: 'var(--color-bg-secondary)', padding: '4px', borderRadius: '10px' }}>
                                     {['all', 'completed', 'in-progress'].map((f) => (
                                         <button
                                             key={f}
@@ -520,14 +543,17 @@ function AdminDashboard() {
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
                                                         <div style={{ 
                                                             width: '32px', height: '32px', borderRadius: '50%', 
-                                                            background: u.role === 'admin' ? 'var(--gradient-primary)' : 'rgba(45, 122, 58, 0.1)',
-                                                            color: u.role === 'admin' ? '#fff' : 'var(--color-accent-primary)',
+                                                            background: u.role === 'admin' ? 'var(--gradient-primary)' : u.role === 'staff' ? '#3b82f6' : 'rgba(45, 122, 58, 0.1)',
+                                                            color: u.role === 'admin' || u.role === 'staff' ? '#fff' : 'var(--color-accent-primary)',
                                                             display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.8rem'
                                                         }}>
                                                             {(u.displayName || u.username)[0].toUpperCase()}
                                                         </div>
                                                         <div>
-                                                            <div style={{ fontWeight: 700 }}>{u.displayName}</div>
+                                                            <div style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                {u.displayName}
+                                                                {u.role === 'staff' && <span style={{ fontSize: '0.65rem', background: '#3b82f6', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 800 }}>STAFF</span>}
+                                                            </div>
                                                             <div style={{ fontSize: '0.7rem', opacity: 0.6 }}>@{u.username}</div>
                                                         </div>
                                                     </div>
