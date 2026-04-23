@@ -52,7 +52,8 @@ exports.getProgress = async (req, res) => {
         const user = await User.findByPk(req.userId, {
             include: [
                 { association: 'completedTasks' },
-                { association: 'activeMissions' }
+                { association: 'activeMissions' },
+                { association: 'redeemedGifts' }
             ]
         });
 
@@ -80,6 +81,8 @@ exports.getProgress = async (req, res) => {
             };
         });
 
+        const pointsSpent = (user.redeemedGifts || []).reduce((sum, g) => sum + (g.UserRedeemedGift?.pointsSpent || 0), 0);
+
         res.json({
             tasks: tasksWithProgress,
             assignedTasks: tasksWithProgress.filter(t => t.isAssigned || t.isCompleted),
@@ -88,7 +91,8 @@ exports.getProgress = async (req, res) => {
                 distance: user.distance,
                 usingPersonalBottle: user.usingPersonalBottle
             },
-            totalCompleted: completedTaskIds.length
+            totalCompleted: completedTaskIds.length,
+            pointsSpent
         });
     } catch (error) {
         console.error('getProgress error:', error);
