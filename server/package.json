@@ -17,6 +17,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@google-cloud/vertexai": "^1.12.0",
     "@payos/node": "^1.0.10",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",

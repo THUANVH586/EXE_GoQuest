@@ -80,13 +80,13 @@ async function loadKnowledgeChunks(language = 'vi') {
     return cachedChunksByLanguage[lang];
 }
 
-function chooseTopChunks(message, chunks, topK = 3) {
+function chooseTopChunks(message, chunks, topK = 2) {
     const scored = chunks
         .map((chunk) => ({
             ...chunk,
             score: overlapScore(message, chunk.content),
         }))
-        .filter((chunk) => chunk.score > 0)
+        .filter((chunk) => chunk.score >= 2) // Chỉ lấy nếu có ít nhất 2 từ khóa khớp
         .sort((a, b) => b.score - a.score)
         .slice(0, topK);
 
@@ -97,60 +97,31 @@ function buildSystemPrompt(userMessage, topChunks, language = 'vi') {
     const isEnglish = language === 'en';
     const contextText = topChunks.length
         ? topChunks
-              .map(
-                  (chunk, index) =>
-                      `CONTEXT ${index + 1} (${chunk.id}):\n${chunk.content}`
-              )
-              .join('\n\n---\n\n')
-        : isEnglish
-          ? 'No suitable internal context is available. Provide a careful high-level answer only.'
-          : 'Không có context nội bộ phù hợp. Hãy trả lời tổng quan và thận trọng.';
+            .map((c) => c.content
+                .replace(/https?:\/\/[^\s]+/g, '') // Xóa URL
+                .replace(/Nguon internet.*/gi, '') // Xóa metadata nguồn
+                .trim()
+            )
+            .join('\n---\n')
+        : (isEnglish ? 'No context.' : 'Không có dữ liệu.');
 
     if (isEnglish) {
-        return `
-You are the official AI assistant for the Go Quest website (experiential tourism in Con Son - Can Tho, Vietnam).
-
-ROLE:
-- Advise users about Go Quest experiences, destinations, culture, local history, and general model information.
-- Prioritize internal context when available.
-- If the question is outside available context, answer briefly and clearly state the current information scope.
-
-RESPONSE RULES:
-1) Always answer in clear, natural English.
-2) Prioritize accuracy and do not invent exact figures.
-3) If historical/cultural data is incomplete, explicitly say "based on currently aggregated data".
-4) Do not provide unsafe or illegal guidance.
-5) Optionally suggest 1-2 follow-up questions.
-
-INTERNAL CONTEXT:
-${contextText}
-
-USER QUESTION:
-${userMessage}
-`;
+        return `You are Go Quest AI (tourism in Con Son, Can Tho). 
+Use context to answer. If not in context, answer briefly & honestly.
+Rules: 
+- Use clear spacing & bullet points for readability.
+- Bold key information.
+- Max 150-300 words.
+Context: ${contextText}`;
     }
 
-    return `
-Bạn là trợ lý AI chính thức của website Go Quest (du lịch trải nghiệm Cồn Sơn - Cần Thơ).
-
-VAI TRÒ:
-- Tư vấn cho user về trải nghiệm tại Go Quest, điểm đến, văn hóa, lịch sử, và thông tin kinh tế tổng quan của mô hình.
-- Nếu có context nội bộ thì ưu tiên context nội bộ.
-- Nếu user hỏi ngoài context, trả lời ngắn gọn và nêu rõ phạm vi thông tin hiện có.
-
-NGUYÊN TẮC TRẢ LỜI:
-1) Trả lời bằng tiếng Việt rõ ràng, thân thiện, dễ hiểu.
-2) Ưu tiên độ chính xác, không tự chế số liệu cụ thể.
-3) Nếu user hỏi về lịch sử/văn hóa: nếu dữ liệu chưa đầy đủ, nói rõ "theo dữ liệu tổng hợp hiện có".
-4) Không trả lời nội dung nguy hiểm/vi phạm pháp luật.
-5) Có thể gợi ý 1-2 câu hỏi tiếp theo để user khám phá thêm.
-
-CONTEXT NỘI BỘ:
-${contextText}
-
-CÂU HỎI USER:
-${userMessage}
-`;
+    return `Bạn là trợ lý Go Quest (du lịch Cồn Sơn, Cần Thơ). 
+Dùng ngữ cảnh để trả lời. Nếu không có, trả lời ngắn gọn & trung thực.
+Quy tắc: 
+- Sử dụng ngắt dòng và danh sách liệt kê (bullet points) cho dễ đọc.
+- In đậm các thông tin quan trọng.
+- Tối đa 150-300 chữ.
+Ngữ cảnh: ${contextText}`;
 }
 
 exports.chatWithAI = async (req, res) => {
@@ -166,46 +137,47 @@ exports.chatWithAI = async (req, res) => {
         const topChunks = chooseTopChunks(userMessage, chunks, 3);
         const systemPrompt = buildSystemPrompt(userMessage, topChunks, language);
 
-        const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-        if (!GEMINI_API_KEY) {
+        const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
+
+        if (!DEEPSEEK_API_KEY || DEEPSEEK_API_KEY === 'your-deepseek-api-key-here') {
             return res.status(200).json({
                 reply: language === 'en'
-                    ? 'The AI assistant is not configured with an API key yet. Please add GEMINI_API_KEY to server environment variables.'
-                    : 'Trợ lý AI chưa được cấu hình API key. Vui lòng thêm GEMINI_API_KEY vào biến môi trường server để sử dụng chatbox.',
+                    ? 'The AI assistant is not fully configured. Please add DEEPSEEK_API_KEY to server environment variables.'
+                    : 'Trợ lý AI chưa được cấu hình đầy đủ. Vui lòng thêm DEEPSEEK_API_KEY vào biến môi trường server.',
             });
         }
 
-        const apiURL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_API_KEY}`;
-
-        const aiResponse = await fetch(apiURL, {
+        // DeepSeek API (OpenAI compatible)
+        const aiResponse = await fetch('https://api.deepseek.com/chat/completions', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
+            },
             body: JSON.stringify({
-                contents: [
-                    {
-                        role: 'user',
-                        parts: [{ text: systemPrompt }],
-                    },
+                model: 'deepseek-chat',
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: userMessage }
                 ],
-                generationConfig: {
-                    maxOutputTokens: 900,
-                    temperature: 0.6,
-                },
+                max_tokens: 500, // Giảm giới hạn token đầu ra
+                temperature: 0.5, // Giảm để câu trả lời tập trung hơn
+                stream: false
             }),
         });
 
-        const data = await aiResponse.json();
-
-        if (data.error) {
+        if (!aiResponse.ok) {
+            const errorData = await aiResponse.json();
+            console.error('DeepSeek API Error:', errorData);
             return res.status(200).json({
                 reply: language === 'en'
-                    ? `AI error: ${data.error.message}`
-                    : `Lỗi AI: ${data.error.message}`,
+                    ? `AI service error: ${errorData.error?.message || aiResponse.statusText}`
+                    : `Lỗi dịch vụ AI: ${errorData.error?.message || aiResponse.statusText}`,
             });
         }
 
-        const reply =
-            data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+        const data = await aiResponse.json();
+        const reply = data?.choices?.[0]?.message?.content ||
             (language === 'en'
                 ? 'I cannot answer right now. Please try again in a few minutes.'
                 : 'Mình chưa thể trả lời lúc này. Bạn vui lòng thử lại sau ít phút nhé.');
@@ -215,6 +187,7 @@ exports.chatWithAI = async (req, res) => {
             contextUsed: topChunks.map((c) => c.id),
         });
     } catch (error) {
+        console.error('AI Controller Error:', error);
         return res.status(200).json({
             reply: req.body?.language === 'en'
                 ? 'The system is busy. Please try again later.'

@@ -219,7 +219,17 @@ export default function AIChatWidget() {
                     <div className="ai-chat-messages" ref={listRef}>
                         {messages.map((m, idx) => (
                             <div key={`${m.role}-${idx}`} className={`ai-msg ai-msg-${m.role}`}>
-                                {m.text}
+                                {m.role === 'assistant' ? (
+                                    <div 
+                                        dangerouslySetInnerHTML={{ 
+                                            __html: m.text
+                                                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                                .replace(/\n/g, '<br />') 
+                                        }} 
+                                    />
+                                ) : (
+                                    m.text
+                                )}
                             </div>
                         ))}
                         {loading && (
