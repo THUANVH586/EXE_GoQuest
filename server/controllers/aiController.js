@@ -108,7 +108,7 @@ function buildSystemPrompt(userMessage, topChunks, language = 'vi') {
 
     if (isEnglish) {
         return `
-You are the official AI assistant for the Go Quest website (experiential tourism in Con Son - Can Tho, Vietnam).
+You are the official AI assistant for the Go Quest website (experiential tourism in Can Tho, Vietnam).
 
 ROLE:
 - Advise users about Go Quest experiences, destinations, culture, local history, and general model information.
@@ -131,7 +131,7 @@ ${userMessage}
     }
 
     return `
-Bạn là trợ lý AI chính thức của website Go Quest (du lịch trải nghiệm Cồn Sơn - Cần Thơ).
+Bạn là trợ lý AI chính thức của website Go Quest (du lịch trải nghiệm Cần Thơ).
 
 VAI TRÒ:
 - Tư vấn cho user về trải nghiệm tại Go Quest, điểm đến, văn hóa, lịch sử, và thông tin kinh tế tổng quan của mô hình.

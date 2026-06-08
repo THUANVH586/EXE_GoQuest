@@ -9,7 +9,7 @@ const sampleTasks = [
         type: 'food',
         category: 'short-term',
         locationName: 'Quầy Cô Ba',
-        locationDescription: 'Đầu đường chính Cồn Sơn',
+        locationDescription: 'Khu ẩm thực Bến Ninh Kiều',
         duration: 20,
         points: 15,
         icon: '🥞',
@@ -21,7 +21,7 @@ const sampleTasks = [
         type: 'craft',
         category: 'short-term',
         locationName: 'Quầy Chú Năm',
-        locationDescription: 'Khu thủ công mỹ nghệ',
+        locationDescription: 'Khu lưu niệm Cần Thơ',
         duration: 30,
         points: 25,
         icon: '🎨',
@@ -33,7 +33,7 @@ const sampleTasks = [
         type: 'community',
         category: 'short-term',
         locationName: 'Quầy Bánh Tráng Trộn',
-        locationDescription: 'Khu ẩm thực đường chính',
+        locationDescription: 'Chợ nổi Cái Răng',
         duration: 30,
         points: 50,
         icon: '🏪',
@@ -41,10 +41,10 @@ const sampleTasks = [
     },
     {
         title: 'Hành trình khám phá',
-        description: 'Khám phá Cồn Sơn bằng cách di chuyển và tích lũy ít nhất 2000m',
+        description: 'Khám phá Cần Thơ bằng cách di chuyển và tích lũy ít nhất 2000m',
         type: 'health',
         category: 'long-term',
-        locationName: 'Toàn bộ Cồn Sơn',
+        locationName: 'Toàn bộ Cần Thơ',
         locationDescription: '',
         duration: 0,
         points: 200,
@@ -56,7 +56,7 @@ const sampleTasks = [
         description: 'Mang theo bình nước cá nhân, không sử dụng ly nhựa trong suốt chuyến tham quan',
         type: 'environment',
         category: 'long-term',
-        locationName: 'Toàn bộ Cồn Sơn',
+        locationName: 'Toàn bộ Cần Thơ',
         locationDescription: '',
         duration: 0,
         points: 75,
@@ -65,11 +65,11 @@ const sampleTasks = [
     },
     {
         title: 'Thưởng thức Chè Bưởi',
-        description: 'Nếm thử món chè bưởi mát lạnh đặc sản Cồn Sơn',
+        description: 'Nếm thử món chè bưởi mát lạnh đặc sản Cần Thơ',
         type: 'food',
         category: 'short-term',
         locationName: 'Quầy Chè Cô Tư',
-        locationDescription: 'Gần bến thuyền',
+        locationDescription: 'Gần bến tàu Ninh Kiều',
         duration: 15,
         points: 10,
         icon: '🍨',
@@ -81,7 +81,7 @@ const sampleTasks = [
         type: 'craft',
         category: 'short-term',
         locationName: 'Khu Workshop',
-        locationDescription: 'Nhà văn hóa Cồn Sơn',
+        locationDescription: 'Làng du lịch Mỹ Khánh',
         duration: 45,
         points: 35,
         icon: '🍰',
@@ -91,15 +91,15 @@ const sampleTasks = [
 
 const sampleGifts = [
     {
-        title: 'Nón lá Cồn Sơn',
-        description: 'Chiếc nón lá truyền thống được các nghệ nhân Cồn Sơn đan thủ công.',
+        title: 'Nón lá Cần Thơ',
+        description: 'Chiếc nón lá truyền thống được các nghệ nhân Cần Thơ đan thủ công.',
         pointsRequired: 200,
         icon: '👒',
         stock: 50
     },
     {
         title: 'Móc khóa Gỗ',
-        description: 'Móc khóa gỗ khắc hình lưu niệm Cồn Sơn độc đáo.',
+        description: 'Móc khóa gỗ khắc hình lưu niệm Cần Thơ độc đáo.',
         pointsRequired: 50,
         icon: '🔑',
         stock: 100
@@ -140,7 +140,7 @@ const seedData = async () => {
         const adminSecret = 'admin123';
         await User.create({
             username: 'admin',
-            email: 'admin@conson.com',
+            email: 'admin@cantho.com',
             password: adminSecret,
             displayName: 'Quản trị viên',
             role: 'admin'

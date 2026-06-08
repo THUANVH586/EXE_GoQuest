@@ -17,7 +17,7 @@
     },
     "hero": {
         "badge": "Du lịch bền vững tại Cần Thơ",
-        "title": "Trải Nghiệm Du Lịch Cồn Sơn",
+        "title": "Trải Nghiệm Du Lịch Cần Thơ",
         "subtitle": "Sống cùng nhịp sống sông nước – Trải nghiệm thật, giá trị thật.",
         "cta_start": "Bắt đầu hành trình",
         "cta_explore": "Khám phá ngay"
@@ -42,7 +42,7 @@
         },
         "gamification": {
             "title": "Game Hóa Trải Nghiệm",
-            "desc": "Tích điểm, hoàn thành nhiệm vụ và khám phá Cồn Sơn theo cách thú vị, tương tác và đầy ý nghĩa."
+            "desc": "Tích điểm, hoàn thành nhiệm vụ và khám phá Cần Thơ theo cách thú vị, tương tác và đầy ý nghĩa."
         }
     },
     "experiences": {
@@ -59,17 +59,17 @@
             "art": {
                 "badge": "Nghệ thuật",
                 "title": "Vẽ Nón Lá Nghệ Thuật",
-                "desc": "Sáng tạo những họa tiết phong cảnh Cồn Sơn lên nón lá trắng, tạo nên món quà lưu niệm độc bản mang dấu ấn cá nhân."
+                "desc": "Sáng tạo những họa tiết phong cảnh Cần Thơ lên nón lá trắng, tạo nên món quà lưu niệm độc bản mang dấu ấn cá nhân."
             },
             "community": {
                 "badge": "Cộng đồng",
                 "title": "Trải Nghiệm Làm Người Bán Hàng",
-                "desc": "Cùng người dân đứng quầy bánh tráng trộn, cảm nhận nhịp sống bình dị và hiếu khách của người dân Cồn Sơn."
+                "desc": "Cùng người dân đứng quầy bánh tráng trộn, cảm nhận nhịp sống bình dị và hiếu khách của người dân Cần Thơ."
             },
             "explore": {
                 "badge": "Khám phá",
                 "title": "Hành Trình Khám Phá",
-                "desc": "Di chuyển và khám phá trọn vẹn Cồn Sơn bằng cách tích lũy ít nhất 2000m, trải nghiệm mọi ngóc ngách của đảo xanh."
+                "desc": "Di chuyển và khám phá trọn vẹn Cần Thơ bằng cách tích lũy ít nhất 2000m, trải nghiệm mọi ngóc ngách của đảo xanh."
             },
             "folk_art": {
                 "badge": "Nghệ thuật truyền thống",
@@ -93,7 +93,7 @@
         "title": "Cách thức hoạt động",
         "step1": {
             "title": "Đăng ký tài khoản",
-            "desc": "Tạo tài khoản miễn phí và bắt đầu hành trình khám phá Cồn Sơn của bạn."
+            "desc": "Tạo tài khoản miễn phí và bắt đầu hành trình khám phá Cần Thơ của bạn."
         },
         "step2": {
             "title": "Nhận nhiệm vụ",
@@ -106,7 +106,7 @@
     },
     "cta_section": {
         "title": "Sẵn sàng hòa mình vào thiên nhiên?",
-        "subtitle": "Đăng ký ngay để nhận cẩm nang du lịch Cồn Sơn miễn phí và bắt đầu hành trình game hóa sống xanh.",
+        "subtitle": "Đăng ký ngay để nhận cẩm nang du lịch Cần Thơ miễn phí và bắt đầu hành trình game hóa sống xanh.",
         "email_placeholder": "Email của bạn",
         "submit": "Gửi thông tin",
         "success": "Cảm ơn bạn! Chúng tôi sẽ liên hệ sớm.",
@@ -129,7 +129,7 @@
             "community": "Cộng đồng"
         },
         "user": {
-            "subtitle": "Khách hàng khám phá Cồn Sơn"
+            "subtitle": "Khách hàng khám phá Cần Thơ"
         },
         "logout": "Đăng xuất",
         "weekly_challenge": {
@@ -142,7 +142,7 @@
         },
         "hero": {
             "title": "Hành trình của bạn",
-            "subtitle": "Theo dõi tiến độ và hoàn thành các nhiệm vụ trải nghiệm độc đáo tại Cồn Sơn để nhận những phần quà hấp dẫn.",
+            "subtitle": "Theo dõi tiến độ và hoàn thành các nhiệm vụ trải nghiệm độc đáo tại Cần Thơ để nhận những phần quà hấp dẫn.",
             "completed": "Đã hoàn thành",
             "points": "Điểm tích lũy",
             "current_progress": "Tiến độ hiện tại",
@@ -193,13 +193,13 @@
             "points_time": "+{{points}} điểm · Vừa xong",
             "static1": "Hoàn thành 5000 bước chân",
             "static1_sub": "Mục tiêu hàng ngày",
-            "static2": "Đổi quà: Nước mắm Cồn Sơn",
+            "static2": "Đổi quà: Nước mắm Cần Thơ",
             "static2_sub": "Ghé quầy lưu niệm",
             "static3": "Nhận 50 điểm ẩm thực",
             "static3_sub": "Trải nghiệm buffet bánh"
         },
         "footer": {
-            "copyright": "© 2024 Con Son Travel. Tất cả quyền được bảo lưu.",
+            "copyright": "© 2024 Can Tho Travel. Tất cả quyền được bảo lưu.",
             "terms": "Điều khoản",
             "privacy": "Bảo mật",
             "support": "Hỗ trợ"
@@ -213,7 +213,7 @@
             "refresh_tasks": "Đã làm mới 5 nhiệm vụ ngẫu nhiên cho hành trình!"
         },
         "map": {
-            "title": "Bản đồ Cồn Sơn",
+            "title": "Bản đồ Cần Thơ",
             "subtitle": "Khám phá các địa điểm trải nghiệm",
             "location_you": "Bạn đang ở đây"
         }
@@ -221,7 +221,7 @@
     "auth": {
         "login": {
             "welcome": "Chào mừng trở lại!",
-            "subtitle": "Đăng nhập để tiếp tục khám phá Cồn Sơn",
+            "subtitle": "Đăng nhập để tiếp tục khám phá Cần Thơ",
             "identifier": "Email hoặc Tên đăng nhập",
             "identifier_placeholder": "Nhập email hoặc tên đăng nhập",
             "password": "Mật khẩu",
@@ -276,7 +276,7 @@
         }
     },
     "map": {
-        "title": "Bản đồ trải nghiệm Cồn Sơn",
+        "title": "Bản đồ trải nghiệm Cần Thơ",
         "subtitle": "Nhấn để xem các địa điểm nhiệm vụ"
     },
     "admin": {
@@ -347,7 +347,7 @@
         },
         "Hành trình khám phá": {
             "title": "Hành trình khám phá",
-            "desc": "Khám phá Cồn Sơn bằng cách di chuyển và tích lũy ít nhất 2000m"
+            "desc": "Khám phá Cần Thơ bằng cách di chuyển và tích lũy ít nhất 2000m"
         },
         "Bảo vệ Môi trường": {
             "title": "Bảo vệ Môi trường",
@@ -355,7 +355,7 @@
         },
         "Thưởng thức Chè Bưởi": {
             "title": "Thưởng thức Chè Bưởi",
-            "desc": "Nếm thử món chè bưởi mát lạnh đặc sản Cồn Sơn"
+            "desc": "Nếm thử món chè bưởi mát lạnh đặc sản Cần Thơ"
         },
         "Thưởng thức Bánh Xèo": {
             "title": "Thưởng thức Bánh Xèo",
@@ -409,7 +409,7 @@
         },
         "spots": {
             "con-son": {
-                "title": "Cồn Sơn Quest",
+                "title": "Cần Thơ Quest",
                 "description": "Trải nghiệm du lịch sinh thái cộng đồng với các nhiệm vụ bảo vệ môi trường hấp dẫn."
             },
             "cai-rang": {
@@ -459,7 +459,7 @@
                 "comment": "Cần Thơ GoQuest thực sự là một trải nghiệm tuyệt vời, mình rất thích cách kết hợp bảo vệ môi trường vào du lịch."
             },
             "review2": {
-                "comment": "Bánh xèo ở Cồn Sơn ngon tuyệt, người dân thì vô cùng thân thiện."
+                "comment": "Bánh xèo ở Cần Thơ ngon tuyệt, người dân thì vô cùng thân thiện."
             }
         }
     }

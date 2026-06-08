@@ -305,7 +305,7 @@ function LandingPage() {
                             <div className="lp-mission-img">
                                 <img
                                     src="https://res.cloudinary.com/dnnz4ze3b/image/upload/v1772892889/Anh1_wiw5fq.png"
-                                    alt="Sứ mệnh Cồn Sơn"
+                                    alt="Sứ mệnh Cần Thơ"
                                     className="lp-mission-image"
                                 />
                             </div>
@@ -477,8 +477,8 @@ function LandingPage() {
                         <div>
                             <h5 className="lp-footer-heading">{t('footer.contact')}</h5>
                             <ul className="lp-footer-links">
-                                <li>📍 Cồn Sơn, Bình Thủy, Cần Thơ</li>
-                                <li>✉️ ConSonGoQuest@gmail.com</li>
+                                <li>📍 TP. Cần Thơ, Việt Nam</li>
+                                <li>✉️ CanThoGoQuest@gmail.com</li>
                                 <li>📞 +84 (0) 942 004 995</li>
                             </ul>
                         </div>

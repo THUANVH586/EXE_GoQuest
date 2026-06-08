@@ -15,7 +15,7 @@
     },
     "hero": {
         "badge": "Sustainable Tourism in Can Tho",
-        "title": "Con Son Tourism Experience",
+        "title": "Can Tho Tourism Experience",
         "subtitle": "Living with the river life – Real experience, real value.",
         "cta_start": "Start the journey",
         "cta_explore": "Explore now"
@@ -40,7 +40,7 @@
         },
         "gamification": {
             "title": "Gamification",
-            "desc": "Earn points, complete missions, and explore Con Son in an interesting, interactive, and meaningful way."
+            "desc": "Earn points, complete missions, and explore Can Tho in an interesting, interactive, and meaningful way."
         }
     },
     "experiences": {
@@ -57,17 +57,17 @@
             "art": {
                 "badge": "Art",
                 "title": "Artistic Conical Hat Painting",
-                "desc": "Create landscape motifs of Con Son on white conical hats, creating a unique souvenir with a personal touch."
+                "desc": "Create landscape motifs of Can Tho on white conical hats, creating a unique souvenir with a personal touch."
             },
             "community": {
                 "badge": "Community",
                 "title": "Sales Experience",
-                "desc": "Stand at a mixed rice paper stall with locals, feeling the simple and authentic rhythm of Con Son life."
+                "desc": "Stand at a mixed rice paper stall with locals, feeling the simple and authentic rhythm of Can Tho life."
             },
             "explore": {
                 "badge": "Explore",
                 "title": "Discovery Journey",
-                "desc": "Move and explore all of Con Son by accumulating at least 2000m, experiencing every corner of the green island."
+                "desc": "Move and explore all of Can Tho by accumulating at least 2000m, experiencing every corner of the green island."
             },
             "folk_art": {
                 "badge": "Traditional Art",
@@ -91,7 +91,7 @@
         "title": "How it works",
         "step1": {
             "title": "Register account",
-            "desc": "Create a free account and start your Con Son exploration journey."
+            "desc": "Create a free account and start your Can Tho exploration journey."
         },
         "step2": {
             "title": "Get missions",
@@ -104,7 +104,7 @@
     },
     "cta_section": {
         "title": "Ready to immerse yourself in nature?",
-        "subtitle": "Register now to get a free Con Son travel handbook and start the green gamification journey.",
+        "subtitle": "Register now to get a free Can Tho travel handbook and start the green gamification journey.",
         "email_placeholder": "Your email",
         "submit": "Send info",
         "success": "Thank you! We'll reach out soon.",
@@ -128,7 +128,7 @@
         },
         "search": "Search journey...",
         "user": {
-            "subtitle": "Exploring Con Son"
+            "subtitle": "Exploring Can Tho"
         },
         "logout": "Logout",
         "weekly_challenge": {
@@ -141,7 +141,7 @@
         },
         "hero": {
             "title": "Your Journey",
-            "subtitle": "Track progress and complete unique experience missions at Con Son to receive attractive rewards.",
+            "subtitle": "Track progress and complete unique experience missions at Can Tho to receive attractive rewards.",
             "completed": "Completed",
             "points": "Accumulated Points",
             "current_progress": "Current Progress",
@@ -190,13 +190,13 @@
             "points_time": "+{{points}} points · Just now",
             "static1": "Completed 5000 steps",
             "static1_sub": "Daily Goal",
-            "static2": "Redeem gift: Con Son fish sauce",
+            "static2": "Redeem gift: Can Tho specialties",
             "static2_sub": "Visit souvenir stall",
             "static3": "Receive 50 culinary points",
             "static3_sub": "Cake buffet experience"
         },
         "footer": {
-            "copyright": "© 2024 Con Son Travel. All rights reserved.",
+            "copyright": "© 2024 Can Tho Travel. All rights reserved.",
             "terms": "Terms",
             "privacy": "Privacy",
             "support": "Support"
@@ -210,7 +210,7 @@
             "refresh_tasks": "Refreshed 5 random missions for the journey!"
         },
         "map": {
-            "title": "Con Son Map",
+            "title": "Can Tho Map",
             "subtitle": "Explore experience locations",
             "location_you": "You are here"
         }
@@ -218,7 +218,7 @@
     "auth": {
         "login": {
             "welcome": "Welcome back!",
-            "subtitle": "Login to continue exploring Con Son",
+            "subtitle": "Login to continue exploring Can Tho",
             "identifier": "Email or Username",
             "identifier_placeholder": "Enter email or username",
             "password": "Password",
@@ -273,7 +273,7 @@
         }
     },
     "map": {
-        "title": "Con Son Experience Map",
+        "title": "Can Tho Experience Map",
         "subtitle": "Click to view mission locations"
     },
     "admin": {
@@ -344,7 +344,7 @@
         },
         "Hành trình khám phá": {
             "title": "Discovery Journey",
-            "desc": "Explore Con Son by moving and accumulating at least 2000m."
+            "desc": "Explore Can Tho by moving and accumulating at least 2000m."
         },
         "Bảo vệ Môi trường": {
             "title": "Environmental Protection",
@@ -352,7 +352,7 @@
         },
         "Thưởng thức Chè Bưởi": {
             "title": "Pomelo Sweet Soup Tasting",
-            "desc": "Taste the refreshing pomelo sweet soup, a specialty of Con Son."
+            "desc": "Taste the refreshing pomelo sweet soup, a specialty of Can Tho."
         },
         "Thưởng thức Bánh Xèo": {
             "title": "Banh Xeo Tasting",
@@ -406,7 +406,7 @@
         },
         "spots": {
             "con-son": {
-                "title": "Con Son Quest",
+                "title": "Can Tho Quest",
                 "description": "Community ecotourism experience with engaging environmental protection missions."
             },
             "cai-rang": {
@@ -456,7 +456,7 @@
                 "comment": "Can Tho GoQuest is truly an amazing experience. I love how they integrate environmental protection into tourism."
             },
             "review2": {
-                "comment": "The sizzling crepes at Con Son are delicious and the locals are incredibly friendly."
+                "comment": "The sizzling crepes at Can Tho are delicious and the locals are incredibly friendly."
             }
         }
     }

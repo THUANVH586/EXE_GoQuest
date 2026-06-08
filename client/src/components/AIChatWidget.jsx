@@ -11,7 +11,7 @@ const CHAT_COPY = {
         welcome:
             'Xin chào, mình là trợ lý AI của Go Quest. Mình có thể giúp bạn tìm hiểu về điểm đến, hành trình và văn hóa ở Cần Thơ.',
         suggestions: [
-            'Cồn Sơn có gì đặc sắc cho người mới đi lần đầu?',
+            'Đi du lịch Cần Thơ nên đi những đâu?',
             'Tôi nên đi chợ nổi Cái Răng vào khung giờ nào?',
             'Go Quest có những nhiệm vụ trải nghiệm nào?',
         ],
@@ -31,7 +31,7 @@ const CHAT_COPY = {
         welcome:
             'Hello, I am Go Quest AI assistant. I can help you explore destinations, itineraries, and local culture in Can Tho.',
         suggestions: [
-            'What is special about Con Son for first-time visitors?',
+            'What is special about Can Tho for first-time visitors?',
             'What is the best time to visit Cai Rang floating market?',
             'What kinds of experience missions are available on Go Quest?',
         ],

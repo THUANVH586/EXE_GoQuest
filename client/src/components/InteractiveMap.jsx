@@ -58,8 +58,8 @@ function ChangeView({ center, zoom }) {
 }
 
 export default function Map({ currentPos, markers = [], scrollWheelZoom = false }) {
-    const defaultCenter = [10.08453, 105.75048] // Cồn Sơn, Bình Thủy, Cần Thơ (tọa độ chính xác)
-    const zoom = 16 // Zoom gần hơn để thấy rõ đảo nhỏ
+    const defaultCenter = [10.0336, 105.7876] // Bến Ninh Kiều, Cần Thơ
+    const zoom = 14 // Zoom level for Cần Thơ city area
 
     const center = currentPos
         ? [currentPos.lat, currentPos.lng]

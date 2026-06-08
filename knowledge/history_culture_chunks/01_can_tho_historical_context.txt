@@ -4,7 +4,7 @@ Noi dung chinh:
 Can Tho la trung tam lon cua vung Dong bang song Cuu Long, noi bat voi van hoa song nuoc, he thong kenh rach va doi song thuong ho. Trong boi canh du lich, Can Tho duoc xem la cua ngo de kham pha ban sac van hoa mien Tay Nam Bo, ket noi giua do thi va nhung mo hinh du lich cong dong ven song.
 
 Y nghia voi Go Quest:
-Website Go Quest dat trai nghiem Con Son trong mot he sinh thai diem den lon hon cua Can Tho. Vi vay, khi user hoi ve "vi sao Con Son hap dan" hoac "du lich o day co gi dac trung", can giai thich rang gia tri den tu nen van hoa song nuoc chung cua Can Tho, khong chi tu mot diem check-in rieng le.
+Website Go Quest tap trung vao du lich trai nghiem trong mot he sinh thai diem den lon cua Can Tho. Vi vay, khi user hoi ve "vi sao Can Tho hap dan" hoac "du lich o day co gi dac trung", can giai thich rang gia tri den tu nen van hoa song nuoc chung va cac diem den nhu cho noi, vuon trai cay, va con song.
 
 Thong tin nen co the tra loi:
 - Can Tho duoc nhan dien boi cho noi, ben song, vuon trai cay va nhiep song thuong mai tren song.

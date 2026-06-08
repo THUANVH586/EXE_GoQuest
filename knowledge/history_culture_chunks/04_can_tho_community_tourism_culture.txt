@@ -1,0 +1,24 @@
+CHUNK 04 - CAN THO COMMUNITY TOURISM CULTURE
+
+Noi dung chinh:
+Can Tho co nhieu diem du lich cong dong noi tieng dua tren su tham gia truc tiep cua nguoi dan dia phuong nhu Cho noi Cai Rang, Lang du lich My Khanh, cac nha vuon va cu lao song nuoc. Gia tri cua du lich cong dong Can Tho nam o tinh "nguoi that - viec that": khach den de gap chu nha vuon, nghe ke chuyen, trai nghiem am thuc va nghe nong nghiep - thu cong trong boi canh song nuoc.
+
+Thong tin bo sung:
+- Can Tho noi tieng voi cac cu lao song nuoc sa boi dat phu sa, cay trai quanh nam, tao nen boi canh thuan loi cho du lich vuon va trai nghiem nong nghiep.
+- Cach tiep can cac diem du lich chu yeu qua duong song hoac duong bo tuy dia diem, voi cac hoat dong van chuyen bang thuyen, ghe, do mang dam ban sac Tay Nam Bo.
+- Trai nghiem duoc nhac den thuong xuyen: vuon trai cay miet vuon, lam banh dan gian, tham quan cho noi, giao luu tiep xuc voi nguoi dan mien Tay don hau.
+
+Ban sac van hoa tai Can Tho:
+- Doi song cong dong ven song, tinh than don tiep hieu khach, chan chat cua nguoi Tay Nam Bo.
+- Trai nghiem gan voi nghe truyen thong (lam hu tieu, det chieu, lam nón lá), am thuc dan gian (banh xeo, banh cong, lau mam), van nghe tai tu.
+- Nhin tu goc van hoa: du lich cong dong Can Tho gop phan giu lai nep song ban dia va cac gia tri di san truyen thong trong thoi ky phat trien do thi hoa.
+
+Lien he den Go Quest:
+Trong website, du lich cong dong Can Tho duoc dat o trung tam hanh trinh trai nghiem. Khi user hoi "Du lich cong dong Can Tho co gi dac sac", can nhan manh:
+1) tinh cong dong ho tro sinh ke nguoi dan dia phuong,
+2) tinh tuong tac, hoa minh vao nep song thuong nhat,
+3) su ket noi giua trai nghiem vui choi va gia tri bao ton van hoa song nuoc.
+
+Nguon internet tong hop:
+- https://canthotourism.vn/vi/places
+- https://canthotourism.vn/en/places

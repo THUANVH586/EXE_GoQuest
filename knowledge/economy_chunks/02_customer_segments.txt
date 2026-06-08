@@ -1,7 +1,7 @@
 CHUNK 02 - CUSTOMER SEGMENTS (PHAN KHUC KHACH HANG)
 
 Phan khuc khach hang chinh:
-1) Du khach trai nghiem tai Con Son
+1) Du khach trai nghiem tai Can Tho
 - Nhom khach thich hoat dong tuong tac, van hoa ban dia, va cac hinh thuc du lich co muc tieu.
 - Nhu cau: ro rang lo trinh, co huong dan, co phan thuong, co ky niem doc dao.
 

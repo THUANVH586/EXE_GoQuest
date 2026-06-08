@@ -9,7 +9,7 @@ Y nghia van hoa:
 - Phan anh ro su giao thoa giua doi song hien dai va nep song song nuoc truyen thong.
 
 Lien he den cau hoi user:
-Neu user hoi "Ninh Kieu co gi dac biet" hoac "tai sao ai cung nhac Ninh Kieu", can tra loi theo huong: day la bieu tuong van hoa - lich su cua do thi song nuoc Can Tho, dong vai tro cua ngo trai nghiem cac diem den nhu Cai Rang va Con Son.
+Neu user hoi "Ninh Kieu co gi dac biet" hoac "tai sao ai cung nhac Ninh Kieu", can tra loi theo huong: day la bieu tuong van hoa - lich su cua do thi song nuoc Can Tho, dong vai tro cua ngo trai nghiem cac diem den nhu Cai Rang va cac lang du lich.
 
 Nguon internet tong hop:
 - https://canthotourism.vn/vi/benninhkieu

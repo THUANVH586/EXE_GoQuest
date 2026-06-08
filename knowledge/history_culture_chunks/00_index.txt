@@ -2,14 +2,14 @@ GO QUEST - HISTORY CULTURE KNOWLEDGE INDEX
 
 Muc tieu:
 - Phuc vu tra loi cau hoi ve lich su, van hoa, ban sac dia phuong lien quan den website Go Quest.
-- Tap trung vao boi canh diem den Can Tho va Con Son.
+- Tap trung vao boi canh diem den Can Tho.
 - Khong dua thong tin ky thuat lap trinh vao bo du lieu nay.
 
 Danh sach chunk:
 - 01_can_tho_historical_context.txt
 - 02_ninh_kieu_symbol_and_urban_memory.txt
 - 03_cai_rang_history_and_heritage.txt
-- 04_con_son_community_tourism_culture.txt
+- 04_can_tho_community_tourism_culture.txt
 - 05_don_ca_tai_tu_cultural_heritage.txt
 - 06_craft_village_and_local_lifeways.txt
 - 07_food_culture_mekong_context.txt
@@ -21,7 +21,7 @@ Huong dan truy xuat nhanh:
 - Cau hoi ve nguon goc Can Tho, boi canh hinh thanh -> uu tien 01.
 - Cau hoi ve Bn Ninh Kieu, bieu tuong do thi song nuoc -> uu tien 02.
 - Cau hoi ve cho noi Cai Rang, di san, lich sinh hoat -> uu tien 03.
-- Cau hoi ve du lich cong dong Con Son -> uu tien 04.
+- Cau hoi ve du lich cong dong Can Tho -> uu tien 04.
 - Cau hoi ve don ca tai tu, gia tri nghe thuat truyen thong -> uu tien 05.
 - Cau hoi ve lang nghe, doi song mien song nuoc -> uu tien 06.
 - Cau hoi ve am thuc va ban sac mon an -> uu tien 07.

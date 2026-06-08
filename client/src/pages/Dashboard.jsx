@@ -10,17 +10,17 @@ import InteractiveMap from '../components/InteractiveMap'
 import confetti from 'canvas-confetti'
 import CountdownTimer from '../components/CountdownTimer'
 
-/* ─── Địa điểm nổi bật tại Cồn Sơn ────────────────────────────── */
-const CON_SON_MARKERS = [
-    { lat: 10.08453, lng: 105.75048, title: '🌿 Trung tâm Cồn Sơn' },
-    { lat: 10.0841,  lng: 105.7512,  title: '🍜 Ẩm thực dân gian (Thực đơn bay)' },
-    { lat: 10.0850,  lng: 105.7498,  title: '🎨 Làng nghề bánh dân gian' },
-    { lat: 10.0862,  lng: 105.7510,  title: '🐟 Xem cá lóc bay' },
-    { lat: 10.0803,  lng: 105.7444,  title: '🚢 Bến đò Cô Bắc (xuất phát)' },
+/* ─── Địa điểm nổi bật tại Cần Thơ ────────────────────────────── */
+const CAN_THO_MARKERS = [
+    { lat: 10.0336, lng: 105.7876, title: '🌿 Bến Ninh Kiều' },
+    { lat: 10.0061, lng: 105.7469, title: '🛶 Chợ nổi Cái Răng' },
+    { lat: 10.0346, lng: 105.7885, title: '⛩️ Chùa Ông Cần Thơ' },
+    { lat: 10.0768, lng: 105.7578, title: '🏡 Nhà cổ Bình Thủy' },
+    { lat: 9.9922,  lng: 105.6980, title: '🛕 Thiền viện Trúc Lâm Phương Nam' },
 ]
 
-/* Tọa độ chỉ đường đến bến đò (du khách đi xuỳng đ liên tại bến, sau đó đi thuyền vào Cồn Sơn) */
-const DIRECTIONS_TARGET = '10.0803,105.7444' // Bến đò Cô Bắc
+/* Tọa độ chỉ đường đến Bến Ninh Kiều */
+const DIRECTIONS_TARGET = '10.0336,105.7876' // Bến Ninh Kiều
 
 /* ─── Dashboard ─────────────────────────────────────────────────── */
 export default function Dashboard() {
@@ -825,7 +825,7 @@ export default function Dashboard() {
                                             : `https://www.google.com/maps/dir/?api=1&destination=${DIRECTIONS_TARGET}&travelmode=driving`
                                         window.open(url, '_blank')
                                     }}
-                                    title="Chỉ đường đến Cồn Sơn"
+                                    title="Chỉ đường đến Bến Ninh Kiều"
                                     style={{
                                         background: '#2d7a3a', color: '#fff',
                                         border: 'none', borderRadius: '8px',
@@ -863,7 +863,7 @@ export default function Dashboard() {
                         <div style={{ height: '240px', width: '100%', borderRadius: '0 0 16px 16px', overflow: 'hidden' }}>
                             <InteractiveMap
                                 currentPos={currentPos}
-                                markers={CON_SON_MARKERS}
+                                markers={CAN_THO_MARKERS}
                                 scrollWheelZoom={false}
                             />
                         </div>
@@ -939,7 +939,7 @@ export default function Dashboard() {
                                     )}
                                 </label>
                                 <p style={{ marginTop: '10px', fontSize: '0.7rem', opacity: 0.6, fontStyle: 'italic', lineHeight: 1.4, color: 'white' }}>
-                                    * Việc mang theo bình nước cá nhân giúp giảm thiểu rác thải nhựa tại Cồn Sơn. Cảm ơn bạn!
+                                    * Việc mang theo bình nước cá nhân giúp giảm thiểu rác thải nhựa tại Cần Thơ. Cảm ơn bạn!
                                 </p>
                             </div>
                         </div>
@@ -1117,7 +1117,7 @@ export default function Dashboard() {
                                 🗺️ {t('dashboard.map.title')}
                             </div>
                             <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>
-                                OpenStreetMap · {currentPos ? `🟢 Đã lấy được vị trí của bạn` : 'Hiển thị khu vực Cồn Sơn'}
+                                OpenStreetMap · {currentPos ? `🟢 Đã lấy được vị trí của bạn` : 'Hiển thị khu vực Cần Thơ'}
                             </div>
                         </div>
                         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -1139,7 +1139,7 @@ export default function Dashboard() {
                                     fontFamily: 'var(--font-family)'
                                 }}
                             >
-                                🗯️ Chỉ đường đến Cồn Sơn
+                                🗯️ Chỉ đường đến Bến Ninh Kiều
                             </button>
                             {/* Nút đóng */}
                             <button
@@ -1163,7 +1163,7 @@ export default function Dashboard() {
                     <div style={{ flex: 1, overflow: 'hidden' }}>
                         <InteractiveMap
                             currentPos={currentPos}
-                            markers={CON_SON_MARKERS}
+                            markers={CAN_THO_MARKERS}
                             scrollWheelZoom={true}
                         />
                     </div>
@@ -1177,7 +1177,7 @@ export default function Dashboard() {
                     }}>
                         <span>© OpenStreetMap contributors · Dữ liệu đường đi trên Google Maps</span>
                         <span style={{ color: '#2d7a3a', fontWeight: 600 }}>
-                            Cồn Sơn, Bình Thủy, Cần Thơ
+                            Bến Ninh Kiều, Ninh Kiều, Cần Thơ
                         </span>
                     </div>
                 </div>

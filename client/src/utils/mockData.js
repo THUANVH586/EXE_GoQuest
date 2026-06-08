@@ -1,10 +1,10 @@
 export const ECO_SPOTS = [
     {
-        id: 'con-son',
-        title: 'Cồn Sơn Quest',
+        id: 'can-tho',
+        title: 'Cần Thơ Quest',
         description: 'Trải nghiệm du lịch sinh thái cộng đồng với các nhiệm vụ bảo vệ môi trường hấp dẫn.',
         image: 'https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773458538/kham-pha-2khudulich-con-noi-tieng-ocantho-06-7-2018-6_ywyh6f.jpg',
-        link: '/con-son',
+        link: '/',
         category: 'Ecotourism',
         rating: 4.9,
         reviews: 128
@@ -107,7 +107,7 @@ export const MOCK_REVIEWS = [
     {
         id: 2,
         user: 'Minh Thư',
-        comment: 'Bánh xèo ở Cồn Sơn ngon tuyệt, người dân thì vô cùng thân thiện.',
+        comment: 'Bánh xèo ở Cần Thơ ngon tuyệt, người dân thì vô cùng thân thiện.',
         rating: 5,
         date: '18-04-2024'
     }
