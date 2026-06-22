@@ -181,7 +181,6 @@ function LandingPage() {
                     <div className="lp-nav-links">
                         <button onClick={() => scrollToSection('lp-mission')} className="lp-nav-link">{t('nav.mission')}</button>
                         <button onClick={() => scrollToSection('lp-experiences')} className="lp-nav-link">{t('nav.experiences')}</button>
-                        <button onClick={() => scrollToSection('lp-impact')} className="lp-nav-link">{t('nav.impact')}</button>
                     </div>
 
                     <div className="lp-nav-actions">
