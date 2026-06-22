@@ -30,7 +30,7 @@ const seedInitialData = async () => {
     console.log('🔄 Synchronizing database and seeding data (stable IDs)...');
     
     // Sync structure changes (like new ENUM values)
-    await sequelize.sync({ alter: true });
+    await sequelize.sync();
 
     // 1. Seed Admin
     const [admin] = await User.findOrCreate({

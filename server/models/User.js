@@ -44,6 +44,10 @@ const User = sequelize.define('User', {
     usingPersonalBottle: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
+    },
+    points: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     }
 }, {
     timestamps: true,
