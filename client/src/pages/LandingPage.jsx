@@ -385,46 +385,6 @@ function LandingPage() {
                 </div>
             </section>
 
-            {/* ===== IMPACT SECTION ===== */}
-            <section className="lp-section lp-section--impact" id="lp-impact">
-                <div className="container">
-                    <div className="lp-impact-grid">
-                        <div className="lp-impact-content">
-                            <span className="lp-section-label lp-section-label--light">{t('impact.label')}</span>
-                            <h2 className="lp-section-title lp-section-title--light">{t('impact.title')}</h2>
-                            <p className="lp-impact-text">
-                                {t('impact.text')}
-                            </p>
-
-                            <Link to="/register" className="btn lp-btn-white lp-btn-large" style={{ marginTop: 'var(--space-xl)' }}>
-                                {t('impact.cta')}
-                            </Link>
-                        </div>
-
-                        <div className="lp-impact-progress">
-                            <div className="lp-mission-visual" style={{ marginBottom: 'var(--space-xl)' }}>
-                                <div className="lp-mission-img" style={{ aspectRatio: '16/9' }}>
-                                    <img
-                                        src="https://res.cloudinary.com/dnnz4ze3b/image/upload/v1772875069/RacThaiNhua_dqmybp.png"
-                                        alt="Tác động rác thải nhựa"
-                                        className="lp-mission-image"
-                                    />
-                                </div>
-                            </div>
-                            <div className="card" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                                <h3 style={{ marginBottom: 'var(--space-xl)', fontSize: 'var(--font-size-lg)' }}>
-                                    {t('impact.goals_title')}
-                                </h3>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
-                                    <ProgressBar label={t('impact.goal_mission')} percent={80} />
-                                    <ProgressBar label={t('impact.goal_green')} percent={70} />
-                                    <ProgressBar label={t('impact.goal_journey')} percent={75} />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             {/* ===== HOW IT WORKS ===== */}
             <section className="lp-section">
