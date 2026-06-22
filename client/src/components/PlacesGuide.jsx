@@ -40,7 +40,6 @@ export default function PlacesGuide() {
                     <article key={place.id} className="place-card">
                         <div className="place-img-wrap">
                             <img src={place.image} alt={place.name} className="place-img" loading="lazy" />
-                            <div className="place-price">{place.priceLevel}</div>
                         </div>
                         <div className="place-body">
                             <h3 className="place-name">{place.name}</h3>
