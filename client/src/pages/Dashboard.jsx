@@ -9,6 +9,7 @@ import InteractiveMap from '../components/InteractiveMap'
 
 import confetti from 'canvas-confetti'
 import CountdownTimer from '../components/CountdownTimer'
+import PlacesGuide from '../components/PlacesGuide'
 
 /* ─── Địa điểm nổi bật tại Cần Thơ ────────────────────────────── */
 const CAN_THO_MARKERS = [
@@ -336,6 +337,7 @@ export default function Dashboard() {
         { key: 'journey', icon: '🗺️', label: t('dashboard.nav.journey') },
         { key: 'tasks', icon: '📋', label: t('dashboard.nav.tasks') },
         { key: 'rewards', icon: '🎁', label: 'Quà tặng' },
+        { key: 'places', icon: '🧳', label: 'Khám phá' },
     ]
 
     const renderTaskCard = (task, isJourneyMode = false) => {
@@ -445,6 +447,12 @@ export default function Dashboard() {
                             onClick={() => setActiveNav('tasks')}
                         >
                             {t('dashboard.nav.tasks')}
+                        </button>
+                        <button
+                            className={`dsh-top-link ${activeNav === 'places' ? 'dsh-top-link--active' : ''}`}
+                            onClick={() => setActiveNav('places')}
+                        >
+                            Khám phá
                         </button>
                         <a className="dsh-top-link" href="#">{t('dashboard.nav.community')}</a>
                     </nav>
@@ -619,6 +627,12 @@ export default function Dashboard() {
                              <div className="dsh-task-grid">
                                 {tasks.filter(t => (t.title || '').toLowerCase().includes(searchVal.toLowerCase())).map(task => renderTaskCard(task))}
                             </div>
+                        </section>
+                    )}
+
+                    {activeNav === 'places' && (
+                        <section style={{ padding: 0 }}>
+                            <PlacesGuide />
                         </section>
                     )}
 

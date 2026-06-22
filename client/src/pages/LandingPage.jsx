@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useTranslation } from 'react-i18next'
+import PlacesGuide from '../components/PlacesGuide'
 
 // ===== Animated Counter Component =====
 function AnimatedCounter({ target, suffix = '', duration = 2000 }) {
@@ -374,6 +375,13 @@ function LandingPage() {
                             {t('experiences.cta')}
                         </Link>
                     </div>
+                </div>
+            </section>
+
+            {/* ===== PLACES GUIDE SECTION ===== */}
+            <section className="lp-section" id="lp-places" style={{ background: '#fafdfa' }}>
+                <div className="container">
+                    <PlacesGuide />
                 </div>
             </section>
 
