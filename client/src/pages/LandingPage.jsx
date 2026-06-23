@@ -433,7 +433,7 @@ function LandingPage() {
                         </div>
 
                         <div>
-                            <h5 className="lp-footer-heading">{t('footer.explore')}</h5>
+                            <h5 className="lp-footer-heading">Mục lục</h5>
                             <ul className="lp-footer-links">
                                 <li><button onClick={() => scrollToSection('lp-mission')} className="lp-footer-link">{t('nav.mission')}</button></li>
                                 <li><button onClick={() => scrollToSection('lp-experiences')} className="lp-footer-link">{t('nav.experiences')}</button></li>

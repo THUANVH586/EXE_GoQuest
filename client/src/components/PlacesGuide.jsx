@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import '../styles/PlacesGuide.css';
 import { featuredPlaces } from '../data/places';
-import '../styles/PlacesGuide.css'; // I will create this CSS file next
 
 export default function PlacesGuide() {
-    const { t } = useTranslation();
     const [activeCategory, setActiveCategory] = useState('hotels');
 
     const renderStars = (rating) => {
-        return '⭐'.repeat(Math.floor(rating)) + (rating % 1 !== 0 ? '✨' : '');
+        const full = Math.floor(rating);
+        return '⭐'.repeat(full);
     };
 
     const places = activeCategory === 'hotels' ? featuredPlaces.hotels : featuredPlaces.restaurants;
@@ -21,13 +20,13 @@ export default function PlacesGuide() {
             </div>
 
             <div className="places-tabs">
-                <button 
+                <button
                     className={`places-tab ${activeCategory === 'hotels' ? 'active' : ''}`}
                     onClick={() => setActiveCategory('hotels')}
                 >
                     🏨 Khách sạn & Lưu trú
                 </button>
-                <button 
+                <button
                     className={`places-tab ${activeCategory === 'restaurants' ? 'active' : ''}`}
                     onClick={() => setActiveCategory('restaurants')}
                 >
@@ -53,6 +52,14 @@ export default function PlacesGuide() {
                                     <span key={idx} className="place-tag">{tag}</span>
                                 ))}
                             </div>
+                            <a
+                                href={place.mapUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="place-map-btn"
+                            >
+                                🗺️ Xem bản đồ
+                            </a>
                         </div>
                     </article>
                 ))}

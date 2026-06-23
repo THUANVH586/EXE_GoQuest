@@ -7,8 +7,8 @@ export const featuredPlaces = {
       address: 'Phường Cái Khế, Quận Ninh Kiều, Cần Thơ',
       image: '/images/hotel_victoria_1782101770881.png',
       rating: 4.8,
-      priceLevel: '',
-      tags: ['Sang trọng', 'Ven sông', 'Spa']
+      tags: ['Sang trọng', 'Ven sông', 'Spa'],
+      mapUrl: 'https://maps.google.com/?q=Victoria+Can+Tho+Resort'
     },
     {
       id: 'h2',
@@ -17,8 +17,8 @@ export const featuredPlaces = {
       address: 'Khu E1, Cồn Cái Khế, Quận Ninh Kiều, Cần Thơ',
       image: '/images/hotel_muong_thanh_1782101782352.png',
       rating: 4.6,
-      priceLevel: '',
-      tags: ['Hồ bơi', 'Trung tâm', 'View đẹp']
+      tags: ['Hồ bơi', 'Trung tâm', 'View đẹp'],
+      mapUrl: 'https://maps.google.com/?q=Muong+Thanh+Luxury+Can+Tho'
     },
     {
       id: 'h3',
@@ -27,8 +27,8 @@ export const featuredPlaces = {
       address: 'Cồn Ấu, Quận Cái Răng, Cần Thơ',
       image: '/images/hotel_azerai_1782101796686.png',
       rating: 4.9,
-      priceLevel: '',
-      tags: ['Cồn Ấu', 'Sinh thái', 'Nghỉ dưỡng']
+      tags: ['Cồn Ấu', 'Sinh thái', 'Nghỉ dưỡng'],
+      mapUrl: 'https://maps.google.com/?q=Azerai+Can+Tho'
     },
     {
       id: 'h4',
@@ -37,8 +37,28 @@ export const featuredPlaces = {
       address: '224 30 Tháng 4, Xuân Khánh, Ninh Kiều, Cần Thơ',
       image: '/images/hotel_iris_1782101810876.png',
       rating: 4.5,
-      priceLevel: '',
-      tags: ['Trung tâm', 'Gia đình', 'Tiện nghi']
+      tags: ['Trung tâm', 'Gia đình', 'Tiện nghi'],
+      mapUrl: 'https://maps.google.com/?q=Iris+Hotel+Can+Tho'
+    },
+    {
+      id: 'h5',
+      name: 'Phương Nam Hotel & Resort',
+      description: 'Boutique resort ven sông với kiến trúc kết hợp truyền thống Việt - Pháp, hồ bơi nhìn ra sông Hậu thơ mộng.',
+      address: 'Quận Cái Răng, Cần Thơ',
+      image: '/images/hotel_phuong_nam_1782210972310.png',
+      rating: 4.4,
+      tags: ['Boutique', 'Ven sông', 'Hồ bơi'],
+      mapUrl: 'https://maps.google.com/?q=Phuong+Nam+Resort+Can+Tho'
+    },
+    {
+      id: 'h6',
+      name: 'Ninh Kiều Riverside Hotel',
+      description: 'Khách sạn ấm cúng nội thất gỗ, nằm gần Bến Ninh Kiều, lý tưởng cho các gia đình và cặp đôi du lịch.',
+      address: 'Đường Hai Bà Trưng, Ninh Kiều, Cần Thơ',
+      image: '/images/hotel_ninh_kieu_hotel_1782210925324.png',
+      rating: 4.3,
+      tags: ['Ấm cúng', 'Gần chợ nổi', 'Gia đình'],
+      mapUrl: 'https://maps.google.com/?q=Ninh+Kieu+Riverside+Hotel+Can+Tho'
     }
   ],
   restaurants: [
@@ -49,8 +69,8 @@ export const featuredPlaces = {
       address: '89 Đường 3/2, Quận Ninh Kiều, Cần Thơ',
       image: '/images/food_lau_mam_1782101821872.png',
       rating: 4.7,
-      priceLevel: '',
-      tags: ['Đặc sản', 'Lẩu mắm', 'Lâu đời']
+      tags: ['Đặc sản', 'Lẩu mắm', 'Lâu đời'],
+      mapUrl: 'https://maps.google.com/?q=Lau+Mam+Da+Ly+Can+Tho'
     },
     {
       id: 'r2',
@@ -59,8 +79,8 @@ export const featuredPlaces = {
       address: 'Hẻm 1, Gõ 1/8 Lý Tự Trọng, Quận Ninh Kiều, Cần Thơ',
       image: '/images/food_vit_nau_chao_1782101834624.png',
       rating: 4.5,
-      priceLevel: '',
-      tags: ['Ăn tối', 'Vịt nấu chao', 'Bình dân']
+      tags: ['Ăn tối', 'Vịt nấu chao', 'Bình dân'],
+      mapUrl: 'https://maps.google.com/?q=Vit+nau+chao+Thanh+Giao+Can+Tho'
     },
     {
       id: 'r3',
@@ -69,8 +89,8 @@ export const featuredPlaces = {
       address: '13/3 Đường 917, Phường Trà Nóc, Quận Bình Thủy, Cần Thơ',
       image: 'https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773065757/exp_1_cusjwd.png',
       rating: 4.4,
-      priceLevel: '',
-      tags: ['Bánh xèo', 'Truyền thống', 'Gia đình']
+      tags: ['Bánh xèo', 'Truyền thống', 'Gia đình'],
+      mapUrl: 'https://maps.google.com/?q=Banh+xeo+Muoi+Xiem+Can+Tho'
     },
     {
       id: 'r4',
@@ -79,8 +99,38 @@ export const featuredPlaces = {
       address: 'Khu du lịch Cái Khế, Quận Ninh Kiều, Cần Thơ',
       image: 'https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773458538/kham-pha-2khudulich-con-noi-tieng-ocantho-06-7-2018-6_ywyh6f.jpg',
       rating: 4.6,
-      priceLevel: '',
-      tags: ['Nhà hàng', 'Ven sông', 'Hải sản']
+      tags: ['Nhà hàng', 'Ven sông', 'Hải sản'],
+      mapUrl: 'https://maps.google.com/?q=Nha+hang+Hoa+Su+Can+Tho'
+    },
+    {
+      id: 'r5',
+      name: 'Bún cá Châu Đốc - Cần Thơ',
+      description: 'Tiệm bún cá ngon nức tiếng với nước dùng trong vắt, thơm mùi mắm ruốc và cá hú tươi ngọt.',
+      address: 'Chợ An Bình, Ninh Kiều, Cần Thơ',
+      image: '/images/food_bun_ca_chau_doc_1782210939989.png',
+      rating: 4.5,
+      tags: ['Bún cá', 'Sáng', 'Đặc sản'],
+      mapUrl: 'https://maps.google.com/?q=Bun+ca+Chau+Doc+Can+Tho'
+    },
+    {
+      id: 'r6',
+      name: 'Bánh mì Bảy Hổ',
+      description: 'Quán bánh mì danh tiếng hơn 30 năm, nhân thịt nướng thơm lừng, rau dưa giòn sần sật đặc trưng.',
+      address: '125 Nguyễn Trãi, Ninh Kiều, Cần Thơ',
+      image: '/images/food_banh_mi_bay_ho_1782210952088.png',
+      rating: 4.3,
+      tags: ['Bánh mì', 'Sáng', 'Vỉa hè'],
+      mapUrl: 'https://maps.google.com/?q=Banh+mi+Bay+Ho+Can+Tho'
+    },
+    {
+      id: 'r7',
+      name: 'Cháo cá Ninh Kiều',
+      description: 'Quán cháo cá truyền thống mở từ 5 giờ sáng, nguyên liệu tươi mỗi ngày, được người dân địa phương yêu thích.',
+      address: 'Bến Ninh Kiều, Ninh Kiều, Cần Thơ',
+      image: '/images/food_chao_ca_long_xuyen_1782210982840.png',
+      rating: 4.4,
+      tags: ['Cháo cá', 'Buổi sáng', 'Dân dã'],
+      mapUrl: 'https://maps.google.com/?q=Chao+ca+Ninh+Kieu+Can+Tho'
     }
   ]
 };
