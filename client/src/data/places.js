@@ -87,7 +87,7 @@ export const featuredPlaces = {
       name: 'Bánh xèo Mười Xiềm',
       description: 'Thương hiệu bánh xèo miền Tây nổi tiếng, vỏ bánh mỏng giòn, nhân tôm thịt đậm đà.',
       address: '13/3 Đường 917, Phường Trà Nóc, Quận Bình Thủy, Cần Thơ',
-      image: 'https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773065757/exp_1_cusjwd.png',
+      image: '/images/food_banh_xeo_muoi_xiem_1782211216815.png',
       rating: 4.4,
       tags: ['Bánh xèo', 'Truyền thống', 'Gia đình'],
       mapUrl: 'https://maps.google.com/?q=Banh+xeo+Muoi+Xiem+Can+Tho'
