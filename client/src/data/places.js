@@ -3,10 +3,10 @@ export const featuredPlaces = {
     {
       id: 'h1',
       name: 'Victoria Cần Thơ Resort',
-      description: 'Khu nghỉ dưỡng 5 sao mang đậm kiến trúc Đông Dương, tọa lạc bên bờ sông Hậu thơ mộng.',
-      address: 'Khu Bãi Cát, Phường Cái Khế, Quận Ninh Kiều, TP. Cần Thơ',
+      description: 'Khu nghỉ dưỡng 4 sao mang đậm kiến trúc Đông Dương, tọa lạc bên bờ sông Hậu thơ mộng.',
+      address: '1 Cách Mạng Tháng Tám, Tân An, Ninh Kiều, Cần Thơ',
       image: '/images/hotel_victoria_1782101770881.png',
-      rating: 5,
+      rating: 4.8,
       tags: ['Sang trọng', 'Ven sông', 'Spa'],
       mapUrl: 'https://www.google.com/maps/search/?api=1&query=Victoria+Can+Tho+Resort,+1+Cach+Mang+Thang+Tam,+Can+Tho'
     },
@@ -14,9 +14,9 @@ export const featuredPlaces = {
       id: 'h2',
       name: 'Mường Thanh Luxury Cần Thơ',
       description: 'Khách sạn 5 sao cao cấp đầu tiên tại Đồng bằng sông Cửu Long, tầm nhìn bao quát toàn thành phố.',
-      address: 'Khu E1, Cồn Cái Khế, Phường Cái Khế, Quận Ninh Kiều, Thành phố Cần Thơ',
+      address: 'Khu đô thị Cồn Khương, Cái Khế, Ninh Kiều, Cần Thơ',
       image: '/images/hotel_muong_thanh_1782101782352.png',
-      rating: 5,
+      rating: 4.6,
       tags: ['Hồ bơi', 'Trung tâm', 'View đẹp'],
       mapUrl: 'https://www.google.com/maps/search/?api=1&query=Muong+Thanh+Luxury+Can+Tho+Hotel'
     },
@@ -24,7 +24,7 @@ export const featuredPlaces = {
       id: 'h3',
       name: 'Azerai Cần Thơ',
       description: 'Resort 5 sao siêu sang biệt lập trên Cồn Ấu, không gian xanh mát và yên bình tuyệt đối.',
-      address: 'Cồn Ấu, Phường Hưng Phú, Cái Răng, Cần Thơ',
+      address: 'Cồn Ấu, Phường Phú Thứ, Cái Răng, Cần Thơ',
       image: '/images/hotel_azerai_1782101796686.png',
       rating: 4.9,
       tags: ['Cồn Ấu', 'Sinh thái', 'Nghỉ dưỡng'],
@@ -44,7 +44,7 @@ export const featuredPlaces = {
       id: 'h5',
       name: 'Nam Bộ Boutique Hotel',
       description: 'Khách sạn boutique phong cách nhà cổ Nam Bộ, tọa lạc ngay trung tâm thành phố, gần Bến Ninh Kiều.',
-      address: 'Số 01, Ngô Quyền, Phường Tân An, Quận Ninh Kiều, Thành phố Cần Thơ ',
+      address: '1 Ngô Gia Tự, Tân An, Ninh Kiều, Cần Thơ',
       image: '/images/hotel_phuong_nam_1782210972310.png',
       rating: 4.4,
       tags: ['Boutique', 'Trung tâm', 'Nhà cổ'],
@@ -86,7 +86,7 @@ export const featuredPlaces = {
       id: 'r3',
       name: 'Bánh xèo 7 Tới',
       description: 'Quán bánh xèo nổi tiếng lâu năm tại Cần Thơ, vỏ bánh giòn rụm, nhân tôm thịt tươi ngon, ăn kèm nước mắm chua ngọt đặc trưng.',
-      address: '45 Hoàng Quốc Việt, phường An Bình, quận Ninh Kiều, Cần Thơ ',
+      address: '38 Đề Thám, Ninh Kiều, Cần Thơ',
       image: '/images/food_banh_xeo_muoi_xiem_1782211216815.png',
       rating: 4.5,
       tags: ['Bánh xèo', 'Lâu năm', 'Đặc sản'],
@@ -110,7 +110,7 @@ export const featuredPlaces = {
       image: '/images/food_bun_ca_chau_doc_1782210939989.png',
       rating: 4.5,
       tags: ['Nem nướng', 'Cả ngày', 'Đặc sản'],
-      mapUrl: 'https://www.google.com/maps/search/?api=1&query=Bun+ca+Chau+Doc+Can+Tho'
+      mapUrl: 'https://www.google.com/maps/search/?api=1&query=Nem+Nuong+Thanh+Van,+17+Dai+lo+Hoa+Binh,+Can+Tho'
     },
     {
       id: 'r6',
@@ -120,7 +120,7 @@ export const featuredPlaces = {
       image: '/images/food_banh_mi_bay_ho_1782210952088.png',
       rating: 4.3,
       tags: ['Bánh mì', 'Sáng', 'Vỉa hè'],
-      mapUrl: 'https://www.google.com/maps/search/?api=1&query=Banh+mi+Bay+Ho,+Nguyen+Trai,+Ninh+Kieu,+Can+Tho'
+      mapUrl: 'https://www.google.com/maps/search/?api=1&query=Banh+mi+bo+com,+66A+Mac+Thien+Tich,+Can+Tho'
     }
   ]
 };

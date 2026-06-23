@@ -356,37 +356,6 @@ function LandingPage() {
                 </div>
             </section>
 
-            {/* ===== EXPERIENCES SECTION ===== */}
-            <section className="lp-section lp-section--alt" id="lp-experiences">
-                <div className="container">
-                    <div className="lp-section-header">
-                        <span className="lp-section-label">{t('experiences.label')}</span>
-                        <h2 className="lp-section-title">{t('experiences.title')}</h2>
-                        <p className="lp-section-text" style={{ maxWidth: '560px', margin: '0 auto' }}>
-                            {t('experiences.subtitle')}
-                        </p>
-                    </div>
-
-                    <div className="lp-experience-container">
-                        <ExperienceAccordion experiences={experiences} />
-                    </div>
-
-                    <div className="lp-experiences-cta">
-                        <Link to="/register" className="btn btn-primary lp-btn-large">
-                            {t('experiences.cta')}
-                        </Link>
-                    </div>
-                </div>
-            </section>
-
-            {/* ===== PLACES GUIDE SECTION ===== */}
-            <section className="lp-section" id="lp-places" style={{ background: '#fafdfa' }}>
-                <div className="container">
-                    <PlacesGuide />
-                </div>
-            </section>
-
-
             {/* ===== HOW IT WORKS ===== */}
             <section className="lp-section" id="lp-how-it-works">
                 <div className="container">
@@ -416,6 +385,36 @@ function LandingPage() {
                             <p className="lp-step-desc">{t('how_it_works.step3.desc')}</p>
                         </div>
                     </div>
+                </div>
+            </section>
+
+            {/* ===== EXPERIENCES SECTION ===== */}
+            <section className="lp-section lp-section--alt" id="lp-experiences">
+                <div className="container">
+                    <div className="lp-section-header">
+                        <span className="lp-section-label">{t('experiences.label')}</span>
+                        <h2 className="lp-section-title">{t('experiences.title')}</h2>
+                        <p className="lp-section-text" style={{ maxWidth: '560px', margin: '0 auto' }}>
+                            {t('experiences.subtitle')}
+                        </p>
+                    </div>
+
+                    <div className="lp-experience-container">
+                        <ExperienceAccordion experiences={experiences} />
+                    </div>
+
+                    <div className="lp-experiences-cta">
+                        <Link to="/register" className="btn btn-primary lp-btn-large">
+                            {t('experiences.cta')}
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
+            {/* ===== PLACES GUIDE SECTION ===== */}
+            <section className="lp-section" id="lp-places" style={{ background: '#fafdfa' }}>
+                <div className="container">
+                    <PlacesGuide />
                 </div>
             </section>
 
