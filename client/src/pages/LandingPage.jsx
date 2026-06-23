@@ -180,6 +180,7 @@ function LandingPage() {
 
                     <div className="lp-nav-links">
                         <button onClick={() => scrollToSection('lp-mission')} className="lp-nav-link">{t('nav.mission')}</button>
+                        <button onClick={() => scrollToSection('lp-how-it-works')} className="lp-nav-link">Cách thức</button>
                         <button onClick={() => scrollToSection('lp-experiences')} className="lp-nav-link">{t('nav.experiences')}</button>
                         <button onClick={() => scrollToSection('lp-places')} className="lp-nav-link">Khám phá</button>
                     </div>
@@ -387,7 +388,7 @@ function LandingPage() {
 
 
             {/* ===== HOW IT WORKS ===== */}
-            <section className="lp-section">
+            <section className="lp-section" id="lp-how-it-works">
                 <div className="container">
                     <div className="lp-section-header">
                         <span className="lp-section-label">{t('how_it_works.label')}</span>
@@ -436,6 +437,7 @@ function LandingPage() {
                             <h5 className="lp-footer-heading">Mục lục</h5>
                             <ul className="lp-footer-links">
                                 <li><button onClick={() => scrollToSection('lp-mission')} className="lp-footer-link">{t('nav.mission')}</button></li>
+                                <li><button onClick={() => scrollToSection('lp-how-it-works')} className="lp-footer-link">Cách thức</button></li>
                                 <li><button onClick={() => scrollToSection('lp-experiences')} className="lp-footer-link">{t('nav.experiences')}</button></li>
                                 <li><button onClick={() => scrollToSection('lp-places')} className="lp-footer-link">Khám phá</button></li>
                             </ul>

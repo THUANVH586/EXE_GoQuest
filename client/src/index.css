@@ -1252,7 +1252,7 @@ a:hover {
 .lp-hero-bg {
   position: absolute;
   inset: 0;
-  background-image: url('./assets/hero2.png');
+  background-image: url('/images/hero_cai_rang.jpg');
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
