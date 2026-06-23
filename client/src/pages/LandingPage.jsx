@@ -181,6 +181,7 @@ function LandingPage() {
                     <div className="lp-nav-links">
                         <button onClick={() => scrollToSection('lp-mission')} className="lp-nav-link">{t('nav.mission')}</button>
                         <button onClick={() => scrollToSection('lp-experiences')} className="lp-nav-link">{t('nav.experiences')}</button>
+                        <button onClick={() => scrollToSection('lp-places')} className="lp-nav-link">Khám phá</button>
                     </div>
 
                     <div className="lp-nav-actions">
@@ -434,10 +435,9 @@ function LandingPage() {
                         <div>
                             <h5 className="lp-footer-heading">{t('footer.explore')}</h5>
                             <ul className="lp-footer-links">
+                                <li><button onClick={() => scrollToSection('lp-mission')} className="lp-footer-link">{t('nav.mission')}</button></li>
                                 <li><button onClick={() => scrollToSection('lp-experiences')} className="lp-footer-link">{t('nav.experiences')}</button></li>
-                                <li><button onClick={() => scrollToSection('lp-impact')} className="lp-footer-link">{t('nav.impact')}</button></li>
-                                <li><Link to="/register" className="lp-footer-link">{t('nav.register')}</Link></li>
-                                <li><Link to="/login" className="lp-footer-link">{t('nav.login')}</Link></li>
+                                <li><button onClick={() => scrollToSection('lp-places')} className="lp-footer-link">Khám phá</button></li>
                             </ul>
                         </div>
 
@@ -446,7 +446,7 @@ function LandingPage() {
                             <ul className="lp-footer-links">
                                 <li>📍 TP. Cần Thơ, Việt Nam</li>
                                 <li>✉️ CanThoGoQuest@gmail.com</li>
-                                <li>📞 +84 (0) 942 004 995</li>
+                                <li>📞 +84 (0) 898 654 592</li>
                             </ul>
                         </div>
                     </div>

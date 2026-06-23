@@ -7,7 +7,7 @@ export const featuredPlaces = {
       address: 'Phường Cái Khế, Quận Ninh Kiều, Cần Thơ',
       image: '/images/hotel_victoria_1782101770881.png',
       rating: 4.8,
-      priceLevel: '$$$',
+      priceLevel: '',
       tags: ['Sang trọng', 'Ven sông', 'Spa']
     },
     {
@@ -17,7 +17,7 @@ export const featuredPlaces = {
       address: 'Khu E1, Cồn Cái Khế, Quận Ninh Kiều, Cần Thơ',
       image: '/images/hotel_muong_thanh_1782101782352.png',
       rating: 4.6,
-      priceLevel: '$$$',
+      priceLevel: '',
       tags: ['Hồ bơi', 'Trung tâm', 'View đẹp']
     },
     {
@@ -27,7 +27,7 @@ export const featuredPlaces = {
       address: 'Cồn Ấu, Quận Cái Răng, Cần Thơ',
       image: '/images/hotel_azerai_1782101796686.png',
       rating: 4.9,
-      priceLevel: '$$$$',
+      priceLevel: '',
       tags: ['Cồn Ấu', 'Sinh thái', 'Nghỉ dưỡng']
     },
     {
@@ -37,7 +37,7 @@ export const featuredPlaces = {
       address: '224 30 Tháng 4, Xuân Khánh, Ninh Kiều, Cần Thơ',
       image: '/images/hotel_iris_1782101810876.png',
       rating: 4.5,
-      priceLevel: '$$',
+      priceLevel: '',
       tags: ['Trung tâm', 'Gia đình', 'Tiện nghi']
     }
   ],
@@ -49,7 +49,7 @@ export const featuredPlaces = {
       address: '89 Đường 3/2, Quận Ninh Kiều, Cần Thơ',
       image: '/images/food_lau_mam_1782101821872.png',
       rating: 4.7,
-      priceLevel: '$$',
+      priceLevel: '',
       tags: ['Đặc sản', 'Lẩu mắm', 'Lâu đời']
     },
     {
@@ -59,7 +59,7 @@ export const featuredPlaces = {
       address: 'Hẻm 1, Gõ 1/8 Lý Tự Trọng, Quận Ninh Kiều, Cần Thơ',
       image: '/images/food_vit_nau_chao_1782101834624.png',
       rating: 4.5,
-      priceLevel: '$$',
+      priceLevel: '',
       tags: ['Ăn tối', 'Vịt nấu chao', 'Bình dân']
     },
     {
@@ -69,7 +69,7 @@ export const featuredPlaces = {
       address: '13/3 Đường 917, Phường Trà Nóc, Quận Bình Thủy, Cần Thơ',
       image: 'https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773065757/exp_1_cusjwd.png',
       rating: 4.4,
-      priceLevel: '$$',
+      priceLevel: '',
       tags: ['Bánh xèo', 'Truyền thống', 'Gia đình']
     },
     {
@@ -79,7 +79,7 @@ export const featuredPlaces = {
       address: 'Khu du lịch Cái Khế, Quận Ninh Kiều, Cần Thơ',
       image: 'https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773458538/kham-pha-2khudulich-con-noi-tieng-ocantho-06-7-2018-6_ywyh6f.jpg',
       rating: 4.6,
-      priceLevel: '$$$',
+      priceLevel: '',
       tags: ['Nhà hàng', 'Ven sông', 'Hải sản']
     }
   ]
