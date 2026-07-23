@@ -39,9 +39,9 @@ const connectDB = async () => {
     try {
         await sequelize.authenticate();
         console.log(`📦 ${sequelize.getDialect().toUpperCase()} Connected Successfully!`);
-
+        
         // Sync models to create tables automatically
-        await sequelize.sync({ alter: true });
+        await sequelize.sync(); 
         console.log('🔄 Database synced successfully');
     } catch (error) {
         console.error(`❌ Database connection error: ${error.message}`);
