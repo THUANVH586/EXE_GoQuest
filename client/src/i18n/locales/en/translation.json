@@ -87,22 +87,29 @@
         "goal_journey": "Participants complete at least one experience journey"
     },
     "how_it_works": {
-        "label": "Method",
+        "label": "How it works",
         "title": "How it works",
         "step1": {
-            "title": "Register account",
-            "desc": "Create a free account and start your Can Tho exploration journey."
+            "title": "Create an account",
+            "desc": "Create a free account and start your journey to explore Can Tho."
         },
         "step2": {
-            "title": "Get missions",
-            "desc": "Select culinary, art, and community missions and complete them at the destination."
+            "title": "Accept missions",
+            "desc": "Choose culinary, art, and community missions to complete at the destination."
         },
         "step3": {
-            "title": "Earn Points & Rewards",
-            "desc": "Complete missions, accumulate points, and bring home unforgettable memories."
+            "title": "Earn points & Rewards",
+            "desc": "Complete missions to earn badges and points, which can be exchanged for exclusive gifts."
         }
     },
-    "cta_section": {
+    "places": {
+        "title": "Explore Can Tho",
+        "subtitle": "Unmissable accommodations and dining spots",
+        "hotels": "Hotels & Stays",
+        "restaurants": "Featured Restaurants",
+        "view_map": "View Map"
+    },
+    "payment": {
         "title": "Ready to immerse yourself in nature?",
         "subtitle": "Register now to get a free Can Tho travel handbook and start the green gamification journey.",
         "email_placeholder": "Your email",

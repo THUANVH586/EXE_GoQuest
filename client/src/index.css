@@ -1267,7 +1267,7 @@ a:hover {
   line-height: 1.1;
   letter-spacing: -0.02em;
   margin-bottom: var(--space-sm);
-  color: #ffffff;
+  color: #FFD700;
 }
 
 .lp-hero-title .text-highlight {
@@ -1277,7 +1277,7 @@ a:hover {
 
 .lp-hero-subtitle {
   font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: #FFD700;
   margin-bottom: var(--space-xl);
   line-height: 1.6;
 }

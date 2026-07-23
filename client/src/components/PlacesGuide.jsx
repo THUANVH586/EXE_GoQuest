@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import '../styles/PlacesGuide.css';
 import { featuredPlaces } from '../data/places';
 
 export default function PlacesGuide() {
+    const { t } = useTranslation();
     const [activeCategory, setActiveCategory] = useState('hotels');
 
     const renderStars = (rating) => {
@@ -15,8 +17,8 @@ export default function PlacesGuide() {
     return (
         <div className="places-guide">
             <div className="places-header">
-                <h2 className="places-title">Khám Phá Cần Thơ</h2>
-                <p className="places-subtitle">Những điểm lưu trú và ẩm thực không thể bỏ lỡ</p>
+                <h2 className="places-title">{t('places.title')}</h2>
+                <p className="places-subtitle">{t('places.subtitle')}</p>
             </div>
 
             <div className="places-tabs">
@@ -24,13 +26,13 @@ export default function PlacesGuide() {
                     className={`places-tab ${activeCategory === 'hotels' ? 'active' : ''}`}
                     onClick={() => setActiveCategory('hotels')}
                 >
-                    🏨 Khách sạn & Lưu trú
+                    🏨 {t('places.hotels')}
                 </button>
                 <button
                     className={`places-tab ${activeCategory === 'restaurants' ? 'active' : ''}`}
                     onClick={() => setActiveCategory('restaurants')}
                 >
-                    🍲 Quán ăn tiêu biểu
+                    🍲 {t('places.restaurants')}
                 </button>
             </div>
 
@@ -58,7 +60,7 @@ export default function PlacesGuide() {
                                 rel="noopener noreferrer"
                                 className="place-map-btn"
                             >
-                                🗺️ Xem bản đồ
+                                🗺️ {t('places.view_map')}
                             </a>
                         </div>
                     </article>

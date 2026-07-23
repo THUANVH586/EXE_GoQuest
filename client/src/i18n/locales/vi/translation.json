@@ -100,11 +100,18 @@
             "desc": "Lựa chọn các nhiệm vụ ẩm thực, nghệ thuật và cộng đồng để hoàn thành tại điểm đến."
         },
         "step3": {
-            "title": "Tích điểm & Nhận quà",
-            "desc": "Hoàn thành nhiệm vụ, tích lũy điểm thưởng và mang về những kỷ niệm khó quên."
+            "title": "Tích điểm & Đổi quà",
+            "desc": "Hoàn thành nhiệm vụ để nhận huy hiệu và điểm thưởng, dùng để đổi các phần quà độc quyền."
         }
     },
-    "cta_section": {
+    "places": {
+        "title": "Khám Phá Cần Thơ",
+        "subtitle": "Những điểm lưu trú và ẩm thực không thể bỏ lỡ",
+        "hotels": "Khách sạn & Lưu trú",
+        "restaurants": "Quán ăn tiêu biểu",
+        "view_map": "Xem bản đồ"
+    },
+    "payment": {
         "title": "Sẵn sàng hòa mình vào thiên nhiên?",
         "subtitle": "Đăng ký ngay để nhận cẩm nang du lịch Cần Thơ miễn phí và bắt đầu hành trình game hóa sống xanh.",
         "email_placeholder": "Email của bạn",
