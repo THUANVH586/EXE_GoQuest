@@ -1245,7 +1245,7 @@ a:hover {
 .lp-hero-bg {
   position: absolute;
   inset: 0;
-  background-image: url('/images/hero_cai_rang.jpg');
+  background-image: url('https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773458538/kham-pha-2khudulich-con-noi-tieng-ocantho-06-7-2018-6_ywyh6f.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

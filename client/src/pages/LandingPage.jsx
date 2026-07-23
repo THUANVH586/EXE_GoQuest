@@ -205,31 +205,21 @@ function LandingPage() {
                             </button>
                         </div>
 
-                        {user ? (
+                        <>
                             <Link
-                                to={user.role === 'admin' ? '/admin' : '/dashboard'}
-                                className="btn btn-primary"
-                                style={{ padding: 'var(--space-sm) var(--space-xl)' }}
+                                to="/login"
+                                className="btn"
+                                style={{ marginRight: '10px', color: 'var(--color-accent-primary)', fontWeight: 600 }}
                             >
-                                {t('nav.dashboard')}
+                                {t('nav.login')}
                             </Link>
-                        ) : (
-                            <>
-                                <Link
-                                    to="/login"
-                                    className="btn"
-                                    style={{ marginRight: '10px', color: 'var(--color-accent-primary)', fontWeight: 600 }}
-                                >
-                                    {t('nav.login')}
-                                </Link>
-                                <Link
-                                    to="/register"
-                                    className="btn btn-primary"
-                                >
-                                    {t('nav.register')}
-                                </Link>
-                            </>
-                        )}
+                            <Link
+                                to="/register"
+                                className="btn btn-primary"
+                            >
+                                {t('nav.register')}
+                            </Link>
+                        </>
                     </div>
                 </div>
             </nav>
@@ -248,12 +238,6 @@ function LandingPage() {
                         <Link to="/register" className="btn btn-primary lp-btn-large btn-journey">
                             {t('hero.cta_start')}
                         </Link>
-                        <button
-                            onClick={() => scrollToSection('lp-experiences')}
-                            className="btn btn-secondary lp-btn-large"
-                        >
-                            {t('hero.cta_explore')}
-                        </button>
                     </div>
                 </div>
             </section>
