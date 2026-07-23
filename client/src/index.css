@@ -1163,11 +1163,11 @@ a:hover {
 
 .lp-nav--scrolled {
   padding: var(--space-sm) var(--space-lg);
-  background: rgba(255, 255, 255, 0.8);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(45, 122, 58, 0.1);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  background: transparent;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: none;
 }
 
 .lp-nav-inner {
@@ -1217,6 +1217,7 @@ a:hover {
   transition: all var(--transition-fast);
   text-decoration: none;
   display: inline-block;
+  white-space: nowrap;
 }
 
 .lp-nav-link:hover {
@@ -1228,6 +1229,7 @@ a:hover {
   display: flex;
   align-items: center;
   gap: var(--space-md);
+  white-space: nowrap;
 }
 
 /* ---- Hero ---- */
@@ -1245,7 +1247,7 @@ a:hover {
 .lp-hero-bg {
   position: absolute;
   inset: 0;
-  background-image: url('https://res.cloudinary.com/dnnz4ze3b/image/upload/v1773458538/kham-pha-2khudulich-con-noi-tieng-ocantho-06-7-2018-6_ywyh6f.jpg');
+  background-image: url('/images/hero_lanterns.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
