@@ -113,6 +113,52 @@
         "restaurants": "Quán ăn tiêu biểu",
         "view_map": "Xem bản đồ"
     },
+    "places_data": {
+        "h1": {
+            "description": "Khu nghỉ dưỡng 4 sao mang đậm kiến trúc Đông Dương, tọa lạc bên bờ sông Hậu thơ mộng.",
+            "tags": ["Sang trọng", "Ven sông", "Spa"]
+        },
+        "h2": {
+            "description": "Khách sạn 5 sao cao cấp đầu tiên tại Đồng bằng sông Cửu Long, tầm nhìn bao quát toàn thành phố.",
+            "tags": ["Hồ bơi", "Trung tâm", "View đẹp"]
+        },
+        "h3": {
+            "description": "Resort 5 sao siêu sang biệt lập trên Cồn Ấu, không gian xanh mát và yên bình tuyệt đối.",
+            "tags": ["Cồn Ấu", "Sinh thái", "Nghỉ dưỡng"]
+        },
+        "h4": {
+            "description": "Khách sạn 4 sao nằm ngay trung tâm, thuận tiện tham quan chợ đêm và Bến Ninh Kiều.",
+            "tags": ["Trung tâm", "Gia đình", "Tiện nghi"]
+        },
+        "h5": {
+            "description": "Khách sạn boutique phong cách nhà cổ Nam Bộ, tọa lạc ngay trung tâm thành phố, gần Bến Ninh Kiều.",
+            "tags": ["Boutique", "Trung tâm", "Nhà cổ"]
+        },
+        "h6": {
+            "description": "Khách sạn ấm cúng nội thất gỗ, view sông Hậu, cách Bến Ninh Kiều chỉ 2 phút đi bộ.",
+            "tags": ["Ấm cúng", "View sông", "Gia đình"]
+        },
+        "r1": {
+            "description": "Quán lẩu mắm danh tiếng nhất nhì Cần Thơ với hương vị đậm đà và hàng chục loại rau ăn kèm.",
+            "tags": ["Đặc sản", "Lẩu mắm", "Lâu đời"]
+        },
+        "r2": {
+            "description": "Món vịt nấu chao trứ danh hẻm 1, từng đón nhiều nghệ sĩ nổi tiếng đến thưởng thức.",
+            "tags": ["Ăn tối", "Vịt nấu chao", "Bình dân"]
+        },
+        "r3": {
+            "description": "Quán bánh xèo nổi tiếng lâu năm tại Cần Thơ, vỏ bánh giòn rụm, nhân tôm thịt tươi ngon, ăn kèm nước mắm chua ngọt đặc trưng.",
+            "tags": ["Bánh xèo", "Lâu năm", "Đặc sản"]
+        },
+        "r4": {
+            "description": "Nhà hàng ven sông chuyên phục vụ các món ăn Nam Bộ dân dã như ốc bươu nướng tiêu, cá lóc nướng trui.",
+            "tags": ["Ven sông", "Dân dã", "Gia đình"]
+        },
+        "r5": {
+            "description": "Thiên đường ẩm thực với hàng trăm gian hàng ăn vặt, đặc sản đường phố đa dạng và hấp dẫn.",
+            "tags": ["Ăn vặt", "Chợ đêm", "Sôi động"]
+        }
+    },
     "payment": {
         "title": "Sẵn sàng hòa mình vào thiên nhiên?",
         "subtitle": "Đăng ký ngay để nhận cẩm nang du lịch Cần Thơ miễn phí và bắt đầu hành trình game hóa sống xanh.",

@@ -111,6 +111,52 @@
         "restaurants": "Featured Restaurants",
         "view_map": "View Map"
     },
+    "places_data": {
+        "h1": {
+            "description": "4-star resort with Indochinese architecture, located by the romantic Hau river.",
+            "tags": ["Luxury", "Riverside", "Spa"]
+        },
+        "h2": {
+            "description": "The first high-class 5-star hotel in the Mekong Delta, with a panoramic view of the whole city.",
+            "tags": ["Pool", "Center", "Nice view"]
+        },
+        "h3": {
+            "description": "Ultra-luxury isolated 5-star resort on Au Islet, absolutely green and peaceful space.",
+            "tags": ["Au Islet", "Eco", "Resort"]
+        },
+        "h4": {
+            "description": "4-star hotel located right in the center, convenient for visiting the night market and Ninh Kieu Wharf.",
+            "tags": ["Center", "Family", "Amenities"]
+        },
+        "h5": {
+            "description": "Boutique hotel with ancient Southern house style, located in the city center, near Ninh Kieu Wharf.",
+            "tags": ["Boutique", "Center", "Ancient house"]
+        },
+        "h6": {
+            "description": "Cozy hotel with wooden furniture, Hau river view, just a 2-minute walk from Ninh Kieu Wharf.",
+            "tags": ["Cozy", "River view", "Family"]
+        },
+        "r1": {
+            "description": "The most famous fermented fish hotpot restaurant in Can Tho with rich flavor and dozens of accompanying vegetables.",
+            "tags": ["Specialty", "Fermented fish hotpot", "Long-standing"]
+        },
+        "r2": {
+            "description": "The famous fermented tofu duck dish in alley 1, which has welcomed many famous artists to enjoy.",
+            "tags": ["Dinner", "Fermented tofu duck", "Affordable"]
+        },
+        "r3": {
+            "description": "A long-standing famous sizzling pancake restaurant in Can Tho, crispy crust, fresh shrimp and meat filling, served with sweet and sour fish sauce.",
+            "tags": ["Sizzling pancake", "Long-standing", "Specialty"]
+        },
+        "r4": {
+            "description": "Riverside restaurant specializing in rustic Southern dishes such as grilled snails with pepper, grilled snakehead fish.",
+            "tags": ["Riverside", "Rustic", "Family"]
+        },
+        "r5": {
+            "description": "Food paradise with hundreds of diverse and attractive street food stalls.",
+            "tags": ["Street food", "Night market", "Bustling"]
+        }
+    },
     "payment": {
         "title": "Ready to immerse yourself in nature?",
         "subtitle": "Register now to get a free Can Tho travel handbook and start the green gamification journey.",
