@@ -1,7 +1,9 @@
 {
     "nav": {
         "mission": "Mission",
+        "how_it_works": "How it works",
         "experiences": "Experiences",
+        "places": "Explore",
         "impact": "Impact",
         "dashboard": "Go to Dashboard",
         "login": "Login",
