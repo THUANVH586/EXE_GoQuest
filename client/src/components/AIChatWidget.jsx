@@ -59,6 +59,67 @@ function LogoAvatar() {
     )
 }
 
+function parseMarkdown(text) {
+    // Escape HTML first to prevent XSS
+    let html = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+
+    // Bold **text** or __text__
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    html = html.replace(/__(.+?)__/g, '<strong>$1</strong>')
+
+    // Italic *text* or _text_
+    html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    html = html.replace(/_([^_]+)_/g, '<em>$1</em>')
+
+    // Numbered list lines: "1. " at start of line
+    // Bullet list lines: "- " or "• " at start
+    const lines = html.split('\n')
+    const result = []
+    let inList = false
+    let listType = null
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i]
+        const numberedMatch = line.match(/^(\d+)\. (.+)/)
+        const bulletMatch = line.match(/^[-•] (.+)/)
+
+        if (numberedMatch) {
+            if (!inList || listType !== 'ol') {
+                if (inList) result.push(`</${listType}>`)
+                result.push('<ol>')
+                inList = true
+                listType = 'ol'
+            }
+            result.push(`<li>${numberedMatch[2]}</li>`)
+        } else if (bulletMatch) {
+            if (!inList || listType !== 'ul') {
+                if (inList) result.push(`</${listType}>`)
+                result.push('<ul>')
+                inList = true
+                listType = 'ul'
+            }
+            result.push(`<li>${bulletMatch[1]}</li>`)
+        } else {
+            if (inList) {
+                result.push(`</${listType}>`)
+                inList = false
+                listType = null
+            }
+            if (line.trim() === '') {
+                result.push('<br/>')
+            } else {
+                result.push(`<span>${line}</span><br/>`)
+            }
+        }
+    }
+    if (inList) result.push(`</${listType}>`)
+
+    return result.join('')
+}
+
 export default function AIChatWidget() {
     const { i18n } = useTranslation()
     const language = i18n.resolvedLanguage === 'en' ? 'en' : 'vi'
@@ -219,7 +280,10 @@ export default function AIChatWidget() {
                     <div className="ai-chat-messages" ref={listRef}>
                         {messages.map((m, idx) => (
                             <div key={`${m.role}-${idx}`} className={`ai-msg ai-msg-${m.role}`}>
-                                {m.text}
+                                {m.role === 'assistant'
+                                    ? <span dangerouslySetInnerHTML={{ __html: parseMarkdown(m.text) }} />
+                                    : m.text
+                                }
                             </div>
                         ))}
                         {loading && (
