@@ -114,47 +114,58 @@
     "places_data": {
         "h1": {
             "description": "4-star resort with Indochinese architecture, located by the romantic Hau river.",
-            "tags": ["Luxury", "Riverside", "Spa"]
+            "tags": ["Luxury", "Riverside", "Spa"],
+            "address": "1 Cach Mang Thang Tam St., Tan An, Ninh Kieu, Can Tho"
         },
         "h2": {
             "description": "The first high-class 5-star hotel in the Mekong Delta, with a panoramic view of the whole city.",
-            "tags": ["Pool", "Center", "Nice view"]
+            "tags": ["Pool", "Center", "Nice view"],
+            "address": "Con Khuong Urban Area, Cai Khe, Ninh Kieu, Can Tho"
         },
         "h3": {
             "description": "Ultra-luxury isolated 5-star resort on Au Islet, absolutely green and peaceful space.",
-            "tags": ["Au Islet", "Eco", "Resort"]
+            "tags": ["Au Islet", "Eco", "Resort"],
+            "address": "Au Islet, Phu Thu Ward, Cai Rang, Can Tho"
         },
         "h4": {
             "description": "4-star hotel located right in the center, convenient for visiting the night market and Ninh Kieu Wharf.",
-            "tags": ["Center", "Family", "Amenities"]
+            "tags": ["Center", "Family", "Amenities"],
+            "address": "224 30 Thang 4 St., Xuan Khanh, Ninh Kieu, Can Tho"
         },
         "h5": {
             "description": "Boutique hotel with ancient Southern house style, located in the city center, near Ninh Kieu Wharf.",
-            "tags": ["Boutique", "Center", "Ancient house"]
+            "tags": ["Boutique", "Center", "Ancient house"],
+            "address": "1 Ngo Gia Tu St., Tan An, Ninh Kieu, Can Tho"
         },
         "h6": {
             "description": "Cozy hotel with wooden furniture, Hau river view, just a 2-minute walk from Ninh Kieu Wharf.",
-            "tags": ["Cozy", "River view", "Family"]
+            "tags": ["Cozy", "River view", "Family"],
+            "address": "2 Hai Ba Trung St., Tan An, Ninh Kieu, Can Tho"
         },
         "r1": {
             "description": "The most famous fermented fish hotpot restaurant in Can Tho with rich flavor and dozens of accompanying vegetables.",
-            "tags": ["Specialty", "Fermented fish hotpot", "Long-standing"]
+            "tags": ["Specialty", "Fermented fish hotpot", "Long-standing"],
+            "address": "89 3/2 St., Ninh Kieu, Can Tho"
         },
         "r2": {
             "description": "The famous fermented tofu duck dish in alley 1, which has welcomed many famous artists to enjoy.",
-            "tags": ["Dinner", "Fermented tofu duck", "Affordable"]
+            "tags": ["Dinner", "Fermented tofu duck", "Affordable"],
+            "address": "Alley 1 Ly Tu Trong, Ninh Kieu, Can Tho"
         },
         "r3": {
             "description": "A long-standing famous sizzling pancake restaurant in Can Tho, crispy crust, fresh shrimp and meat filling, served with sweet and sour fish sauce.",
-            "tags": ["Sizzling pancake", "Long-standing", "Specialty"]
+            "tags": ["Sizzling pancake", "Long-standing", "Specialty"],
+            "address": "38 De Tham St., Ninh Kieu, Can Tho"
         },
         "r4": {
             "description": "Riverside restaurant specializing in rustic Southern dishes such as grilled snails with pepper, grilled snakehead fish.",
-            "tags": ["Riverside", "Rustic", "Family"]
+            "tags": ["Riverside", "Rustic", "Family"],
+            "address": "Ninh Kieu Wharf, Ninh Kieu, Can Tho"
         },
         "r5": {
             "description": "Food paradise with hundreds of diverse and attractive street food stalls.",
-            "tags": ["Street food", "Night market", "Bustling"]
+            "tags": ["Street food", "Night market", "Bustling"],
+            "address": "Ninh Kieu Wharf, Can Tho"
         }
     },
     "payment": {

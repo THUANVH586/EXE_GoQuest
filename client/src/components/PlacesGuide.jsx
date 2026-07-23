@@ -47,7 +47,7 @@ export default function PlacesGuide() {
                             <div className="place-rating">
                                 {renderStars(place.rating)} <span className="rating-num">({place.rating})</span>
                             </div>
-                            <p className="place-address">📍 {place.address}</p>
+                            <p className="place-address">📍 {t(`places_data.${place.id}.address`, { defaultValue: place.address })}</p>
                             <p className="place-desc">{t(`places_data.${place.id}.description`, { defaultValue: place.description })}</p>
                             <div className="place-tags">
                                 {place.tags.map((tag, idx) => (
