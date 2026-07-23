@@ -234,39 +234,24 @@ function LandingPage() {
                 </div>
             </nav>
 
-            {/* ===== HERO TEXT SECTION ===== */}
-            <section className="lp-hero-text">
+            {/* ===== HERO SECTION ===== */}
+            <section className="lp-hero">
+                <div className="lp-hero-bg" />
                 <div className="lp-hero-content animate-fade-in">
-                    <div className="lp-hero-badge">
-                        <span></span>
-                        <span>{t('hero.badge')}</span>
-                    </div>
-
                     <h1 className="lp-hero-title">
-                        <em>{t('hero.title')}</em>
+                        Smart Tourism<br />
+                        <span className="text-highlight">Ecosystem</span>
                     </h1>
-
                     <p className="lp-hero-subtitle">
-                        {t('hero.subtitle')}
+                        Experience the beauty of Tay Do through the lens of technology<br/>
+                        and sustainability.
                     </p>
-
                     <div className="lp-hero-cta">
-                        <Link to="/register" className="btn btn-primary lp-btn-large">
-                            {t('hero.cta_start')}
+                        <Link to="/register" className="btn btn-primary lp-btn-large btn-journey">
+                            Start the journey
                         </Link>
-                        <button
-                            onClick={() => scrollToSection('lp-experiences')}
-                            className="btn btn-secondary lp-btn-large"
-                        >
-                            {t('hero.cta_explore')}
-                        </button>
                     </div>
                 </div>
-            </section>
-
-            {/* ===== HERO IMAGE SECTION ===== */}
-            <section className="lp-hero-image">
-                <div className="lp-hero-bg" />
             </section>
 
             {/* ===== STATS STRIP ===== */}
