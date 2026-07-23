@@ -1245,7 +1245,7 @@ a:hover {
 .lp-hero-bg {
   position: absolute;
   inset: 0;
-  background-image: url('https://images.unsplash.com/photo-1517457210515-56543b591b65?q=80&w=2940&auto=format&fit=crop');
+  background-image: url('/images/hero_cai_rang.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

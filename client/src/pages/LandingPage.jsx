@@ -239,17 +239,21 @@ function LandingPage() {
                 <div className="lp-hero-bg" />
                 <div className="lp-hero-content animate-fade-in">
                     <h1 className="lp-hero-title">
-                        Smart Tourism<br />
-                        <span className="text-highlight">Ecosystem</span>
+                        {t('hero.title')}
                     </h1>
                     <p className="lp-hero-subtitle">
-                        Experience the beauty of Tay Do through the lens of technology<br/>
-                        and sustainability.
+                        {t('hero.subtitle')}
                     </p>
                     <div className="lp-hero-cta">
                         <Link to="/register" className="btn btn-primary lp-btn-large btn-journey">
-                            Start the journey
+                            {t('hero.cta_start')}
                         </Link>
+                        <button
+                            onClick={() => scrollToSection('lp-experiences')}
+                            className="btn btn-secondary lp-btn-large"
+                        >
+                            {t('hero.cta_explore')}
+                        </button>
                     </div>
                 </div>
             </section>
