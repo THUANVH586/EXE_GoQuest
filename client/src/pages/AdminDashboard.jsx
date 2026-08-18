@@ -140,10 +140,10 @@ function AdminDashboard() {
             // Append JSON data starting from row 8 (index 7), leaving row 7 empty
             window.XLSX.utils.sheet_add_json(worksheet, exportData, { origin: "A8" });
 
-            // Apply Merges
+            // Apply Merges (Only merge columns A and B to fit text tightly)
             worksheet['!merges'] = [
-                { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }, // Merge A1:E1 for Title
-                { s: { r: 5, c: 0 }, e: { r: 5, c: 4 } }  // Merge A6:E6 for Note
+                { s: { r: 0, c: 0 }, e: { r: 0, c: 1 } }, // Merge A1:B1 for Title
+                { s: { r: 5, c: 0 }, e: { r: 5, c: 1 } }  // Merge A6:B6 for Note
             ];
 
             // Apply Styling
