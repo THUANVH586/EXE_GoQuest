@@ -147,12 +147,26 @@ function AdminDashboard() {
             ];
 
             // Apply Styling
+            
+            // 0. Global Left Alignment for ALL cells
+            const range = window.XLSX.utils.decode_range(worksheet['!ref']);
+            for (let R = range.s.r; R <= range.e.r; ++R) {
+                for (let C = range.s.c; C <= range.e.c; ++C) {
+                    const cellRef = window.XLSX.utils.encode_cell({ r: R, c: C });
+                    const cell = worksheet[cellRef];
+                    if (!cell) continue;
+
+                    if (!cell.s) cell.s = {};
+                    if (!cell.s.alignment) cell.s.alignment = { horizontal: "left", vertical: "center" };
+                }
+            }
+
             // 1. Summary Title (A1)
             if (worksheet['A1']) {
                 worksheet['A1'].s = { 
                     font: { bold: true, sz: 14, color: { rgb: "FFFFFF" } }, 
                     fill: { fgColor: { rgb: "107C41" } },
-                    alignment: { vertical: "center" }
+                    alignment: { horizontal: "left", vertical: "center" }
                 };
             }
 
@@ -161,7 +175,7 @@ function AdminDashboard() {
                 worksheet['A6'].s = {
                     font: { italic: true, bold: true, color: { rgb: "000000" } },
                     fill: { fgColor: { rgb: "FFEB3B" } }, // Yellow
-                    alignment: { vertical: "center" }
+                    alignment: { horizontal: "left", vertical: "center" }
                 };
             }
 
@@ -173,23 +187,23 @@ function AdminDashboard() {
                     worksheet[cellRef].s = {
                         font: { bold: true, color: { rgb: "FFFFFF" } },
                         fill: { fgColor: { rgb: "2D7A3A" } },
-                        alignment: { horizontal: "center", vertical: "center" }
+                        alignment: { horizontal: "left", vertical: "center" }
                     };
                 }
             });
 
             // Set column widths (10 columns!)
             const colWidths = [
-                { wch: 25 }, // Tên hiển thị
+                { wch: 23 }, // Tên hiển thị (Slightly reduced for tighter summary gap)
                 { wch: 25 }, // Tên đăng nhập
                 { wch: 30 }, // Email
                 { wch: 18 }, // Trạng thái
-                { wch: 14 }, // Điểm hiện tại (Shrunk)
+                { wch: 14 }, // Điểm hiện tại
                 { wch: 60 }, // Nhiệm vụ đã hoàn thành
                 { wch: 60 }, // Nhiệm vụ đang làm
                 { wch: 45 }, // Quà tặng đã đổi
                 { wch: 18 }, // Quãng đường (m)
-                { wch: 25 }, // Dùng bình cá nhân (WIDER)
+                { wch: 25 }, // Dùng bình cá nhân
             ]
             worksheet['!cols'] = colWidths;
 
