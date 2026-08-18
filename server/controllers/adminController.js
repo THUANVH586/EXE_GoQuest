@@ -112,7 +112,6 @@ exports.exportUsersExcel = async (req, res) => {
             }
 
             return {
-                'ID': u.id,
                 'Tên hiển thị': u.displayName,
                 'Tên đăng nhập': u.username,
                 'Email': u.email,

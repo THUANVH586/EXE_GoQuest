@@ -113,33 +113,31 @@ function AdminDashboard() {
                 return
             }
 
-            // Generate CSV
-            const headers = Object.keys(exportData[0])
-            let csvContent = headers.join(',') + '\n'
+            // Generate XLSX
+            const worksheet = window.XLSX.utils.json_to_sheet(exportData)
+            const workbook = window.XLSX.utils.book_new()
+            window.XLSX.utils.book_append_sheet(workbook, worksheet, "NguoiDung")
+            
+            // Set column widths
+            const colWidths = [
+                { wch: 20 }, // Tên hiển thị
+                { wch: 20 }, // Tên đăng nhập
+                { wch: 25 }, // Email
+                { wch: 15 }, // Trạng thái
+                { wch: 15 }, // Điểm hiện tại
+                { wch: 50 }, // Nhiệm vụ đã hoàn thành
+                { wch: 50 }, // Nhiệm vụ đang làm
+                { wch: 30 }, // Quà tặng đã đổi
+                { wch: 12 }, // Số bước đi
+                { wch: 20 }, // Quãng đường
+                { wch: 20 }, // Dùng bình cá nhân
+            ]
+            worksheet['!cols'] = colWidths
 
-            exportData.forEach(row => {
-                const values = headers.map(header => {
-                    let val = row[header]
-                    if (val === null || val === undefined) val = ''
-                    // Escape quotes and wrap in quotes if contains comma
-                    val = String(val).replace(/"/g, '""')
-                    if (val.search(/("|,|\n)/g) >= 0) val = `"${val}"`
-                    return val
-                })
-                csvContent += values.join(',') + '\n'
-            })
+            // Generate buffer and save
+            window.XLSX.writeFile(workbook, `GoQuest_Users_${new Date().toISOString().slice(0, 10)}.xlsx`)
 
-            // Add UTF-8 BOM
-            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
-            const url = URL.createObjectURL(blob)
-            const link = document.createElement('a')
-            link.href = url
-            link.setAttribute('download', `GoQuest_Users_${new Date().toISOString().slice(0, 10)}.csv`)
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-
-            toast.success('Xuất dữ liệu thành công!', { id: 'export-excel' })
+            toast.success('Xuất file Excel thành công!', { id: 'export-excel' })
         } catch (err) {
             console.error('Export Excel Error:', err)
             toast.error('Lỗi khi xuất dữ liệu!', { id: 'export-excel' })
