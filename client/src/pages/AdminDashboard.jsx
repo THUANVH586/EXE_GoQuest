@@ -128,7 +128,6 @@ function AdminDashboard() {
                 { wch: 50 }, // Nhiệm vụ đã hoàn thành
                 { wch: 50 }, // Nhiệm vụ đang làm
                 { wch: 30 }, // Quà tặng đã đổi
-                { wch: 12 }, // Số bước đi
                 { wch: 20 }, // Quãng đường
                 { wch: 20 }, // Dùng bình cá nhân
             ]

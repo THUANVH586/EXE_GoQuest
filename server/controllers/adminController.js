@@ -120,8 +120,7 @@ exports.exportUsersExcel = async (req, res) => {
                 'Nhiệm vụ đã hoàn thành': completedNames,
                 'Nhiệm vụ đang làm': activeNames,
                 'Quà tặng đã đổi': redeemedGiftsList,
-                'Số bước đi': u.steps || 0,
-                'Quãng đường (km)': u.distance || 0,
+                'Quãng đường (m)': Math.round((u.distance || 0) * 1000),
                 'Dùng bình cá nhân': u.usingPersonalBottle ? 'Có' : 'Không',
             };
         });
