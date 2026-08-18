@@ -113,26 +113,72 @@ function AdminDashboard() {
                 return
             }
 
-            // Generate XLSX
-            const worksheet = window.XLSX.utils.json_to_sheet(exportData)
+            // Calculate Summary Data
+            const totalUsers = exportData.length;
+            const completedUsers = exportData.filter(u => u['Trạng thái'] === 'Đã hoàn thành').length;
+            const inProgressUsers = exportData.filter(u => u['Trạng thái'] === 'Đang thực hiện').length;
+            const totalGifts = exportData.reduce((sum, u) => {
+                const gifts = u['Quà tặng đã đổi'];
+                if (!gifts) return sum;
+                return sum + gifts.split(',').filter(g => g.trim() !== '').length;
+            }, 0);
+
+            // Generate Worksheet with Summary at top
+            const summaryAOA = [
+                ["BẢNG TỔNG HỢP TRẢI NGHIỆM KHÁCH HÀNG"],
+                ["Tổng số khách hàng:", totalUsers],
+                ["Số khách đã hoàn thành:", completedUsers],
+                ["Số khách đang tham gia:", inProgressUsers],
+                ["Tổng số quà đã tặng:", totalGifts],
+                [], // Empty row
+                []  // Empty row before table
+            ];
+
+            const worksheet = window.XLSX.utils.aoa_to_sheet(summaryAOA);
+            
+            // Append JSON data starting from row 8
+            window.XLSX.utils.sheet_add_json(worksheet, exportData, { origin: "A8" });
+
+            // Apply Styling
+            // 1. Summary Title
+            if (worksheet['A1']) {
+                worksheet['A1'].s = { 
+                    font: { bold: true, sz: 14, color: { rgb: "FFFFFF" } }, 
+                    fill: { fgColor: { rgb: "107C41" } },
+                    alignment: { vertical: "center" }
+                };
+            }
+
+            // 2. Data Headers (Row 8 is index 7)
+            const headers = Object.keys(exportData[0]);
+            headers.forEach((header, index) => {
+                const cellRef = window.XLSX.utils.encode_cell({ c: index, r: 7 });
+                if (worksheet[cellRef]) {
+                    worksheet[cellRef].s = {
+                        font: { bold: true, color: { rgb: "FFFFFF" } },
+                        fill: { fgColor: { rgb: "2D7A3A" } },
+                        alignment: { horizontal: "center", vertical: "center" }
+                    };
+                }
+            });
+
+            // Set column widths
+            const colWidths = [
+                { wch: 25 }, // Tên hiển thị
+                { wch: 30 }, // Email
+                { wch: 18 }, // Trạng thái
+                { wch: 15 }, // Điểm hiện tại
+                { wch: 45 }, // Nhiệm vụ đã hoàn thành
+                { wch: 45 }, // Nhiệm vụ đang làm
+                { wch: 35 }, // Quà tặng đã đổi
+                { wch: 20 }, // Quãng đường (m)
+                { wch: 20 }, // Dùng bình cá nhân
+            ]
+            worksheet['!cols'] = colWidths;
+
             const workbook = window.XLSX.utils.book_new()
             window.XLSX.utils.book_append_sheet(workbook, worksheet, "NguoiDung")
             
-            // Set column widths
-            const colWidths = [
-                { wch: 20 }, // Tên hiển thị
-                { wch: 20 }, // Tên đăng nhập
-                { wch: 25 }, // Email
-                { wch: 15 }, // Trạng thái
-                { wch: 15 }, // Điểm hiện tại
-                { wch: 50 }, // Nhiệm vụ đã hoàn thành
-                { wch: 50 }, // Nhiệm vụ đang làm
-                { wch: 30 }, // Quà tặng đã đổi
-                { wch: 20 }, // Quãng đường
-                { wch: 20 }, // Dùng bình cá nhân
-            ]
-            worksheet['!cols'] = colWidths
-
             // Generate buffer and save
             window.XLSX.writeFile(workbook, `GoQuest_Users_${new Date().toISOString().slice(0, 10)}.xlsx`)
 
