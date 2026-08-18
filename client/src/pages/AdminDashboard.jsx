@@ -123,6 +123,8 @@ function AdminDashboard() {
                 return sum + gifts.split(',').filter(g => g.trim() !== '').length;
             }, 0);
 
+            const staffCount = users.filter(u => u.role === 'staff').length;
+
             // Generate Worksheet with Summary at top
             const summaryAOA = [
                 ["BẢNG TỔNG HỢP TRẢI NGHIỆM KHÁCH HÀNG"],
@@ -130,6 +132,7 @@ function AdminDashboard() {
                 ["Số khách đã hoàn thành:", completedUsers],
                 ["Số khách đang tham gia:", inProgressUsers],
                 ["Tổng số quà đã tặng:", totalGifts],
+                [`(Ghi chú: Không bao gồm ${staffCount} nhân viên hệ thống)`, ""],
                 [], // Empty row
                 []  // Empty row before table
             ];
@@ -466,44 +469,63 @@ function AdminDashboard() {
                     </div>
                 </div>
 
-                {/* Tabs - Premium Look */}
-                <div style={{ 
-                    display: 'flex', 
-                    gap: 'var(--space-lg)', 
-                    marginBottom: 'var(--space-xl)', 
-                    padding: '4px',
-                    background: 'rgba(45, 122, 58, 0.05)',
-                    borderRadius: '12px',
-                    width: 'fit-content'
-                }}>
-                    {[
-                        { key: 'leaderboard', label: t('admin.tabs.leaderboard'), icon: '📊' },
-                        { key: 'tasks', label: t('admin.tabs.tasks'), icon: '🎯' },
-                        { key: 'staff', label: 'Quản lý nhân viên', icon: '👤' },
-                        { key: 'gifts', label: 'Quản lý quà tặng', icon: '🎁' }
-                    ].map(tab => (
-                        <button
-                            key={tab.key}
-                            onClick={() => setActiveTab(tab.key)}
+                {/* Tabs & Export Row */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-xl)' }}>
+                    {/* Tabs - Premium Look */}
+                    <div style={{ 
+                        display: 'flex', 
+                        gap: 'var(--space-lg)', 
+                        padding: '4px',
+                        background: 'rgba(45, 122, 58, 0.05)',
+                        borderRadius: '12px',
+                        width: 'fit-content'
+                    }}>
+                        {[
+                            { key: 'leaderboard', label: t('admin.tabs.leaderboard'), icon: '📊' },
+                            { key: 'tasks', label: t('admin.tabs.tasks'), icon: '🎯' },
+                            { key: 'staff', label: 'Quản lý nhân viên', icon: '👤' },
+                            { key: 'gifts', label: 'Quản lý quà tặng', icon: '🎁' }
+                        ].map(tab => (
+                            <button
+                                key={tab.key}
+                                onClick={() => setActiveTab(tab.key)}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 'var(--space-xs)',
+                                    padding: '10px 20px',
+                                    background: activeTab === tab.key ? 'var(--color-bg-primary)' : 'transparent',
+                                    color: activeTab === tab.key ? 'var(--color-accent-primary)' : 'var(--color-text-muted)',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    fontWeight: 700,
+                                    fontSize: '0.9rem',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    boxShadow: activeTab === tab.key ? '0 4px 12px rgba(45, 122, 58, 0.1)' : 'none'
+                                }}
+                            >
+                                <span>{tab.icon}</span> {tab.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Export Button */}
+                    {activeTab === 'leaderboard' && (
+                        <button 
+                            onClick={handleExportExcel}
                             style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 'var(--space-xs)',
-                                padding: '10px 20px',
-                                background: activeTab === tab.key ? 'var(--color-bg-primary)' : 'transparent',
-                                color: activeTab === tab.key ? 'var(--color-accent-primary)' : 'var(--color-text-muted)',
-                                border: 'none',
-                                borderRadius: '8px',
-                                fontWeight: 700,
-                                fontSize: '0.9rem',
-                                cursor: 'pointer',
-                                transition: 'all 0.3s ease',
-                                boxShadow: activeTab === tab.key ? '0 4px 12px rgba(45, 122, 58, 0.1)' : 'none'
+                                display: 'flex', alignItems: 'center', gap: '8px',
+                                background: '#107c41', color: 'white',
+                                border: 'none', borderRadius: '8px',
+                                padding: '10px 20px', fontWeight: 700, fontSize: '0.9rem',
+                                cursor: 'pointer', transition: 'all 0.2s',
+                                boxShadow: '0 4px 12px rgba(16, 124, 65, 0.2)'
                             }}
                         >
-                            <span>{tab.icon}</span> {tab.label}
+                            <span>📥</span> Xuất dữ liệu Excel
                         </button>
-                    ))}
+                    )}
                 </div>
 
                 {activeTab === 'leaderboard' && (
@@ -534,19 +556,6 @@ function AdminDashboard() {
                                 {t('admin.leaderboard.title')}
                             </h2>
                             <div style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap' }}>
-                                <button 
-                                    onClick={handleExportExcel}
-                                    style={{
-                                        display: 'flex', alignItems: 'center', gap: '6px',
-                                        background: '#107c41', color: 'white',
-                                        border: 'none', borderRadius: '8px',
-                                        padding: '0 14px', fontWeight: 700, fontSize: '0.85rem',
-                                        cursor: 'pointer', transition: 'all 0.2s',
-                                        height: '36px'
-                                    }}
-                                >
-                                    📥 Xuất Excel
-                                </button>
                                 <div style={{ display: 'flex', alignItems: 'center', background: 'var(--color-bg-secondary)', borderRadius: '10px', padding: '0 10px', border: '1px solid rgba(44, 89, 38, 0.1)' }}>
                                     <span>🔍</span>
                                     <input 
