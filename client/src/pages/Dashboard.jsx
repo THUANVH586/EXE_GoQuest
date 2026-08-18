@@ -52,9 +52,9 @@ export default function Dashboard() {
     const distanceRef = useRef(distance)
 
     function getRank(pts) {
-        if (pts >= 800) return { name: t('dashboard.rank.gold', 'Hạng Vàng'), icon: '🏆', next: null, need: 0, nextThreshold: 800 }
-        if (pts >= 300) return { name: t('dashboard.rank.silver', 'Hạng Bạc'), icon: '🥈', next: t('dashboard.rank.gold', 'Hạng Vàng'), need: 800 - pts, nextThreshold: 800 }
-        return { name: t('dashboard.rank.bronze', 'Hạng Đồng'), icon: '🥉', next: t('dashboard.rank.silver', 'Hạng Bạc'), need: 300 - pts, nextThreshold: 300 }
+        if (pts >= 400) return { name: t('dashboard.rank.gold', 'Hạng Vàng'), icon: '🏆', next: null, need: 0, nextThreshold: 400 }
+        if (pts >= 150) return { name: t('dashboard.rank.silver', 'Hạng Bạc'), icon: '🥈', next: t('dashboard.rank.gold', 'Hạng Vàng'), need: 400 - pts, nextThreshold: 400 }
+        return { name: t('dashboard.rank.bronze', 'Hạng Đồng'), icon: '🥉', next: t('dashboard.rank.silver', 'Hạng Bạc'), need: 150 - pts, nextThreshold: 150 }
     }
 
     // Keep distanceRef in sync with distance state
@@ -435,7 +435,6 @@ export default function Dashboard() {
                         <span className="dsh-logo-name" style={{ margin: 0, color: 'var(--color-accent-primary)' }}>Go Quest</span>
                     </Link>
                     <nav className="dsh-top-nav">
-                        <Link className="dsh-top-link" to="/">{t('dashboard.nav.intro')}</Link>
                         <button
                             className={`dsh-top-link ${activeNav === 'journey' ? 'dsh-top-link--active' : ''}`}
                             onClick={() => setActiveNav('journey')}
@@ -454,7 +453,6 @@ export default function Dashboard() {
                         >
                             Khám phá
                         </button>
-                        <a className="dsh-top-link" href="#">{t('dashboard.nav.community')}</a>
                     </nav>
                 </div>
                 <div className="dsh-header-right" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
@@ -475,15 +473,6 @@ export default function Dashboard() {
                             <img src="https://flagcdn.com/w20/gb.png" srcSet="https://flagcdn.com/w40/gb.png 2x" width="20" alt="UK Flag" style={{ borderRadius: '2px' }} />
                             <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>EN</span>
                         </button>
-                    </div>
-                    <div className="dsh-search-box">
-                        <span className="dsh-search-icon">🔍</span>
-                        <input
-                            className="dsh-search-input"
-                            placeholder={t('dashboard.search')}
-                            value={searchVal}
-                            onChange={e => setSearchVal(e.target.value)}
-                        />
                     </div>
                 </div>
             </header>
@@ -598,7 +587,7 @@ export default function Dashboard() {
                             <section>
                                 <div className="dsh-section-head">
                                     <h2 className="dsh-section-title">{t('dashboard.journey_tasks.title')}</h2>
-                                    {journeyTasks.length < 5 && (
+                                    {journeyTasks.length > 0 && journeyTasks.length < 5 && (
                                         <button className="dsh-see-all" style={{ background: '#2c5926', color: '#fff', padding: '6px 14px', borderRadius: '8px' }} onClick={handleReceiveTasks}>
                                             {t('dashboard.journey_tasks.get_tasks')}
                                         </button>
