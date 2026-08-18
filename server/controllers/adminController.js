@@ -70,6 +70,7 @@ exports.getUsersReport = async (req, res) => {
     } catch (error) {
         console.error('getUsersReport error:', error);
         res.status(500).json({ message: 'Lỗi lấy danh sách người dùng' });
+    }
 };
 
 // @desc    Export users to Excel (Raw Data)
