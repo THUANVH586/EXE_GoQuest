@@ -102,6 +102,50 @@ function AdminDashboard() {
         }
     }
 
+    const handleExportExcel = async () => {
+        try {
+            toast.loading('Đang tải dữ liệu...', { id: 'export-excel' })
+            const response = await api.get('/admin/users/export')
+            const exportData = response.data
+
+            if (exportData.length === 0) {
+                toast.error('Không có dữ liệu người dùng để xuất!', { id: 'export-excel' })
+                return
+            }
+
+            // Generate CSV
+            const headers = Object.keys(exportData[0])
+            let csvContent = headers.join(',') + '\n'
+
+            exportData.forEach(row => {
+                const values = headers.map(header => {
+                    let val = row[header]
+                    if (val === null || val === undefined) val = ''
+                    // Escape quotes and wrap in quotes if contains comma
+                    val = String(val).replace(/"/g, '""')
+                    if (val.search(/("|,|\n)/g) >= 0) val = `"${val}"`
+                    return val
+                })
+                csvContent += values.join(',') + '\n'
+            })
+
+            // Add UTF-8 BOM
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
+            const url = URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.href = url
+            link.setAttribute('download', `GoQuest_Users_${new Date().toISOString().slice(0, 10)}.csv`)
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+
+            toast.success('Xuất dữ liệu thành công!', { id: 'export-excel' })
+        } catch (err) {
+            console.error('Export Excel Error:', err)
+            toast.error('Lỗi khi xuất dữ liệu!', { id: 'export-excel' })
+        }
+    }
+
     const handleSaveTask = async (e) => {
         e.preventDefault()
         try {
@@ -447,6 +491,19 @@ function AdminDashboard() {
                                 {t('admin.leaderboard.title')}
                             </h2>
                             <div style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap' }}>
+                                <button 
+                                    onClick={handleExportExcel}
+                                    style={{
+                                        display: 'flex', alignItems: 'center', gap: '6px',
+                                        background: '#107c41', color: 'white',
+                                        border: 'none', borderRadius: '8px',
+                                        padding: '0 14px', fontWeight: 700, fontSize: '0.85rem',
+                                        cursor: 'pointer', transition: 'all 0.2s',
+                                        height: '36px'
+                                    }}
+                                >
+                                    📥 Xuất Excel
+                                </button>
                                 <div style={{ display: 'flex', alignItems: 'center', background: 'var(--color-bg-secondary)', borderRadius: '10px', padding: '0 10px', border: '1px solid rgba(44, 89, 38, 0.1)' }}>
                                     <span>🔍</span>
                                     <input 

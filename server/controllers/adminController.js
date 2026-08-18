@@ -1,4 +1,4 @@
-const { User, Task } = require('../models');
+const { User, Task, Gift } = require('../models');
 const { Op } = require('sequelize');
 
 // @desc    Get all users (Dashboard data)
@@ -70,6 +70,66 @@ exports.getUsersReport = async (req, res) => {
     } catch (error) {
         console.error('getUsersReport error:', error);
         res.status(500).json({ message: 'Lỗi lấy danh sách người dùng' });
+};
+
+// @desc    Export users to Excel (Raw Data)
+// @route   GET /api/admin/users/export
+exports.exportUsersExcel = async (req, res) => {
+    try {
+        const tasks = await Task.findAll();
+        const users = await User.findAll({
+            where: { role: 'user' },
+            include: ['completedTasks', 'activeMissions', 'redeemedGifts']
+        });
+
+        const exportData = users.map(u => {
+            const REQUIRED_TASKS = 5;
+            
+            // Calculate total points
+            const userPoints = tasks
+                .filter(t => (u.completedTasks || []).some(ct => ct.id === t.id))
+                .reduce((sum, t) => sum + t.points, 0);
+
+            // Completed Tasks Name List
+            const completedNames = (u.completedTasks || []).map(t => t.title).join(', ');
+
+            // Active Missions Name List
+            const activeNames = (u.activeMissions || [])
+                .filter(m => m.UserActiveMission && m.UserActiveMission.status !== 'completed' && m.UserActiveMission.status !== 'expired')
+                .map(t => t.title)
+                .join(', ');
+
+            // Redeemed Gifts List (Format: Gift Name (Points))
+            const redeemedGiftsList = (u.redeemedGifts || []).map(g => `${g.title} (${g.UserRedeemedGift.pointsSpent}pts)`).join(', ');
+
+            // Status
+            let status = 'Chưa bắt đầu';
+            if ((u.completedTasks || []).length >= REQUIRED_TASKS) {
+                status = 'Đã hoàn thành';
+            } else if ((u.completedTasks || []).length > 0 || u.steps > 0) {
+                status = 'Đang thực hiện';
+            }
+
+            return {
+                'ID': u.id,
+                'Tên hiển thị': u.displayName,
+                'Tên đăng nhập': u.username,
+                'Email': u.email,
+                'Trạng thái': status,
+                'Điểm hiện tại': userPoints,
+                'Nhiệm vụ đã hoàn thành': completedNames,
+                'Nhiệm vụ đang làm': activeNames,
+                'Quà tặng đã đổi': redeemedGiftsList,
+                'Số bước đi': u.steps || 0,
+                'Quãng đường (km)': u.distance || 0,
+                'Dùng bình cá nhân': u.usingPersonalBottle ? 'Có' : 'Không',
+            };
+        });
+
+        res.json(exportData);
+    } catch (error) {
+        console.error('exportUsersExcel error:', error);
+        res.status(500).json({ message: 'Lỗi xuất dữ liệu người dùng' });
     }
 };
 

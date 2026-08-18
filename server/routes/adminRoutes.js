@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { getUsersReport, deleteUser, createTask, updateTask, deleteTask, createStaff } = require('../controllers/adminController');
+const { getUsersReport, exportUsersExcel, deleteUser, createTask, updateTask, deleteTask, createStaff } = require('../controllers/adminController');
 const { authMiddleware, adminMiddleware, authorize } = require('../middleware/auth');
 
-router.get('/users', authMiddleware, authorize('admin'), getUsersReport);
+router.get('/users', authMiddleware, authorize('admin', 'staff'), getUsersReport);
+router.get('/users/export', authMiddleware, authorize('admin', 'staff'), exportUsersExcel);
 router.delete('/users/:id', authMiddleware, authorize('admin'), deleteUser);
 
 // Staff Management
