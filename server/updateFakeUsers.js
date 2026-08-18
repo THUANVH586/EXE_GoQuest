@@ -29,7 +29,7 @@ const updateUsers = async () => {
                 else username = `${cleanName}.${suffix}`;
 
                 // Add random realistic email domains
-                const domains = ['@gmail.com', '@yahoo.com', '@outlook.com', '@hotmail.com'];
+                const domains = ['@gmail.com', '@outlook.com', '@hotmail.com', '@icloud.com'];
                 const domain = domains[Math.floor(Math.random() * domains.length)];
                 let email = `${username}${domain}`;
 
