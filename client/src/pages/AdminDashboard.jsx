@@ -132,21 +132,18 @@ function AdminDashboard() {
                 ["Số khách đã hoàn thành:", completedUsers],
                 ["Số khách đang tham gia:", inProgressUsers],
                 ["Tổng số quà đã tặng:", totalGifts],
-                [], // Empty row 6
-                [`Ghi chú: Không bao gồm ${staffCount} nhân viên hệ thống (Staff)`], // Row 7
-                [], // Empty row 8
-                []  // Empty row 9
+                [`Ghi chú: Không bao gồm ${staffCount} nhân viên hệ thống (Staff)`] // Row 6
             ];
 
             const worksheet = window.XLSX.utils.aoa_to_sheet(summaryAOA);
             
-            // Append JSON data starting from row 10
-            window.XLSX.utils.sheet_add_json(worksheet, exportData, { origin: "A10" });
+            // Append JSON data starting from row 8 (index 7), leaving row 7 empty
+            window.XLSX.utils.sheet_add_json(worksheet, exportData, { origin: "A8" });
 
             // Apply Merges
             worksheet['!merges'] = [
                 { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }, // Merge A1:E1 for Title
-                { s: { r: 6, c: 0 }, e: { r: 6, c: 4 } }  // Merge A7:E7 for Note
+                { s: { r: 5, c: 0 }, e: { r: 5, c: 4 } }  // Merge A6:E6 for Note
             ];
 
             // Apply Styling
@@ -159,19 +156,19 @@ function AdminDashboard() {
                 };
             }
 
-            // 2. Note Cell (A7) - Yellow Background
-            if (worksheet['A7']) {
-                worksheet['A7'].s = {
+            // 2. Note Cell (A6) - Yellow Background
+            if (worksheet['A6']) {
+                worksheet['A6'].s = {
                     font: { italic: true, bold: true, color: { rgb: "000000" } },
                     fill: { fgColor: { rgb: "FFEB3B" } }, // Yellow
                     alignment: { vertical: "center" }
                 };
             }
 
-            // 3. Data Headers (Row 10 is index 9)
+            // 3. Data Headers (Row 8 is index 7)
             const headers = Object.keys(exportData[0]);
             headers.forEach((header, index) => {
-                const cellRef = window.XLSX.utils.encode_cell({ c: index, r: 9 });
+                const cellRef = window.XLSX.utils.encode_cell({ c: index, r: 7 });
                 if (worksheet[cellRef]) {
                     worksheet[cellRef].s = {
                         font: { bold: true, color: { rgb: "FFFFFF" } },
@@ -181,17 +178,18 @@ function AdminDashboard() {
                 }
             });
 
-            // Set column widths
+            // Set column widths (10 columns!)
             const colWidths = [
-                { wch: 30 }, // Tên hiển thị (Wider for summary labels)
+                { wch: 25 }, // Tên hiển thị
+                { wch: 25 }, // Tên đăng nhập
                 { wch: 30 }, // Email
                 { wch: 18 }, // Trạng thái
-                { wch: 12 }, // Điểm hiện tại (Shrunk)
-                { wch: 65 }, // Nhiệm vụ đã hoàn thành (Wider)
-                { wch: 65 }, // Nhiệm vụ đang làm (Wider)
-                { wch: 45 }, // Quà tặng đã đổi (Wider)
+                { wch: 14 }, // Điểm hiện tại (Shrunk)
+                { wch: 60 }, // Nhiệm vụ đã hoàn thành
+                { wch: 60 }, // Nhiệm vụ đang làm
+                { wch: 45 }, // Quà tặng đã đổi
                 { wch: 18 }, // Quãng đường (m)
-                { wch: 20 }, // Dùng bình cá nhân
+                { wch: 25 }, // Dùng bình cá nhân (WIDER)
             ]
             worksheet['!cols'] = colWidths;
 
